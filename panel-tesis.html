@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
-<title>Panel de la investigadora · Siembra hábitos</title>
+<title>Panel de la investigadora · Siembra hábitos · TESA</title>
 <style>
-:root{--g:#2f7d4f;--gl:#e8f4ec;--b:#d6e2da;--m:#5d6b62;--o:#f4a23a}*{box-sizing:border-box}
-body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#f4f7f5;color:#1f2a24;line-height:1.45}
-header{background:#1f4d33;color:#fff;padding:14px 16px;text-align:center}header h1{margin:0;font-size:20px}header p{margin:3px 0 0;font-size:13px;opacity:.85}
+:root{--g:#5b2a86;--gl:#f3ebfa;--b:#ddcfec;--m:#6b5d7a;--o:#f5c518}*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#faf7fd;color:#241a30;line-height:1.45}
+header{background:#3d1a5e;color:#fff;padding:14px 16px;text-align:center}header h1{margin:0;font-size:20px}header p{margin:3px 0 0;font-size:13px;opacity:.85}
 main{max-width:1100px;margin:0 auto;padding:14px}
 .card{background:#fff;border:1px solid var(--b);border-radius:12px;padding:16px;margin-bottom:14px}
-h2{margin:0 0 10px;font-size:17px;color:var(--g)}h3{margin:14px 0 8px;font-size:15px;color:#1f4d33}
-input,select{padding:9px 10px;border:1px solid #b9c9bf;border-radius:8px;font-size:14px;font-family:inherit}
+h2{margin:0 0 10px;font-size:17px;color:var(--g)}h3{margin:14px 0 8px;font-size:15px;color:#3d1a5e}
+input,select{padding:9px 10px;border:1px solid #c5b3d8;border-radius:8px;font-size:14px;font-family:inherit}
 input[type=password],input[type=search]{width:100%;max-width:340px}
 button{background:var(--g);color:#fff;border:0;border-radius:8px;padding:9px 14px;font-size:14px;font-weight:bold;cursor:pointer;margin:4px 6px 4px 0}
 button.s{background:#fff;color:var(--g);border:1px solid var(--g)}
@@ -23,13 +23,13 @@ tr.avg td{background:var(--gl);font-weight:bold}
 .step{font-size:13px;color:var(--m);margin:2px 0 8px}
 .tabs{display:flex;gap:6px;overflow-x:auto;padding:8px 14px;background:#fff;border-bottom:1px solid var(--b);position:sticky;top:0;z-index:5}
 .tabs button{margin:0;background:#fff;color:var(--g);border:1px solid var(--b);white-space:nowrap}.tabs button.on{background:var(--g);color:#fff;border-color:var(--g)}
-.sub{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px}.sub button{margin:0;background:#fff;color:#1f4d33;border:1px solid var(--b);padding:7px 12px}.sub button.on{background:var(--o);color:#fff;border-color:var(--o)}
+.sub{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px}.sub button{margin:0;background:#fff;color:#3d1a5e;border:1px solid var(--b);padding:7px 12px}.sub button.on{background:var(--o);color:#3a2a00;border-color:var(--o)}
 .bar{display:grid;grid-template-columns:150px 1fr 110px;gap:8px;align-items:center;margin:6px 0;font-size:13px}
-.trk{background:#eef3f0;border-radius:99px;height:14px;overflow:hidden}.trk i{display:block;height:100%;background:linear-gradient(90deg,#3d9a60,#58b273);border-radius:99px}
+.trk{background:#f1ecf6;border-radius:99px;height:14px;overflow:hidden}.trk i{display:block;height:100%;background:linear-gradient(90deg,#5b2a86,#a77bd1);border-radius:99px}
 .go{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
-.go button{margin:0;text-align:left;background:var(--gl);color:#1f4d33;border:1px solid var(--b);font-weight:normal;padding:12px}.go button b{display:block;color:var(--g);margin-bottom:2px}
-.bt{margin-top:12px;padding:10px;background:#f7faf8;border:1px dashed var(--b);border-radius:8px}
-.pill{display:inline-block;padding:2px 9px;border-radius:99px;font-size:12px;background:var(--gl);color:var(--g)}.pill.w{background:#fdeed7;color:#8a5200}.pill.n{background:#eee;color:#666}
+.go button{margin:0;text-align:left;background:var(--gl);color:#3d1a5e;border:1px solid var(--b);font-weight:normal;padding:12px}.go button b{display:block;color:var(--g);margin-bottom:2px}
+.bt{margin-top:12px;padding:10px;background:#faf7fd;border:1px dashed var(--b);border-radius:8px}
+.pill{display:inline-block;padding:2px 9px;border-radius:99px;font-size:12px;background:var(--gl);color:var(--g)}.pill.w{background:#fff4c7;color:#7a5b00}.pill.n{background:#eee;color:#666}
 .res{background:var(--gl);border-radius:8px;padding:10px;margin:10px 0}
 @media(max-width:600px){.bar{grid-template-columns:1fr}}
 </style></head><body>
@@ -41,6 +41,7 @@ const URL="https://vokpjjidytayjrzjespr.supabase.co",KEY="sb_publishable_q6YCquh
 const esc=v=>String(v==null?"":v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const $=s=>document.querySelector(s),app=$("#app"),nav=$("#nav");
 let CLAVE="",F=[],SEM=[],GEN="",TAB="inicio",SUB="",BUSCA="",RW=1,RP=true;
+const TIT={1:"Agua primero",2:"Plato arcoíris",3:"En movimiento",4:"Cocinamos juntos"};
 const KQ=["B","B","B","A","C","B","B","C","A","B"]; // clave supuesta; verificar con la tabla "clave" de Supabase
 async function rpc(fn,a){let r;try{r=await fetch(`${URL}/rest/v1/rpc/${fn}`,{method:"POST",headers:{"Content-Type":"application/json",apikey:KEY},body:JSON.stringify(a)})}catch(e){throw new Error("Sin conexión")}
  const t=await r.text();let d;try{d=JSON.parse(t)}catch(e){d=t}if(!r.ok)throw new Error((d&&d.message)||"Error");return d}
@@ -62,12 +63,13 @@ const dash=v=>v==null||v===""?"–":v;
 const nhab=f=>[1,2,3,4].filter(s=>hab(f,s)).length;
 const elig=f=>!!(f.pre&&f.post&&f.sat&&nhab(f)>=3);
 const fecha=d=>d?new Date(d).toLocaleDateString("es-EC"):"–";
+const canal=f=>f.correo&&f.whatsapp?"Ambos":f.correo?"Correo":f.whatsapp?"WhatsApp":"–";
 const flt=()=>{const q=BUSCA.trim().toLowerCase();return q?F.filter(f=>((f.codigo||"")+" "+(f.nombre||"")).toLowerCase().includes(q)):F};
 
 /* ---------- bloques para copiar (siempre completos y en el mismo orden) ---------- */
 const BL={
  part:()=>F.map(f=>[f.codigo,f.edad,f.sexo,f.parentesco,f.instruccion,f.grado,"",(f.progreso||[]).filter(x=>x.r).length]),
- contactos:()=>[["Código","Nombre","Correo","WhatsApp","Registro"]].concat(F.map(f=>[f.codigo,f.nombre,f.correo,f.whatsapp,fecha(f.registrado)])),
+ contactos:()=>[["Código","Nombre","Canal","Correo","WhatsApp","Registro"]].concat(F.map(f=>[f.codigo,f.nombre,canal(f),f.correo,f.whatsapp,fecha(f.registrado)])),
  pre:()=>F.map(f=>[f.codigo].concat(f.pre||Array(10).fill(""))),
  post:()=>F.map(f=>f.post||Array(10).fill("")),
  comp:()=>[["Código","Pretest","Postest","Cambio"]].concat(F.map(f=>{const a=sc(f.pre),b=sc(f.post);return[f.codigo,a==null?"":a,b==null?"":b,a!=null&&b!=null?b-a:""]})),
@@ -95,20 +97,20 @@ function vInicio(){const n=F.length,c=a=>F.filter(a).length,pct=x=>n?Math.round(
  const h=hoy(),est=s=>h<s.fecha_apertura?{h:'<span class="pill n">Próxima</span>'}:h>s.fecha_cierre?{h:'<span class="pill">Cerrada</span>'}:{h:'<span class="pill w">Abierta ahora</span>'};
  return `<div class="card"><h2>Panorama general</h2><div class="kp">${k.map(x=>`<div class="k"><b>${x[1]}</b><span>${x[0]}</span></div>`).join("")}</div></div>
  <div class="card"><h2>Avance de la campaña</h2><p class="step">Porcentaje sobre el total de registrados.</p>${et.map(x=>`<div class="bar"><span>${x[0]}</span><div class="trk"><i style="width:${pct(x[1])}%"></i></div><b>${x[1]} (${pct(x[1])}%)</b></div>`).join("")}</div>
- <div class="card"><h2>Calendario</h2>${T(["Semana","Tema","Abre","Cierra","Estado"],SEM.map(s=>[s.numero,s.titulo,s.fecha_apertura,s.fecha_cierre,est(s)]),"No se pudieron cargar las semanas.")}</div>
+ <div class="card"><h2>Calendario</h2>${T(["Semana","Tema","Abre","Cierra","Estado"],SEM.map(s=>[s.numero,TIT[s.numero]||s.titulo,s.fecha_apertura,s.fecha_cierre,est(s)]),"No se pudieron cargar las semanas.")}</div>
  <div class="card"><h2>Secciones del panel</h2><div class="go">
  <button onclick="go('part')"><b>👥 Participantes</b>Quiénes se registraron y sus datos.</button>
- <button onclick="go('avance')"><b>📈 Avance</b>Qué ha hecho cada familia.</button>
+ <button onclick="go('avance')"><b>📈 Avance</b>Qué ha hecho cada participante.</button>
  <button onclick="go('conoc')"><b>🧠 Conocimientos</b>Evaluación inicial, final y comparación.</button>
  <button onclick="go('hab')"><b>🌱 Hábitos</b>Registro semanal, semana por semana.</button>
  <button onclick="go('sat')"><b>⭐ Satisfacción</b>Resultados de la encuesta.</button>
- <button onclick="go('rec')"><b>🔔 Recordatorios</b>Mensajes a las familias pendientes.</button></div>
+ <button onclick="go('rec')"><b>🔔 Recordatorios</b>Mensajes a los participantes pendientes.</button></div>
  <p class="step">Cada sección tiene su botón “Copiar” con las instrucciones de dónde pegar en el Excel de tabulación.</p></div>`}
 
 /* ---------- PARTICIPANTES ---------- */
 function vPart(){const L=flt();
  return `<div class="card"><h2>Participantes (${F.length})</h2>${buscador()}<p class="step">Mostrando ${L.length} de ${F.length}.</p>
- ${T(["Código","Nombre","Edad","Sexo","Parentesco","Instrucción","Grado","Registro","Retos","Correo","WhatsApp"],L.map(f=>[f.codigo,dash(f.nombre),dash(f.edad),dash(f.sexo),dash(f.parentesco),dash(f.instruccion),dash(f.grado),fecha(f.registrado),(f.progreso||[]).filter(x=>x.r).length,dash(f.correo),dash(f.whatsapp)]))}
+ ${T(["Código","Nombre","Edad","Sexo","Rol","Entorno o nivel","Participa para","Registro","Retos","Canal","Correo","WhatsApp"],L.map(f=>[f.codigo,dash(f.nombre),dash(f.edad),dash(f.sexo),dash(f.parentesco),dash(f.instruccion),dash(f.grado),fecha(f.registrado),(f.progreso||[]).filter(x=>x.r).length,canal(f),dash(f.correo),dash(f.whatsapp)]))}
  <div class="bt"><b>Para el Excel de la tesis</b> (solo código, sin nombre)<br>${cbtn("part","Copiar participantes")}<p class="step">Hoja de Participantes, celda <b>A6</b>. Incluye todos los registrados, aunque haya filtrado la tabla. La columna “Asistencia a la charla” sale vacía: complétela a mano con la lista de la sesión en vivo.</p></div>
  <div class="bt"><b>Contactos</b> (incluye nombre, correo y WhatsApp; no pegar en el Excel de la tesis)<br>${cbtn("contactos","Copiar contactos","s")}</div></div>`}
 
@@ -134,7 +136,7 @@ function vConoc(){const L=flt(),H=["Código"].concat(Array.from({length:10},(_,i
  return `<div class="card"><h2>Conocimientos</h2>${sub([["pre","Evaluación inicial"],["post","Evaluación final"],["comp","Comparación"]])}${b}</div>`}
 
 /* ---------- HÁBITOS ---------- */
-function vHab(){const L=flt(),N=["Agua","Lonchera","Juego","Pantallas"];let b="";
+function vHab(){const L=flt(),N=["Agua","Fruta o verdura","Actividad física","Sin pantallas"];let b="";
  if(SUB=="all"){b=`<h3>Las 4 semanas juntas</h3>${buscador()}${T(["Código"].concat([1,2,3,4].flatMap(s=>N.map(x=>"S"+s+" "+x))),L.map(f=>{let r=[f.codigo];for(let s=1;s<=4;s++)r=r.concat(hab(f,s)||["–","–","–","–"]);return r}))}
   <div class="bt">${cbtn("hab","Copiar hábitos semanas 1 a 4")}<p class="step">Hoja de Hábitos, celda <b>A6</b> (código + 16 columnas). Incluye a todos en el mismo orden.</p></div>`}
  else{const s=+SUB||1,env=F.filter(f=>hab(f,s));
@@ -150,19 +152,19 @@ function vSat(){const L=flt(),con=F.filter(f=>f.sat);
 /* ---------- RECORDATORIOS ---------- */
 const base=()=>location.href.replace(/panel-tesis\.html.*$/,"");
 const MSG={1:"ya está abierta la Semana 1: Agua primero. Ingrese, responda la evaluación inicial (unos 5 minutos) y comience con la lección y el reto.",
-2:"ya está disponible la Semana 2: Lonchera arcoíris. Ingrese para ver el nuevo contenido y registrar su semana.",
-3:"ya está disponible la Semana 3: Familia en movimiento. Ingrese para ver el reto y registrar su semana.",
+2:"ya está disponible la Semana 2: Plato arcoíris. Ingrese para ver el nuevo contenido y registrar su semana.",
+3:"ya está disponible la Semana 3: En movimiento. Ingrese para ver el reto y registrar su semana.",
 4:"ya está disponible la Semana 4: Cocinamos juntos, la última semana. Ingrese, registre su semana y complete la evaluación final y la encuesta para recibir su certificado."};
 const pend=(f,n)=>n==1?!(f.pre&&hab(f,1)):n==4?!(hab(f,4)&&f.post&&f.sat):!hab(f,n);
 const tel=w=>{let d=(w||"").replace(/\D/g,"");if(!d)return"";if(d.startsWith("593"))return d;if(d.startsWith("0"))d=d.slice(1);return"593"+d};
-const texto=(n,f)=>`${f&&f.nombre?"Estimado/a "+f.nombre:"Estimada familia de Surcos"}: ${MSG[n]}${f?` Su código: ${f.codigo}.`:""} Enlace: ${base()}`;
+const texto=(n,f)=>`${f&&f.nombre?"Estimado/a "+f.nombre:"Estimado/a participante"}: ${MSG[n]}${f?` Su código: ${f.codigo}.`:""} Enlace: ${base()}`;
 const L2=()=>F.filter(f=>!RP||pend(f,RW));
 let GAS="",ESTADO={},RES="",FORZAR=false,OCUP=false,VK="";
-try{GAS=localStorage.getItem("surcos_gas")||""}catch(e){}
+try{GAS=localStorage.getItem("tesa_gas")||""}catch(e){}
 const clv=()=>RW+"|"+RP+"|"+FORZAR;
 function guardarGas(){const v=$("#gas").value.trim();
  if(v&&!/^https:\/\/script\.google\.com\/.+\/exec$/.test(v)){RES='<div class="err">El enlace debe empezar con https://script.google.com/ y terminar en /exec.</div>';return render()}
- GAS=v;try{localStorage.setItem("surcos_gas",v)}catch(e){}RES="";VK="";ESTADO={};cargarEstado();render()}
+ GAS=v;try{localStorage.setItem("tesa_gas",v)}catch(e){}RES="";VK="";ESTADO={};cargarEstado();render()}
 async function gas(o){if(!GAS)throw new Error("Falta el enlace del script de Google.");let r;
  try{r=await fetch(GAS,{method:"POST",body:JSON.stringify(Object.assign({clave:CLAVE},o))})}catch(e){throw new Error("No se pudo conectar con el script de Google. Revise el enlace y su internet.")}
  let d;try{d=await r.json()}catch(e){throw new Error("Respuesta no válida del script. Revise que esté implementado como aplicación web con acceso para “Cualquier persona”.")}
@@ -184,19 +186,19 @@ function vRec(){const n=RW,L=L2(),s=SEM.find(x=>x.numero==n),ult=f=>{const e=EST
  <label>Semana: <select onchange="RW=+this.value;VK='';RES='';render()">${[1,2,3,4].map(i=>`<option value="${i}" ${i==n?"selected":""}>Semana ${i}</option>`).join("")}</select></label>
  <label style="margin-left:14px"><input type="checkbox" ${RP?"checked":""} onchange="RP=this.checked;VK='';RES='';render()"> Solo pendientes</label></div>
  <div class="card"><h2>📧 Envío por correo desde su Gmail</h2>
- ${GAS?`<p class="step">Se enviará a las familias de la <b>Semana ${n}</b>: ${RP?"las que aún no la completaron":"todas (aviso de que la semana está disponible)"}. El script no repite el mismo aviso en la misma semana ni escribe a quien recibió un correo hace menos de 2 días.</p>
- <label style="font-weight:normal"><input type="checkbox" ${FORZAR?"checked":""} onchange="FORZAR=this.checked;VK='';RES='';render()"> Reenviar aunque ya se haya enviado este aviso o se haya escrito hace poco</label>${FORZAR?'<p class="step" style="color:#9b1c1c">Atención: así se puede repetir el correo a familias que ya lo recibieron.</p>':""}
+ ${GAS?`<p class="step">Se enviará a los participantes de la <b>Semana ${n}</b>: ${RP?"las que aún no la completaron":"todas (aviso de que la semana está disponible)"}. El script no repite el mismo aviso en la misma semana ni escribe a quien recibió un correo hace menos de 2 días.</p>
+ <label style="font-weight:normal"><input type="checkbox" ${FORZAR?"checked":""} onchange="FORZAR=this.checked;VK='';RES='';render()"> Reenviar aunque ya se haya enviado este aviso o se haya escrito hace poco</label>${FORZAR?'<p class="step" style="color:#9b1c1c">Atención: así se puede repetir el correo a participantes que ya lo recibieron.</p>':""}
  <button ${OCUP?"disabled":""} onclick="envio('vista')">1. Ver a quiénes se enviaría</button>${ok?`<button ${OCUP?"disabled":""} onclick="envio('enviar')">2. Confirmar y enviar</button>`:""}`
  :`<p class="step">Aún no hay un script de Google conectado. Pegue abajo el enlace de la aplicación web para activar el envío por correo.</p>`}
  <div>${RES}</div>
  <details ${GAS?"":"open"}><summary style="cursor:pointer;font-size:13px;color:var(--g)">Enlace del script de Google</summary>
  <p class="step">En Apps Script: Implementar → Nueva implementación → Aplicación web → ejecutar como “Yo”, acceso “Cualquier persona”. Copie el enlace que termina en /exec.</p>
  <input id="gas" type="url" placeholder="https://script.google.com/macros/s/…/exec" value="${esc(GAS)}" style="width:100%;max-width:560px"><br><button class="s" onclick="guardarGas()">Guardar enlace</button></details></div>
- <div class="card"><h2>💬 WhatsApp y lista de familias</h2>
+ <div class="card"><h2>💬 WhatsApp y lista de participantes</h2>
  <p class="step"><b>Mensaje:</b> ${esc(texto(n,null))}</p>
  <button onclick="navigator.clipboard.writeText(texto(RW,null)).then(()=>this.nextElementSibling.textContent='Copiado ✓')">Copiar mensaje</button><span class="ok"></span>
  <button class="s" onclick="navigator.clipboard.writeText(L2().map(f=>f.correo).filter(Boolean).join(', ')).then(()=>this.nextElementSibling.textContent='Copiado ✓')">Copiar correos (${L.filter(f=>f.correo).length})</button><span class="ok"></span>
- <p class="step">Si envía correos a mano, péguelos en el campo <b>CCO</b> (copia oculta). Los WhatsApp se abren en su aplicación y usted los envía.</p>
+ <p class="step">Si envía correos a mano, péguelos en el campo <b>CCO</b> (copia oculta). Los WhatsApp se abren en su aplicación y usted los envía. La columna Canal muestra qué medio eligió cada participante.</p>
  ${T(["Código","Nombre","Estado","Último aviso por correo","WhatsApp","Correo"],L.map(f=>[f.codigo,dash(f.nombre),{h:pend(f,n)?'<span class="pill w">Pendiente</span>':'<span class="pill">Completó ✓</span>'},ult(f),{h:tel(f.whatsapp)?`<a href="https://wa.me/${tel(f.whatsapp)}?text=${encodeURIComponent(texto(n,f))}" target="_blank" rel="noopener">Enviar WhatsApp</a>`:"–"},dash(f.correo)]),"Nadie pendiente en esta semana.")}</div>`}
 
 login();
