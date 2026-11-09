@@ -406,7 +406,12 @@ function cal(w){const sm=S.est.semanas.filter(x=>x.numero<=3);if(!w){const ab=sm
 <button onclick="semana(${w})">Ir al registro de esta semana</button> <button class="sec noprint" onclick="window.print()">Imprimir</button></div>`)}
 function trSet(w,i,j,v){const t=trLoad(w)||[0,1,2,3].map(()=>Array(7).fill(false));t[i][j]=v;LS.s(trKey(w),JSON.stringify(t));$("#tt"+i).textContent=t[i].filter(Boolean).length;if(v&&t.every(r=>r[j]))celebra()}
 /* ---------- videos ---------- */
-const VIDEOS_EXT=[]; // Para sumar videos de YouTube: {t:"Título del video",id:"ID_DEL_VIDEO"}
+const VIDEOS_EXT=[ // Para sumar videos de YouTube: {t:"Título del video",id:"ID_DEL_VIDEO"},
+{t:"Video recomendado 1",id:"cFUaHGlF0Dk"},
+{t:"Video recomendado 2",id:"Wr0_wULJnBE"},
+{t:"Video recomendado 3",id:"OkjtI6Umevk"},
+{t:"Alimentación Saludable (Ventanilla De Salud)",id:"z9ov3C7XM3o"}
+];
 const VIDEOS=[
 {t:"Mi plato saludable",e:"🍽️",s:()=>[["🍽️","Un plato, tres partes","Imagine su plato dividido en tres partes."],["🥦🍎","La mitad: frutas y verduras","Cuantos más colores, mejor."],["🍚🥔","Un cuarto: cereales o tubérculos","Arroz, papa, mote o pan integral."],["🫘🍗","Un cuarto: proteínas","Legumbres, huevo, pescado o carnes magras."],["💧","Y para tomar, agua",V("Haga del agua su bebida de cada comida.","Acompañe con agua cada comida de su hijo o hija.","Pongan una jarra de agua en la mesa para todos.")]]},
 {t:"El agua primero",e:"💧",s:()=>[["💧","El agua, la mejor bebida","Más de la mitad del cuerpo humano es agua."],["🥤","Las bebidas azucaradas","Una gaseosa de 500 ml puede tener alrededor de 13 cucharaditas de azúcar."],["🧴","Lleve su botella",V("Llévela a todas partes y rellénela durante el día.","Que su hijo o hija tenga su propia botella y la lleve siempre.","Que cada integrante de la familia tenga su botella.")],["🍋","Dele sabor natural","Rodajas de limón, naranja o frutilla, o unas hojas de menta."],["✅","Su reto","Cambie una bebida azucarada al día por agua simple."]]},
