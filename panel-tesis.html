@@ -46,7 +46,7 @@ async function rpc(fn,a){let r;try{r=await fetch(`${URL}/rest/v1/rpc/${fn}`,{met
  const t=await r.text();let d;try{d=JSON.parse(t)}catch(e){d=t}if(!r.ok)throw new Error((d&&d.message)||"Error");return d}
 function login(m){nav.innerHTML="";app.innerHTML=`<div class="card"><h2>Ingreso</h2><p class="step">Escriba la clave que definió al crear el panel.</p><input id="k" type="password" placeholder="Clave" autocomplete="current-password"> <button id="bk" onclick="entrar()">Entrar</button>${m?`<div class="err">${esc(m)}</div>`:""}</div>`;$("#k").addEventListener("keydown",e=>{if(e.key=="Enter")entrar()})}
 async function entrar(){CLAVE=$("#k").value;const b=$("#bk");b.disabled=true;b.textContent="Verificando…";await cargar(true)}
-async function cargar(primera){try{const d=await rpc("admin_exportar",{p_clave:CLAVE});F=d.filas||[];GEN=d.generado;await semanas();if(primera){TAB="inicio";SUB="";BUSCA=""}render()}catch(e){login(e.message)}}
+async function cargar(primera){try{const d=await rpc("admin_exportar",{p_clave:CLAVE});F=d.filas||[];GEN=d.generado;await semanas();await cargarEnvios();if(primera){TAB="inicio";SUB="";BUSCA=""}render()}catch(e){login(e.message)}}
 const hoy=()=>new Date().toLocaleDateString("en-CA",{timeZone:"America/Guayaquil"});
 async function semanas(){try{const r=await fetch(`${URL}/rest/v1/semanas?select=numero,titulo,fecha_apertura,fecha_cierre&order=numero`,{headers:{apikey:KEY}});SEM=(await r.json()).filter(x=>x.numero<=3);RW=Math.max(1,SEM.filter(x=>x.fecha_apertura<=hoy()).reduce((a,x)=>Math.max(a,x.numero),1))}catch(e){SEM=[]}}
 function salirP(){CLAVE="";F=[];login()}
@@ -82,11 +82,11 @@ const T=(h,r,vacio)=>`<div class="tw"><table><tr>${h.map(x=>`<th>${esc(x)}</th>`
 const AV=c=>({avg:1,c});
 const buscador=()=>`<input id="bs" type="search" placeholder="Buscar por código o nombre…" value="${esc(BUSCA)}" oninput="BUSCA=this.value;render();const b=$('#bs');b.focus();b.setSelectionRange(b.value.length,b.value.length)">`;
 const sub=l=>`<div class="sub">${l.map(x=>`<button class="${SUB==x[0]?"on":""}" onclick="SUB='${x[0]}';render()">${x[1]}</button>`).join("")}</div>`;
-const TABS=[["inicio","🏠 Inicio"],["part","👥 Participantes"],["avance","📈 Avance"],["conoc","🧠 Conocimientos"],["hab","🌱 Hábitos"],["sat","⭐ Satisfacción"],["rec","🔔 Recordatorios"]];
-function go(t){TAB=t;SUB={conoc:"pre",hab:"1"}[t]||"";BUSCA="";render();window.scrollTo(0,0);if(t=="rec")cargarEstado()}
+const TABS=[["inicio","🏠 Inicio"],["part","👥 Participantes"],["avance","📈 Avance"],["conoc","🧠 Conocimientos"],["hab","🌱 Hábitos"],["sat","⭐ Satisfacción"],["rec","🔔 Recordatorios"],["env","📋 Envíos"]];
+function go(t){TAB=t;SUB={conoc:"pre",hab:"1"}[t]||"";BUSCA="";render();window.scrollTo(0,0);if(t=="rec")cargarEstado();if(t=="env")cargarEnvios().then(render)}
 function render(){
  nav.innerHTML=`<div class="tabs">${TABS.map(t=>`<button class="${TAB==t[0]?"on":""}" onclick="go('${t[0]}')">${t[1]}</button>`).join("")}<button class="s" style="margin-left:auto" onclick="cargar()">↻ Actualizar</button><button class="s" onclick="salirP()">Cerrar sesión</button></div>`;
- app.innerHTML=({inicio:vInicio,part:vPart,avance:vAvance,conoc:vConoc,hab:vHab,sat:vSat,rec:vRec})[TAB]()+`<p class="step">Datos actualizados: ${GEN?new Date(GEN).toLocaleString("es-EC"):"–"}</p>`}
+ app.innerHTML=({inicio:vInicio,part:vPart,avance:vAvance,conoc:vConoc,hab:vHab,sat:vSat,rec:vRec,env:vEnv})[TAB]()+`<p class="step">Datos actualizados: ${GEN?new Date(GEN).toLocaleString("es-EC"):"–"}</p>`}
 
 /* ---------- INICIO: panorama general ---------- */
 function vInicio(){const n=F.length,c=a=>F.filter(a).length,pct=x=>n?Math.round(x*100/n):0;
@@ -147,6 +147,13 @@ function vSat(){const L=flt(),con=F.filter(f=>f.sat);
  ${T(["Código","Utilidad","Claridad","Recomendaría","Comentario"],L.map(f=>{const s=f.sat||[];return[f.codigo,dash(s[0]),dash(s[1]),dash(s[2]),{h:s[3]?`<span style="white-space:normal;display:inline-block;min-width:220px;text-align:left">${esc(s[3])}</span>`:"–"}]}).concat(con.length?[AV(["Promedio",avg(con.map(f=>f.sat[0])),avg(con.map(f=>f.sat[1])),avg(con.map(f=>f.sat[2])),""])]:[]))}
  <div class="bt">${cbtn("sat","Copiar satisfacción")}<p class="step">Hoja de Satisfacción, celda <b>A6</b> (código, 3 valoraciones y comentario).</p></div></div>`}
 
+/* ---------- control de envíos compartido ---------- */
+let ENV=[];
+async function cargarEnvios(){try{ENV=await rpc("listar_envios",{p_clave:CLAVE})||[]}catch(e){ENV=[]}}
+const envi=(c,s,k)=>ENV.filter(e=>e.codigo==c&&e.semana==s&&e.canal==k).pop();
+const hora=d=>new Date(d).toLocaleString("es-EC",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
+const ckp=(c,s)=>{const e=envi(c,s,"whatsapp");return e?{h:`<span class="pill">✓ ${esc(e.quien)} · ${hora(e.creado)}</span>`}:"–"};
+function wa(c){const p=envi(c,RW,"whatsapp");if(p&&!confirm("Este WhatsApp ya lo envió "+p.quien+" ("+hora(p.creado)+"). ¿Enviarlo de nuevo?"))return false;rpc("registrar_envio",{p_clave:CLAVE,p_codigos:[c],p_semana:RW,p_canal:"whatsapp"}).then(cargarEnvios).then(render);return true}
 /* ---------- RECORDATORIOS ---------- */
 const base=()=>location.href.replace(/panel-tesis\.html.*$/,"");
 const MSG={1:"ya está abierta la Semana 1: Agua primero. Ingrese, responda la evaluación inicial (unos 5 minutos) y comience con la lección y el reto.",
@@ -173,9 +180,9 @@ function resumen(d,acc){const o=d.omitidos||{},n=x=>esc(x==null?0:x),
  if(acc=="vista")return `<div class="res">Se enviarían <b>${n(d.aEnviar)}</b> correos · Semana ${n(d.semana)} · ${tipo}.</div><p class="step">Se omiten: ${om}.</p>${sim}<p class="step">Cuota diaria restante de Gmail: ${n(d.cuota)}.</p>`;
  return `<div class="res">${d.simulado?"SIMULACIÓN · se habrían enviado":"Correos enviados"}: <b>${n(d.enviados)}</b> · Semana ${n(d.semana)} · ${tipo}.</div>${(d.fallidos||[]).length?`<div class="err">No se pudo enviar a: ${d.fallidos.map(esc).join(", ")}</div>`:""}${d.cuotaAgotada?'<div class="err">Se alcanzó la cuota diaria de Gmail. El resto quedó sin enviar; vuelva a intentarlo mañana (no se duplicarán los ya enviados).</div>':""}<p class="step">Se omitieron: ${om}.</p>${sim}`}
 async function envio(acc){if(OCUP)return;
- if(acc=="enviar"&&!confirm("¿Enviar ahora los correos de la Semana "+RW+"? Esta acción no se puede deshacer."))return;
+ if(acc=="enviar"){const m=ENV.filter(e=>e.codigo=="*"&&e.semana==RW&&e.canal=="correo").pop();if(!confirm((m?"⚠️ "+m.quien+" ya envió los correos de la Semana "+RW+" ("+hora(m.creado)+"). ¿Enviarlos de nuevo?":"¿Enviar ahora los correos de la Semana "+RW+"?")+" Esta acción no se puede deshacer."))return}
  OCUP=true;RES='<p class="step">Procesando…</p>';render();
- try{const d=await gas({accion:acc,semana:RW,soloPendientes:RP,forzar:FORZAR});RES=resumen(d,acc);VK=acc=="vista"&&d.aEnviar>0?clv():"";if(acc=="enviar"){VK="";await cargarEstado()}}
+ try{const d=await gas({accion:acc,semana:RW,soloPendientes:RP,forzar:FORZAR});RES=resumen(d,acc);VK=acc=="vista"&&d.aEnviar>0?clv():"";if(acc=="enviar"){VK="";if(d.enviados>0&&!d.simulado){try{await rpc("registrar_envio",{p_clave:CLAVE,p_codigos:["*"],p_semana:RW,p_canal:"correo"});await cargarEnvios()}catch(x){}}await cargarEstado()}}
  catch(e){RES=`<div class="err">${esc(e.message)}</div>`;VK=""}
  OCUP=false;render()}
 function vRec(){const n=RW,L=L2(),s=SEM.find(x=>x.numero==n),ult=f=>{const e=ESTADO[f.codigo];return e&&e.u?fecha(e.u+"T12:00:00"):(GAS?"Nunca":"–")},ok=VK&&VK==clv();
@@ -196,7 +203,10 @@ function vRec(){const n=RW,L=L2(),s=SEM.find(x=>x.numero==n),ult=f=>{const e=EST
  <button onclick="navigator.clipboard.writeText(texto(RW,null)).then(()=>this.nextElementSibling.textContent='Copiado ✓')">Copiar mensaje</button><span class="ok"></span>
  <button class="s" onclick="navigator.clipboard.writeText(L2().map(f=>f.correo).filter(Boolean).join(', ')).then(()=>this.nextElementSibling.textContent='Copiado ✓')">Copiar correos (${L.filter(f=>f.correo).length})</button><span class="ok"></span>
  <p class="step">Si envía correos a mano, péguelos en el campo <b>CCO</b> (copia oculta). Los WhatsApp se abren en su aplicación y usted los envía.</p>
- ${T(["Código","Nombre","Estado","Último aviso por correo","WhatsApp","Correo"],L.map(f=>[f.codigo,dash(f.nombre),{h:pend(f,n)?'<span class="pill w">Pendiente</span>':'<span class="pill">Completó ✓</span>'},ult(f),{h:tel(f.whatsapp)?`<a href="https://wa.me/${tel(f.whatsapp)}?text=${encodeURIComponent(texto(n,f))}" target="_blank" rel="noopener">Enviar WhatsApp</a>`:"–"},dash(f.correo)]),"Nadie pendiente en esta semana.")}</div>`}
+ ${T(["Código","Nombre","Estado","Último aviso por correo","WhatsApp","Correo","Enviado"],L.map(f=>[f.codigo,dash(f.nombre),{h:pend(f,n)?'<span class="pill w">Pendiente</span>':'<span class="pill">Completó ✓</span>'},ult(f),{h:tel(f.whatsapp)?`<a href="https://wa.me/${tel(f.whatsapp)}?text=${encodeURIComponent(texto(n,f))}" onclick="return wa('${f.codigo}')" target="_blank" rel="noopener">Enviar WhatsApp</a>`:"–"},dash(f.correo),ckp(f.codigo,n)]),"Nadie pendiente en esta semana.")}</div>`}
 
+function vEnv(){const W=ENV.filter(e=>e.canal=="whatsapp"),C=ENV.filter(e=>e.codigo=="*");
+ const rows=[1,2,3].map(s=>{const c=C.filter(e=>e.semana==s).pop(),w=W.filter(e=>e.semana==s),u=new Set(w.map(e=>e.codigo)).size,lw=w.pop();return[s,c?c.quien+" · "+hora(c.creado):"Sin enviar",u+" de "+F.length,lw?lw.quien+" · "+hora(lw.creado):"–"]});
+ return `<div class="card"><h2>Control de envíos</h2><p class="step">Quién envió cada recordatorio, desde este panel o desde el de su compañera.</p>${T(["Semana","Correos (último envío)","WhatsApp enviados","Último WhatsApp"],rows)}<h3>Últimos movimientos</h3>${T(["Fecha","Quién","Semana","Canal","Familia"],ENV.slice(-40).reverse().map(e=>[hora(e.creado),e.quien,e.semana,e.canal,e.codigo=="*"?"Todas (correo)":e.codigo]),"Aún no hay envíos registrados.")}</div>`}
 login();
 </script></body></html>
