@@ -57,7 +57,16 @@ const MSG={1:"ya está abierta la Semana 1: Agua primero. Ingrese, responda la e
 3:"ya está disponible la Semana 3: En movimiento y sin pantallas, la última semana. Ingrese, registre su semana y complete la evaluación final y la encuesta para recibir su certificado."};
 const pend=(f,n)=>n==1?!(f.pre&&hab(f,1)):n==3?!(hab(f,3)&&f.post&&f.sat):!hab(f,n);
 const tel=w=>{let d=(w||"").replace(/\D/g,"");if(!d)return"";if(d.startsWith("593"))return d;if(d.startsWith("0"))d=d.slice(1);return"593"+d};
-const texto=(n,f)=>`${f&&f.nombre?"Estimado/a "+f.nombre:"Estimado/a participante"}: ${MSG[n]}${f?` Su código: ${f.codigo}.`:""} Enlace: ${base()}`;
+const falta=(f,n)=>{const a=[];
+ if(n==1){if(!f.pre)a.push("la evaluación inicial");if(!hab(f,1))a.push("el registro de hábitos de la Semana 1")}
+ if(n==2){if(!hab(f,2))a.push("el registro de hábitos de la Semana 2")}
+ if(n==3){if(!hab(f,3))a.push("el registro de hábitos de la Semana 3");if(!f.post)a.push("la evaluación final");if(!f.sat)a.push("la encuesta de satisfacción")}
+ return a};
+const lista=a=>a.length<2?a.join(""):a.slice(0,-1).join(", ")+" y "+a[a.length-1];
+const faltaTxt=(f,n)=>falta(f,n).join(" · ")||"Nada";
+const texto=(n,f)=>{const fl=f?falta(f,n):[];
+ if(f&&fl.length)return `${f.nombre?"Estimado/a "+f.nombre:"Estimado/a participante"}: en la Semana ${n} aún le falta completar ${lista(fl)}. Ingrese con su código ${f.codigo} y complételo aquí: ${base()}`;
+ return `${f&&f.nombre?"Estimado/a "+f.nombre:"Estimado/a participante"}: ${MSG[n]}${f?` Su código: ${f.codigo}.`:""} Enlace: ${base()}`};
 const L2=()=>F.filter(f=>!RP||pend(f,RW));
 let GAS="",ESTADO={},RES="",FORZAR=false,OCUP=false,VK="";
 try{GAS=localStorage.getItem("surcos_gas")||""}catch(e){}
@@ -113,6 +122,6 @@ function vRec(){const n=RW,L=L2(),ok=VK&&VK==clv(),m=ENV.filter(e=>e.codigo=="*"
  <div class="card"><h2>💬 WhatsApp y lista de familias</h2><p class="step"><b>Mensaje:</b> ${esc(texto(n,null))}</p>
  <button class="s" onclick="navigator.clipboard.writeText(L2().map(f=>f.correo).filter(Boolean).join(', ')).then(()=>this.nextElementSibling.textContent='Copiado ✓')">Copiar correos (${L.filter(f=>f.correo).length})</button><span class="ok"></span>
  <p class="step">Si envía correos a mano, péguelos en el campo <b>CCO</b> (copia oculta).</p>
- ${T(["Código","Nombre","Estado","Correo","WhatsApp","Enviado"],L.map(f=>[f.codigo,dash(f.nombre),{h:pend(f,n)?'<span class="pill w">Pendiente</span>':'<span class="pill">Completó ✓</span>'},dash(f.correo),{h:tel(f.whatsapp)?`<a href="https://wa.me/${tel(f.whatsapp)}?text=${encodeURIComponent(texto(n,f))}" onclick="return wa('${f.codigo}')" target="_blank" rel="noopener">Enviar WhatsApp</a>`:"–"},ckp(f.codigo,n)]),"Nadie pendiente en esta semana.")}</div>`}
+ ${T(["Código","Nombre","Estado","Qué le falta","Correo","WhatsApp","Enviado"],L.map(f=>[f.codigo,dash(f.nombre),{h:pend(f,n)?'<span class="pill w">Pendiente</span>':'<span class="pill">Completó ✓</span>'},faltaTxt(f,n),dash(f.correo),{h:tel(f.whatsapp)?`<a href="https://wa.me/${tel(f.whatsapp)}?text=${encodeURIComponent(texto(n,f))}" onclick="return wa('${f.codigo}')" target="_blank" rel="noopener">Enviar WhatsApp</a>`:"–"},ckp(f.codigo,n)]),"Nadie pendiente en esta semana.")}</div>`}
 login();
 </script></body></html>

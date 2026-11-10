@@ -161,7 +161,16 @@ const MSG={1:"ya está abierta la Semana 1: Agua primero. Ingrese, responda la e
 3:"ya está disponible la Semana 3: En movimiento y sin pantallas, la última semana. Ingrese, registre su semana y complete la evaluación final y la encuesta para recibir su certificado."};
 const pend=(f,n)=>n==1?!(f.pre&&hab(f,1)):n==3?!(hab(f,3)&&f.post&&f.sat):!hab(f,n);
 const tel=w=>{let d=(w||"").replace(/\D/g,"");if(!d)return"";if(d.startsWith("593"))return d;if(d.startsWith("0"))d=d.slice(1);return"593"+d};
-const texto=(n,f)=>`${f&&f.nombre?"Estimado/a "+f.nombre:"Estimado/a participante"}: ${MSG[n]}${f?` Su código: ${f.codigo}.`:""} Enlace: ${base()}`;
+const falta=(f,n)=>{const a=[];
+ if(n==1){if(!f.pre)a.push("la evaluación inicial");if(!hab(f,1))a.push("el registro de hábitos de la Semana 1")}
+ if(n==2){if(!hab(f,2))a.push("el registro de hábitos de la Semana 2")}
+ if(n==3){if(!hab(f,3))a.push("el registro de hábitos de la Semana 3");if(!f.post)a.push("la evaluación final");if(!f.sat)a.push("la encuesta de satisfacción")}
+ return a};
+const lista=a=>a.length<2?a.join(""):a.slice(0,-1).join(", ")+" y "+a[a.length-1];
+const faltaTxt=(f,n)=>falta(f,n).join(" · ")||"Nada";
+const texto=(n,f)=>{const fl=f?falta(f,n):[];
+ if(f&&fl.length)return `${f.nombre?"Estimado/a "+f.nombre:"Estimado/a participante"}: en la Semana ${n} aún le falta completar ${lista(fl)}. Ingrese con su código ${f.codigo} y complételo aquí: ${base()}`;
+ return `${f&&f.nombre?"Estimado/a "+f.nombre:"Estimado/a participante"}: ${MSG[n]}${f?` Su código: ${f.codigo}.`:""} Enlace: ${base()}`};
 const L2=()=>F.filter(f=>!RP||pend(f,RW));
 let GAS="",ESTADO={},RES="",FORZAR=false,OCUP=false,VK="";
 try{GAS=localStorage.getItem("surcos_gas")||""}catch(e){}
@@ -190,7 +199,7 @@ function vRec(){const n=RW,L=L2(),s=SEM.find(x=>x.numero==n),ult=f=>{const e=EST
  <label>Semana: <select onchange="RW=+this.value;VK='';RES='';render()">${[1,2,3].map(i=>`<option value="${i}" ${i==n?"selected":""}>Semana ${i}</option>`).join("")}</select></label>
  <label style="margin-left:14px"><input type="checkbox" ${RP?"checked":""} onchange="RP=this.checked;VK='';RES='';render()"> Solo pendientes</label></div>
  <div class="card"><h2>📧 Envío por correo desde su Gmail</h2>
- ${GAS?`<p class="step">Se enviará a las familias de la <b>Semana ${n}</b>: ${RP?"las que aún no la completaron":"todas (aviso de que la semana está disponible)"}. El script no repite el mismo aviso en la misma semana ni escribe a quien recibió un correo hace menos de 2 días.</p>
+ ${GAS?`<p class="step">Se enviará a las familias de la <b>Semana ${n}</b>: ${RP?"las que aún no la completaron (el correo indica qué le falta a cada una)":"todas (aviso de que la semana está disponible)"}. El script no repite el mismo aviso en la misma semana ni escribe a quien recibió un correo hace menos de 2 días.</p>
  <label style="font-weight:normal"><input type="checkbox" ${FORZAR?"checked":""} onchange="FORZAR=this.checked;VK='';RES='';render()"> Reenviar aunque ya se haya enviado este aviso o se haya escrito hace poco</label>${FORZAR?'<p class="step" style="color:#9b1c1c">Atención: así se puede repetir el correo a familias que ya lo recibieron.</p>':""}
  <button ${OCUP?"disabled":""} onclick="envio('vista')">1. Ver a quiénes se enviaría</button>${ok?`<button ${OCUP?"disabled":""} onclick="envio('enviar')">2. Confirmar y enviar</button>`:""}`
  :`<p class="step">Aún no hay un script de Google conectado. Pegue abajo el enlace de la aplicación web para activar el envío por correo.</p>`}
@@ -199,11 +208,12 @@ function vRec(){const n=RW,L=L2(),s=SEM.find(x=>x.numero==n),ult=f=>{const e=EST
  <p class="step">En Apps Script: Implementar → Nueva implementación → Aplicación web → ejecutar como “Yo”, acceso “Cualquier persona”. Copie el enlace que termina en /exec.</p>
  <input id="gas" type="url" placeholder="https://script.google.com/macros/s/…/exec" value="${esc(GAS)}" style="width:100%;max-width:560px"><br><button class="s" onclick="guardarGas()">Guardar enlace</button></details></div>
  <div class="card"><h2>💬 WhatsApp y lista de familias</h2>
- <p class="step"><b>Mensaje:</b> ${esc(texto(n,null))}</p>
+ <p class="step"><b>Mensaje general:</b> ${esc(texto(n,null))}</p>
+ <p class="step">Cada WhatsApp de la lista sale personalizado con lo que le falta a esa persona.</p>
  <button onclick="navigator.clipboard.writeText(texto(RW,null)).then(()=>this.nextElementSibling.textContent='Copiado ✓')">Copiar mensaje</button><span class="ok"></span>
  <button class="s" onclick="navigator.clipboard.writeText(L2().map(f=>f.correo).filter(Boolean).join(', ')).then(()=>this.nextElementSibling.textContent='Copiado ✓')">Copiar correos (${L.filter(f=>f.correo).length})</button><span class="ok"></span>
  <p class="step">Si envía correos a mano, péguelos en el campo <b>CCO</b> (copia oculta). Los WhatsApp se abren en su aplicación y usted los envía.</p>
- ${T(["Código","Nombre","Estado","Último aviso por correo","WhatsApp","Correo","Enviado"],L.map(f=>[f.codigo,dash(f.nombre),{h:pend(f,n)?'<span class="pill w">Pendiente</span>':'<span class="pill">Completó ✓</span>'},ult(f),{h:tel(f.whatsapp)?`<a href="https://wa.me/${tel(f.whatsapp)}?text=${encodeURIComponent(texto(n,f))}" onclick="return wa('${f.codigo}')" target="_blank" rel="noopener">Enviar WhatsApp</a>`:"–"},dash(f.correo),ckp(f.codigo,n)]),"Nadie pendiente en esta semana.")}</div>`}
+ ${T(["Código","Nombre","Estado","Qué le falta","Último aviso por correo","WhatsApp","Correo","Enviado"],L.map(f=>[f.codigo,dash(f.nombre),{h:pend(f,n)?'<span class="pill w">Pendiente</span>':'<span class="pill">Completó ✓</span>'},faltaTxt(f,n),ult(f),{h:tel(f.whatsapp)?`<a href="https://wa.me/${tel(f.whatsapp)}?text=${encodeURIComponent(texto(n,f))}" onclick="return wa('${f.codigo}')" target="_blank" rel="noopener">Enviar WhatsApp</a>`:"–"},dash(f.correo),ckp(f.codigo,n)]),"Nadie pendiente en esta semana.")}</div>`}
 
 function vEnv(){const W=ENV.filter(e=>e.canal=="whatsapp"),C=ENV.filter(e=>e.codigo=="*");
  const rows=[1,2,3].map(s=>{const c=C.filter(e=>e.semana==s).pop(),w=W.filter(e=>e.semana==s),u=new Set(w.map(e=>e.codigo)).size,lw=w.pop();return[s,c?c.quien+" · "+hora(c.creado):"Sin enviar",u+" de "+F.length,lw?lw.quien+" · "+hora(lw.creado):"–"]});
