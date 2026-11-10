@@ -271,7 +271,7 @@ function show(h,keep){window._vw="";clearInterval(window._ni);stopVid();app.inne
 function busy(b,on){b.disabled=on;b.dataset.t=b.dataset.t||b.textContent;b.textContent=on?"Guardando…":b.dataset.t}
 const back=`<button class="sec noprint" style="margin:0 0 12px" onclick="ini()">← Volver al inicio</button>`;
 const ini=()=>S.est?home():load();
-async function load(){try{S.est=await rpc("obtener_estado",{p_codigo:S.code});if(!S.est.existe){S.code=null;LS.d("tesa_codigo");LS.d("surcos_codigo");return start()}LS.s("tesa_ultimo",S.code);S.lb=true;if(S.est.pretest_hecho){try{S.lb=await rpc("tiene_linea_base",{p_codigo:S.code})}catch(e){S.lb=true}}home()}catch(e){show(`<div class="card">${msg("err",e.message)}<button onclick="load()">Reintentar</button></div>`)}}
+async function load(){try{S.est=await rpc("obtener_estado",{p_codigo:S.code});if(!S.est.existe){S.code=null;LS.d("tesa_codigo");LS.d("surcos_codigo");return start()}LS.s("tesa_ultimo",S.code);try{S.nom=(await rpc("obtener_nombre",{p_codigo:S.code}))||""}catch(e){S.nom=LS.g("tesa_nombre")||""}S.lb=true;if(S.est.pretest_hecho){try{S.lb=await rpc("tiene_linea_base",{p_codigo:S.code})}catch(e){S.lb=true}}home()}catch(e){show(`<div class="card">${msg("err",e.message)}<button onclick="load()">Reintentar</button></div>`)}}
 /* ---------- registro por pasos ---------- */
 const ROLES=[["Madre","👩"],["Padre","👨"],["Representante legal","📝"],["Abuelo/a","👵"],["Otro familiar","👪"]];
 const NIV=[["Primaria","🎒"],["Secundaria","🏫"],["Universidad o instituto","🎓"],["Trabajo","💼"]];
@@ -304,7 +304,7 @@ function regNext(){const m=t=>{$("#rm").innerHTML=msg("err",t)};
  if(RP==2){if(REG.para!="Para mí"&&!REG.rol)return m("Elija su rol.");if(!REG.ins)return m("Elija un nivel o entorno.")}
  if(RP==3){const n=(REG.nom||"").trim();if(n.length<5||!n.includes(" "))return m("Escriba su nombre y apellido.");if(!REG.edad||!REG.sexo)return m("Elija su edad y su sexo.")}
  regPaso(RP+1)}
-async function entrar(){const c=$("#cod").value.trim().toUpperCase();if(c.length<4)return $("#m1").innerHTML=msg("err","Escriba su código.");S.code=c;LS.s("tesa_codigo",c);load()}
+async function entrar(){const c=$("#cod").value.trim().toUpperCase();if(c.length<4)return $("#m1").innerHTML=msg("err","Escriba su código.");const prev=LS.g("tesa_ultimo");if(prev&&prev!==c){["tesa_nombre","tesa_para","tesa_nivel","tesa_cor","tesa_wha"].forEach(LS.d);S.para=null;S.nivel=null}S.code=c;LS.s("tesa_codigo",c);load()}
 async function registrar(){const m=t=>{$("#rm").innerHTML=msg("err",t)};
  if(!REG.canal)return m("Elija cómo desea recibir los recordatorios: correo o WhatsApp.");
  let cor="",wha="";
@@ -313,7 +313,7 @@ async function registrar(){const m=t=>{$("#rm").innerHTML=msg("err",t)};
  if(!REG.cons)return m("Debe confirmar que es mayor de 18 años y aceptar el consentimiento para continuar.");
  const rol=REG.para=="Para mí"?"Participo solo por mí":REG.rol,nom=REG.nom.trim(),b=event.target;busy(b,true);
  try{const c=await rpc("registrar_participante",{p_nombre:nom,p_consentimiento:true,p_correo:cor,p_whatsapp:wha,p_edad:REG.edad,p_sexo:REG.sexo,p_parentesco:rol,p_instruccion:REG.ins,p_grado:REG.para});
-  S.code=c;S.para=REG.para;S.nivel=REG.ins;LS.s("tesa_codigo",c);LS.s("tesa_nombre",nom);LS.s("tesa_para",S.para);LS.s("tesa_nivel",S.nivel);TIP=-1;REG={};
+  S.code=c;S.nom=nom;S.para=REG.para;S.nivel=REG.ins;LS.s("tesa_codigo",c);LS.s("tesa_nombre",nom);LS.s("tesa_para",S.para);LS.s("tesa_nivel",S.nivel);TIP=-1;REG={};
   LS.s("tesa_ultimo",c);LS.s("tesa_cor",cor);LS.s("tesa_wha",wha);CD={c,cor,wha};
   show(`<div class="card" style="text-align:center"><h2>¡Registro listo!</h2><p>Este es su código de participante. <b>Guárdelo ahora</b>: lo necesitará para volver a entrar.</p><div class="code">${c}</div>${cdOpc()}<button onclick="load()">Continuar</button></div>`)}
  catch(e){busy(b,false);m(e.message)}}
@@ -423,7 +423,7 @@ function sat(){if(S.est.satisfaccion_hecha)return"";const o=id=>sel(id,1,5);retu
 async function enviarSat(){const v=["#s1","#s2","#s3"].map(i=>$(i).value);if(v.includes(""))return $("#ms").innerHTML=msg("err","Califique los tres aspectos.");const b=event.target;busy(b,true);
  try{await rpc("guardar_satisfaccion",{p_codigo:S.code,p_utilidad:+v[0],p_claridad:+v[1],p_recomendaria:+v[2],p_comentario:$("#s4").value});S.est.satisfaccion_hecha=true;celebra();show(`<div class="card" style="text-align:center"><h2>¡Gracias por participar!</h2><p>Completó la campaña “Siembra hábitos, cosecha salud”.</p><button onclick="ini()">Volver al inicio</button></div>`)}catch(e){busy(b,false);$("#ms").innerHTML=msg("err",e.message)}}
 /* ---------- certificado ---------- */
-const nomG=()=>esc(LS.g("tesa_nombre")||LS.g("surcos_nombre")||"");
+const nomG=()=>esc(S.nom||"");
 const MIN_SEM=2;
 function certFalta(){const e=S.est,n=e.semanas.filter(x=>x.numero>=1&&x.numero<=3&&x.habitos_enviados).length,f=[];
  if(!e.pretest_hecho)f.push("la evaluación inicial");if(n<MIN_SEM)f.push(`el registro de hábitos en ${MIN_SEM-n} semana${MIN_SEM-n>1?"s":""} más (de las semanas 1 a 3)`);
