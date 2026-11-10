@@ -140,6 +140,12 @@ input[type=range]{padding:0;accent-color:#5b2a86}
 .gbar{display:flex;gap:10px;align-items:center;margin-top:8px}.gbar .pb{flex:1}.gbar button{margin:0;white-space:nowrap}
 .dr{position:absolute;top:-20px;font-size:22px;z-index:3;pointer-events:none;animation:caer2 1.1s ease-in forwards}@keyframes caer2{to{transform:translateY(260px);opacity:.2}}
 @media (prefers-reduced-motion:reduce){.gd .sunx,.gd .nub,.gp .pl.f{animation:none}}
+
+/* QR y código */
+a.btn{display:inline-block;background:var(--g);color:#fff;border-radius:8px;padding:11px 18px;font-weight:bold;text-decoration:none;font-size:14px;margin-top:14px}a.btn.sec{background:#fff;color:var(--g);border:1px solid var(--g)}
+.qrc{text-align:center}.qrc .qrb{display:inline-block;background:#fff;border:2px solid var(--b);border-radius:14px;padding:8px;margin:10px 0}.qrc .lnk{word-break:break-all;font-size:13px;color:var(--m)}
+.cdbox{background:var(--gl);border:1px dashed var(--g);border-radius:12px;padding:12px;margin:12px 0;text-align:center}
+@media print{.qrc .noprint{display:none!important}}
 </style></head><body>
 <div id="fl" aria-hidden="true"></div>
 <header class="hero"><div class="deco" aria-hidden="true"><span>🥕</span><span>🍎</span><span>🌱</span><span>🥦</span><span>🍌</span><span>💧</span></div>
@@ -150,8 +156,77 @@ input[type=range]{padding:0;accent-color:#5b2a86}
 <main id="app"><div class="card">Cargando…</div></main><aside class="side" id="sr" aria-hidden="true"><span class="big" onclick="wig(this)">🌈</span><span class="big" onclick="wig(this)">🦋</span><span class="big" onclick="wig(this)">⚽</span><span class="big" onclick="wig(this)">🍓</span><span class="big" onclick="wig(this)">🏃‍♀️</span><span class="big" onclick="wig(this)">🧘‍♂️</span><span class="big" onclick="wig(this)">💧</span></aside></div>
 <footer class="foot"><div class="grass" aria-hidden="true"><span>🌿</span><span>🥕</span><span>🌻</span><span>🍅</span><span>🌱</span><span>🥦</span><span>🌽</span><span>🌿</span><span>🍓</span><span>🌻</span><span>🥕</span><span>🌱</span><span>🍅</span><span>🌿</span></div>Proyecto académico de Enfermería, Instituto Superior Tecnológico San Antonio (TESA). Sus datos son confidenciales y se usan solo con fines académicos.</footer>
 <script>
-const URL="https://vokpjjidytayjrzjespr.supabase.co",KEY="sb_publishable_q6YCquh7-JYBEUrl1UCQfA_NDJ5ROGS";
-async function rpc(fn,args){let r;try{r=await fetch(`${URL}/rest/v1/rpc/${fn}`,{method:"POST",headers:{"Content-Type":"application/json",apikey:KEY},body:JSON.stringify(args)})}catch(e){throw new Error("Sin conexión. Revise su internet e intente de nuevo.")}
+/* ---------- generador de QR (modo byte, corrección M, versiones 1 a 10) ---------- */
+const QR=(()=>{
+const EXP=new Array(512),LOG=new Array(256);let x=1;
+for(let i=0;i<255;i++){EXP[i]=x;LOG[x]=i;x<<=1;if(x&256)x^=0x11d}
+for(let i=255;i<512;i++)EXP[i]=EXP[i-255];
+const mul=(a,b)=>a&&b?EXP[LOG[a]+LOG[b]]:0;
+function gen(n){let g=[1];for(let i=0;i<n;i++){const h=new Array(g.length+1).fill(0);for(let j=0;j<g.length;j++){h[j]^=g[j];h[j+1]^=mul(g[j],EXP[i])}g=h}return g}
+function rem(d,n){const g=gen(n),r=new Array(n).fill(0);for(const b of d){const f=b^r.shift();r.push(0);for(let i=0;i<n;i++)r[i]^=mul(g[i+1],f)}return r}
+/* [bytes de corrección por bloque, bloques de grupo 1, datos g1, bloques g2, datos g2] */
+const T={1:[10,1,16,0,0],2:[16,1,28,0,0],3:[26,1,44,0,0],4:[18,2,32,0,0],5:[24,2,43,0,0],6:[16,4,27,0,0],7:[18,4,31,0,0],8:[22,2,38,2,39],9:[22,3,36,2,37],10:[26,4,43,1,44]};
+const AL={2:[6,18],3:[6,22],4:[6,26],5:[6,30],6:[6,34],7:[6,22,38],8:[6,24,42],9:[6,26,46],10:[6,28,50]};
+const cap=v=>{const t=T[v];return t[1]*t[2]+t[3]*t[4]};
+const bit=(n,i)=>((n>>>i)&1)!==0;
+function make(text){
+ const bytes=Array.from(new TextEncoder().encode(text));let v=1;
+ while(v<=10&&bytes.length>cap(v)-(v<10?2:3))v++;
+ if(v>10)throw new Error("Texto demasiado largo para el QR");
+ const size=17+4*v,total=cap(v),bits=[];
+ const put=(val,len)=>{for(let i=len-1;i>=0;i--)bits.push((val>>>i)&1)};
+ put(4,4);put(bytes.length,v<10?8:16);bytes.forEach(b=>put(b,8));
+ put(0,Math.min(4,total*8-bits.length));while(bits.length%8)bits.push(0);
+ const data=[];for(let i=0;i<bits.length;i+=8){let b=0;for(let j=0;j<8;j++)b=(b<<1)|bits[i+j];data.push(b)}
+ for(let p=0xEC;data.length<total;p^=0xEC^0x11)data.push(p);
+ const t=T[v],blocks=[];let k=0;
+ for(let i=0;i<t[1]+t[3];i++){const n=i<t[1]?t[2]:t[4];blocks.push(data.slice(k,k+n));k+=n}
+ const ecs=blocks.map(b=>rem(b,t[0])),out=[],maxd=Math.max(t[2],t[4]);
+ for(let i=0;i<maxd;i++)blocks.forEach(b=>{if(i<b.length)out.push(b[i])});
+ for(let i=0;i<t[0];i++)ecs.forEach(e=>out.push(e[i]));
+ const M=Array.from({length:size},()=>new Array(size).fill(false)),F=Array.from({length:size},()=>new Array(size).fill(false));
+ const sf=(x,y,d)=>{M[y][x]=d;F[y][x]=true};
+ for(let i=0;i<size;i++){sf(6,i,i%2==0);sf(i,6,i%2==0)}
+ [[3,3],[size-4,3],[3,size-4]].forEach(([cx,cy])=>{for(let dy=-4;dy<=4;dy++)for(let dx=-4;dx<=4;dx++){const d=Math.max(Math.abs(dx),Math.abs(dy)),xx=cx+dx,yy=cy+dy;if(xx>=0&&xx<size&&yy>=0&&yy<size)sf(xx,yy,d!=2&&d!=4)}});
+ const ap=AL[v]||[];
+ ap.forEach((cy,i)=>ap.forEach((cx,j)=>{if((i==0&&j==0)||(i==0&&j==ap.length-1)||(i==ap.length-1&&j==0))return;for(let dy=-2;dy<=2;dy++)for(let dx=-2;dx<=2;dx++)sf(cx+dx,cy+dy,Math.max(Math.abs(dx),Math.abs(dy))!=1)}));
+ const fmt=m=>{const d=(0<<3)|m;let r=d;for(let i=0;i<10;i++)r=(r<<1)^((r>>>9)*0x537);const b=((d<<10)|r)^0x5412;
+  for(let i=0;i<=5;i++)sf(8,i,bit(b,i));sf(8,7,bit(b,6));sf(8,8,bit(b,7));sf(7,8,bit(b,8));
+  for(let i=9;i<15;i++)sf(14-i,8,bit(b,i));
+  for(let i=0;i<8;i++)sf(size-1-i,8,bit(b,i));
+  for(let i=8;i<15;i++)sf(8,size-15+i,bit(b,i));sf(8,size-8,true)};
+ fmt(0);
+ if(v>=7){let r=v;for(let i=0;i<12;i++)r=(r<<1)^((r>>>11)*0x1F25);const b=(v<<12)|r;for(let i=0;i<18;i++){const c=bit(b,i),a=size-11+i%3,d=Math.floor(i/3);sf(a,d,c);sf(d,a,c)}}
+ let i=0;
+ for(let right=size-1;right>=1;right-=2){if(right==6)right=5;
+  for(let vert=0;vert<size;vert++)for(let j=0;j<2;j++){const x=right-j,up=((right+1)&2)==0,y=up?size-1-vert:vert;
+   if(!F[y][x]&&i<out.length*8){M[y][x]=bit(out[i>>>3],7-(i&7));i++}}}
+ const MK=[(x,y)=>(x+y)%2==0,(x,y)=>y%2==0,(x,y)=>x%3==0,(x,y)=>(x+y)%3==0,(x,y)=>(Math.floor(x/3)+Math.floor(y/2))%2==0,(x,y)=>x*y%2+x*y%3==0,(x,y)=>(x*y%2+x*y%3)%2==0,(x,y)=>((x+y)%2+x*y%3)%2==0];
+ const pen=G=>{let p=0;const lines=[];for(let y=0;y<size;y++)lines.push(G[y].map(c=>c?"1":"0").join(""));for(let x=0;x<size;x++){let s="";for(let y=0;y<size;y++)s+=G[y][x]?"1":"0";lines.push(s)}
+  lines.forEach(s=>{const r=s.match(/0{5,}|1{5,}/g);if(r)r.forEach(q=>p+=q.length-2);const a=s.match(/(?=(10111010000|00001011101))/g);if(a)p+=40*a.length});
+  for(let y=0;y<size-1;y++)for(let x=0;x<size-1;x++){const c=G[y][x];if(c==G[y][x+1]&&c==G[y+1][x]&&c==G[y+1][x+1])p+=3}
+  let dk=0;G.forEach(r=>r.forEach(c=>{if(c)dk++}));p+=10*(Math.ceil(Math.abs(dk*20-size*size*10)/(size*size))-1);return p};
+ let best=null,bp=1e9;
+ for(let m=0;m<8;m++){const G=M.map(r=>r.slice());for(let y=0;y<size;y++)for(let x=0;x<size;x++)if(!F[y][x]&&MK[m](x,y))G[y][x]=!G[y][x];
+  /* el formato depende de la máscara: se redibuja sobre la copia */
+  
+  const sf2=(x,y,d)=>{G[y][x]=d};
+  const d=(0<<3)|m;let r=d;for(let q=0;q<10;q++)r=(r<<1)^((r>>>9)*0x537);const b=((d<<10)|r)^0x5412;
+  for(let q=0;q<=5;q++)sf2(8,q,bit(b,q));sf2(8,7,bit(b,6));sf2(8,8,bit(b,7));sf2(7,8,bit(b,8));
+  for(let q=9;q<15;q++)sf2(14-q,8,bit(b,q));
+  for(let q=0;q<8;q++)sf2(size-1-q,8,bit(b,q));
+  for(let q=8;q<15;q++)sf2(8,size-15+q,bit(b,q));sf2(8,size-8,true);
+  const pp=pen(G);if(pp<bp){bp=pp;best=G}}
+ return best}
+function svg(text,px,quiet){const G=make(text),n=G.length,q=quiet==null?4:quiet,t=n+2*q;let d="";
+ G.forEach((r,y)=>r.forEach((c,x)=>{if(c)d+=`M${x+q} ${y+q}h1v1h-1z`}));
+ return`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${t} ${t}" width="${px||200}" height="${px||200}" shape-rendering="crispEdges" role="img" aria-label="Código QR"><rect width="${t}" height="${t}" fill="#fff"/><path d="${d}" fill="#000"/></svg>`}
+function draw(ctx,text,x0,y0,px,quiet){const G=make(text),n=G.length,q=quiet==null?4:quiet,s=px/(n+2*q);ctx.fillStyle="#fff";ctx.fillRect(x0,y0,px,px);ctx.fillStyle="#000";
+ G.forEach((r,y)=>r.forEach((c,x)=>{if(c)ctx.fillRect(x0+(x+q)*s,y0+(y+q)*s,Math.ceil(s),Math.ceil(s))}))}
+return{make,svg,draw}})();
+
+const SBURL="https://vokpjjidytayjrzjespr.supabase.co",KEY="sb_publishable_q6YCquh7-JYBEUrl1UCQfA_NDJ5ROGS";
+async function rpc(fn,args){let r;try{r=await fetch(`${SBURL}/rest/v1/rpc/${fn}`,{method:"POST",headers:{"Content-Type":"application/json",apikey:KEY},body:JSON.stringify(args)})}catch(e){throw new Error("Sin conexión. Revise su internet e intente de nuevo.")}
  const t=await r.text();let d;try{d=JSON.parse(t)}catch(e){d=t}if(!r.ok)throw new Error((d&&d.message)||"Ocurrió un error. Intente de nuevo.");return d}
 const $=s=>document.querySelector(s),app=$("#app");
 const LS={g:k=>{try{return localStorage.getItem(k)}catch(e){return null}},s:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}},d:k=>{try{localStorage.removeItem(k)}catch(e){}}};
@@ -192,11 +267,11 @@ const H=()=>[["agua",V("Días que tomó agua simple en lugar de bebidas azucarad
 function sel(id,from,to){let o='<option value="">Elija…</option>';for(let i=from;i<=to;i++)o+=`<option>${i}</option>`;return`<select id="${id}">${o}</select>`}
 function opt(id,arr,ex){return`<select id="${id}" ${ex||""}><option value="">Elija…</option>${arr.map(x=>`<option>${x}</option>`).join("")}</select>`}
 const msg=(c,t)=>`<div class="${c}">${t}</div>`;
-function show(h,keep){clearInterval(window._ni);stopVid();app.innerHTML=h;side();if(!keep)window.scrollTo(0,0)}
+function show(h,keep){window._vw="";clearInterval(window._ni);stopVid();app.innerHTML=h;side();if(!keep)window.scrollTo(0,0)}
 function busy(b,on){b.disabled=on;b.dataset.t=b.dataset.t||b.textContent;b.textContent=on?"Guardando…":b.dataset.t}
 const back=`<button class="sec noprint" style="margin:0 0 12px" onclick="ini()">← Volver al inicio</button>`;
 const ini=()=>S.est?home():load();
-async function load(){try{S.est=await rpc("obtener_estado",{p_codigo:S.code});if(!S.est.existe){S.code=null;LS.d("tesa_codigo");LS.d("surcos_codigo");return start()}home()}catch(e){show(`<div class="card">${msg("err",e.message)}<button onclick="load()">Reintentar</button></div>`)}}
+async function load(){try{S.est=await rpc("obtener_estado",{p_codigo:S.code});if(!S.est.existe){S.code=null;LS.d("tesa_codigo");LS.d("surcos_codigo");return start()}LS.s("tesa_ultimo",S.code);home()}catch(e){show(`<div class="card">${msg("err",e.message)}<button onclick="load()">Reintentar</button></div>`)}}
 /* ---------- registro por pasos ---------- */
 const ROLES=[["Madre","👩"],["Padre","👨"],["Representante legal","📝"],["Abuelo/a","👵"],["Otro familiar","👪"]];
 const NIV=[["Primaria","🎒"],["Secundaria","🏫"],["Universidad o instituto","🎓"],["Trabajo","💼"]];
@@ -211,7 +286,7 @@ let REG={},RP=1;
 const opts=(sel,fn,k,arr,cls)=>`<div class="opts ${cls||""}">${arr.map((x,i)=>`<button type="button" class="opt ${sel==x[0]?"on":""}" onclick="${fn}('${k}',${i})"><span class="oe">${x[1]}</span><b>${x[0]}</b>${x[2]?`<small>${x[2]}</small>`:""}</button>`).join("")}</div>`;
 const selv=(id,arr,val)=>`<select id="${id}" onchange="REG.${id}=this.value"><option value="">Elija…</option>${arr.map(x=>`<option ${x==val?"selected":""}>${x}</option>`).join("")}</select>`;
 function start(){show(`<div class="card"><h2>Bienvenido/a</h2><p>Esta campaña de 3 semanas le ayudará a mejorar la alimentación y los hábitos de vida, suyos, de su hijo o hija, o de toda su familia. Cada semana se habilita sola en su fecha.</p>
-<h3 style="margin-top:16px">Ya me registré</h3><label>Mi código de participante</label><input id="cod" placeholder="Ej.: A3F9K2" maxlength="6" style="text-transform:uppercase"><button onclick="entrar()">Entrar</button><div id="m1"></div></div>
+<h3 style="margin-top:16px">Ya me registré</h3><label>Mi código de participante</label><input id="cod" name="usuario" autocomplete="username" placeholder="Ej.: A3F9K2" maxlength="6" style="text-transform:uppercase" value="${esc(LS.g('tesa_ultimo')||'')}"><p class="small" style="margin:6px 0 0">¿No recuerda su código? Búsquelo en el mensaje de bienvenida que recibió por correo o WhatsApp.</p><button onclick="entrar()">Entrar</button><div id="m1"></div></div>
 <div class="card"><h3>Soy nuevo/a</h3><p class="small">El registro tiene 4 pasos sencillos y toma menos de 2 minutos.</p><button class="y" onclick="REG={};regPaso(1)">Comenzar registro</button></div>`)}
 function regSet(k,i){REG[k]=REGARR[k][i][0];if(k=="para")REG.rol=REG.para=="Para mí"?"Participo solo por mí":(ROLES.some(r=>r[0]==REG.rol)?REG.rol:"");regPaso(RP,true)}
 function regPaso(n,keep){RP=n;const p=REG.para;
@@ -239,11 +314,49 @@ async function registrar(){const m=t=>{$("#rm").innerHTML=msg("err",t)};
  const rol=REG.para=="Para mí"?"Participo solo por mí":REG.rol,nom=REG.nom.trim(),b=event.target;busy(b,true);
  try{const c=await rpc("registrar_participante",{p_nombre:nom,p_consentimiento:true,p_correo:cor,p_whatsapp:wha,p_edad:REG.edad,p_sexo:REG.sexo,p_parentesco:rol,p_instruccion:REG.ins,p_grado:REG.para});
   S.code=c;S.para=REG.para;S.nivel=REG.ins;LS.s("tesa_codigo",c);LS.s("tesa_nombre",nom);LS.s("tesa_para",S.para);LS.s("tesa_nivel",S.nivel);TIP=-1;REG={};
-  show(`<div class="card" style="text-align:center"><h2>¡Registro listo!</h2><p>Este es su código de participante. <b>Anótelo o tome una captura</b>: lo necesitará para volver a entrar.</p><div class="code">${c}</div><br><button onclick="load()">Continuar</button></div>`)}
+  LS.s("tesa_ultimo",c);LS.s("tesa_cor",cor);LS.s("tesa_wha",wha);CD={c,cor,wha};
+  show(`<div class="card" style="text-align:center"><h2>¡Registro listo!</h2><p>Este es su código de participante. <b>Guárdelo ahora</b>: lo necesitará para volver a entrar.</p><div class="code">${c}</div>${cdOpc()}<button onclick="load()">Continuar</button></div>`)}
  catch(e){busy(b,false);m(e.message)}}
-function salir(){const c=S.code,nm=(nomG().split(" ")[0]||"participante"),F=["¡Hasta pronto, "+nm+"! 👋 Gracias por cuidar su salud.","¡Nos vemos pronto, "+nm+"! 🌻 Su huerta seguirá creciendo.","¡Hasta la próxima, "+nm+"! 💜 Cada pequeño hábito cuenta.","¡Gracias por su tiempo, "+nm+"! 🌱 Aquí estaremos cuando regrese."];
+function salir(){const c=S.code,nm=(nomG().split(" ")[0]||"participante");CD={c,cor:LS.g("tesa_cor")||"",wha:LS.g("tesa_wha")||""};const F=["¡Hasta pronto, "+nm+"! 👋 Gracias por cuidar su salud.","¡Nos vemos pronto, "+nm+"! 🌻 Su huerta seguirá creciendo.","¡Hasta la próxima, "+nm+"! 💜 Cada pequeño hábito cuenta.","¡Gracias por su tiempo, "+nm+"! 🌱 Aquí estaremos cuando regrese."];
  S.code=null;S.est=null;S.hola=false;LS.d("tesa_codigo");LS.d("surcos_codigo");
- show(`<div class="card" style="text-align:center"><div class="wv" style="font-size:64px">👋</div><h2>Sesión cerrada</h2><p>${F[Math.floor(Math.random()*F.length)]}</p><p class="small">Anote su código para volver a entrar:</p><div class="code">${c}</div><br><button onclick="start();document.getElementById('cod').value='${c}'">Entrar de nuevo</button></div>`)}
+ show(`<div class="card" style="text-align:center"><div class="wv" style="font-size:64px">👋</div><h2>Sesión cerrada</h2><p>${F[Math.floor(Math.random()*F.length)]}</p><p class="small">Anote su código para volver a entrar:</p><div class="code">${c}</div>${cdOpc()}<button onclick="start()">Entrar de nuevo</button> <button class="sec" onclick="olvidar()">Borrar de este dispositivo</button></div>`)}
+
+/* ---------- QR, compartir y guardado del código ---------- */
+const appUrl=()=>location.href.split("#")[0].split("?")[0];
+const qrSafe=(t,px,q)=>{try{return QR.svg(t,px,q)}catch(e){return""}};
+const waNum=n=>{let d=String(n||"").replace(/\D/g,"");if(d.startsWith("593"))return d;if(d.startsWith("0"))d=d.slice(1);return"593"+d};
+let CD={c:"",cor:"",wha:""};
+const cdTexto=()=>`Mi código de participante en la campaña «Siembra hábitos, cosecha salud» es: ${CD.c}\nEntre aquí: ${appUrl()}`;
+function copiar(t,ok){const m=$("#cdm");const fin=g=>{if(m)m.innerHTML=g?msg("ok",ok):msg("err","No se pudo copiar. Tome una captura de pantalla o use la tarjeta.")};
+ try{navigator.clipboard.writeText(t).then(()=>fin(1),()=>fin(0))}catch(e){fin(0)}}
+function cdCopiar(){copiar(CD.c,"Código copiado: "+CD.c)}
+function cdShare(){try{navigator.share({title:"Siembra hábitos, cosecha salud",text:cdTexto()})}catch(e){}}
+function cdTarjeta(){const W=900,H=500,c=document.createElement("canvas");c.width=W;c.height=H;const x=c.getContext("2d");
+ const g=x.createLinearGradient(0,0,W,H);g.addColorStop(0,"#46196f");g.addColorStop(1,"#7b44ad");x.fillStyle=g;x.fillRect(0,0,W,H);
+ x.fillStyle="#f5c518";x.font="bold 40px Arial";x.fillText("Siembra hábitos, cosecha salud",50,80);
+ x.fillStyle="#fff";x.font="24px Arial";x.fillText("Mi código de participante",50,150);
+ x.fillStyle="#fff";x.fillRect(50,175,500,130);x.fillStyle="#5b2a86";x.font="bold 84px Courier New,monospace";
+ const ch=(CD.c||"").split("");let px=50+(500-ch.length*62)/2;ch.forEach(l=>{x.fillText(l,px,270);px+=62});
+ x.fillStyle="#fff";x.font="20px Arial";x.fillText("Guarde esta imagen: lo necesitará para volver a entrar.",50,350);
+ x.fillStyle="#e9dcf7";x.font="16px Arial";x.fillText(appUrl().slice(0,60),50,385);
+ x.fillText("Instituto Superior Tecnológico San Antonio (TESA)",50,455);
+ x.fillStyle="#fff";x.fillRect(585,105,290,290);try{QR.draw(x,appUrl(),595,115,270,2)}catch(e){}
+ x.fillStyle="#fff";x.font="16px Arial";x.fillText("Escanee para entrar",645,425);
+ const a=document.createElement("a");a.href=c.toDataURL("image/png");a.download="Mi-codigo-Siembra-habitos.png";document.body.appendChild(a);a.click();a.remove()}
+function cdOpc(){const t=encodeURIComponent(cdTexto()),sub=encodeURIComponent("Mi código · Siembra hábitos, cosecha salud");
+ return`<div class="cdbox"><p class="small" style="margin:0 0 6px">Guárdelo en un lugar seguro:</p><div class="row2"><button onclick="cdCopiar()">📋 Copiar código</button><button class="sec" onclick="cdTarjeta()">🖼️ Descargar tarjeta</button></div><div class="row2">${CD.cor?`<a class="btn sec" href="mailto:${esc(CD.cor)}?subject=${sub}&body=${t}">📧 Enviármelo por correo</a>`:""}${CD.wha?`<a class="btn sec" target="_blank" rel="noopener" href="https://wa.me/${waNum(CD.wha)}?text=${t}">💬 Enviármelo por WhatsApp</a>`:""}${navigator.share?`<button class="sec" onclick="cdShare()">📤 Compartir</button>`:""}</div><div id="cdm"></div><p class="small" style="margin:8px 0 0">Este navegador también lo recordará. Si cambia de celular, use la tarjeta o el mensaje que se envió.</p></div>`}
+function miCodigo(){CD={c:S.code,cor:LS.g("tesa_cor")||"",wha:LS.g("tesa_wha")||""};show(`<div class="card" style="text-align:center">${back}<h2>🔑 Mi código</h2><p>Con este código vuelve a entrar a la campaña desde cualquier dispositivo.</p><div class="code">${esc(CD.c)}</div>${cdOpc()}</div>`)}
+function olvidar(){["tesa_ultimo","tesa_cor","tesa_wha","tesa_nombre","tesa_para","tesa_nivel"].forEach(LS.d);start()}
+function bCo(){const u=appUrl(),t=encodeURIComponent("Campaña «Siembra hábitos, cosecha salud» (alimentación saludable y estilos de vida). Participe aquí: "+u);
+ return`<div class="card qrc"><h3>Compartir la campaña</h3><p class="small noprint">Muestre este QR o envíe el enlace. Quien lo escanee llega directo a la campaña.</p><div class="qrb">${qrSafe(u,240,2)||"<p class='small'>No se pudo generar el QR.</p>"}</div><p class="lnk">${esc(u)}</p><div class="row2 noprint"><button onclick="copiar('${esc(u)}','Enlace copiado.')">📋 Copiar enlace</button><button class="sec" onclick="qrPng()">⬇️ Descargar QR</button><button class="sec" onclick="window.print()">🖨️ Imprimir</button><a class="btn sec" target="_blank" rel="noopener" href="https://wa.me/?text=${t}">💬 Compartir por WhatsApp</a></div><div id="cdm" class="noprint"></div></div>`}
+function qrPng(){const c=document.createElement("canvas");c.width=c.height=800;const x=c.getContext("2d");try{QR.draw(x,appUrl(),0,0,800,4)}catch(e){return}const a=document.createElement("a");a.href=c.toDataURL("image/png");a.download="QR-Siembra-habitos.png";document.body.appendChild(a);a.click();a.remove()}
+/* ---------- títulos reales de los videos de YouTube ---------- */
+const YTC=()=>{try{return JSON.parse(LS.g("tesa_yt")||"{}")}catch(e){return{}}};
+function ytCargar(cb){const c=YTC();VIDEOS_EXT.forEach(x=>{const m=c[x.id];if(m&&!x._ok){x.t=m.t;x.a=m.a;x._ok=1}});
+ const pend=VIDEOS_EXT.filter(x=>!x._ok);if(!pend.length){if(cb)cb(false);return}let ch=false;
+ Promise.all(pend.map(x=>fetch("https://www.youtube.com/oembed?format=json&url="+encodeURIComponent("https://www.youtube.com/watch?v="+x.id)).then(r=>r.ok?r.json():Promise.reject()).then(j=>{x.t=j.title;x.a=j.author_name;x._ok=1;const k=YTC();k[x.id]={t:x.t,a:x.a};LS.s("tesa_yt",JSON.stringify(k));ch=true}).catch(()=>{}))).then(()=>{if(cb)cb(ch)})}
+function ytPaint(){document.querySelectorAll(".vth button span").forEach((e,i)=>{if(VIDEOS_EXT[i])e.textContent=VIDEOS_EXT[i].t});const b=document.querySelector("#vxp b");if(b&&window._vxi!=null)b.textContent=VIDEOS_EXT[window._vxi].t}
+function ytExportar(){console.log(JSON.stringify(VIDEOS_EXT.map(x=>({t:x.t,id:x.id,a:x.a||"",y:x.y||"",s:x.s||0})),null,1))}
 /* ---------- inicio ---------- */
 /* ---------- contexto (cambiar desde el inicio) ---------- */
 const ctxLinea=()=>S.para&&S.nivel?`<div class="ctxl"><span>🎯 ${esc(S.para)} · ${esc(S.nivel)}</span><a href="#" onclick="cambiarCtx();return false">Cambiar</a></div>`:`<div class="card"><h3>Complete su perfil de campaña</h3><p class="small">Así adaptamos los textos, consejos, videos y juegos a su situación.</p><button onclick="cambiarCtx()">Elegir ahora</button></div>`;
@@ -253,12 +366,12 @@ function ctxView(keep){show(`<div class="card">${back}<h2>Mi campaña</h2><p cla
 function ctSet(k,i){CT[k]=(k=="para"?PARAD:(NIVD[CT.para]||NIV))[i][0];ctxView(true)}
 function ctGuardar(){if(!CT.para||!CT.ins)return $("#cm").innerHTML=msg("err","Elija las dos opciones.");S.para=CT.para;S.nivel=CT.ins;LS.s("tesa_para",S.para);LS.s("tesa_nivel",S.nivel);TIP=-1;ini()}
 function home(){const e=S.est,sm=e.semanas,j=e.pretest_hecho,pl=plantas(),G=["🥕","🍎","🌻"],nf=(nomG().split(" ")[0]||"");
- let h=`<div class="card"><div class="hd"><span><b>${nf?"Hola, "+esc(nf.charAt(0).toUpperCase()+nf.slice(1).toLowerCase()):"Hola"} 👋</b><span class="code">${S.code}</span></span><button class="sec" onclick="salir()">Salir</button></div>${S.para&&S.nivel?`<div class="small" style="margin-top:6px">🎯 ${esc(S.para)} · ${esc(S.nivel)} · <a href="#" onclick="cambiarCtx();return false" style="color:var(--g);font-weight:bold">Cambiar</a></div>`:`<div style="margin-top:6px"><button style="margin:0;padding:6px 12px" onclick="cambiarCtx()">Completar mi perfil</button></div>`}</div>`;
+ let h=`<div class="card"><div class="hd"><span><b>${nf?"Hola, "+esc(nf.charAt(0).toUpperCase()+nf.slice(1).toLowerCase()):"Hola"} 👋</b><span class="code">${S.code}</span></span><span><button class="sec" onclick="miCodigo()">🔑 Mi código</button> <button class="sec" onclick="salir()">Salir</button></span></div>${S.para&&S.nivel?`<div class="small" style="margin-top:6px">🎯 ${esc(S.para)} · ${esc(S.nivel)} · <a href="#" onclick="cambiarCtx();return false" style="color:var(--g);font-weight:bold">Cambiar</a></div>`:`<div style="margin-top:6px"><button style="margin:0;padding:6px 12px" onclick="cambiarCtx()">Completar mi perfil</button></div>`}</div>`;
  h+=huertaCard();
  h+=`<div class="card"><div class="tools"><button onclick="biblio('ig')"><span>📚</span>Biblioteca</button><button onclick="videos()"><span>🎬</span>Videos</button><button onclick="recetario()"><span>🍽️</span>Recetas</button><button onclick="cal()"><span>📅</span>Registro</button><button class="${j?"":"lock"}" ${j?'onclick="juegos()"':"disabled"}><span>🎮</span>Juegos</button><button onclick="refs()"><span>📖</span>Fuentes</button></div></div>`;
  h+=tipCard()+accion();
  h+=`<div class="card"><h3 style="margin-bottom:4px">Mi campaña</h3>`;
- h+=`<div class="wk"><span class="em">📝</span><div class="wt"><b>Evaluación inicial</b><small>${j?"Completada ✓":"10 preguntas · unos 5 minutos"}</small></div>${j?"":`<button onclick="test('pretest')">Responder</button>`}</div>`;
+ h+=`<div class="wk"><span class="em">📝</span><div class="wt"><b>Evaluación inicial</b><small>${j?"Completada ✓":"10 preguntas y 4 de hábitos · unos 7 minutos"}</small></div>${j?"":`<button onclick="test('pretest')">Responder</button>`}</div>`;
  sm.filter(s=>s.numero<=3).forEach(s=>{const n=s.numero,ab=s.abierta,bloq=n==1&&!j,done=s.habitos_enviados&&(n<3||(e.postest_hecho&&e.satisfaccion_hecha));
   const sub=!ab?"Se abre el "+fmt(s.fecha_apertura):bloq?"Primero la evaluación inicial":done?"Completada ✓":fmt(s.fecha_apertura)+" al "+fmt(s.fecha_cierre);
   h+=`<div class="wk"><span class="em">${EM[n]}</span><div class="wt"><b>Semana ${n}: ${W(n).t}</b><small>${sub}</small></div>${ab&&!bloq?`<button onclick="abrir(${n})">${done?"Repasar":"Abrir"}</button>`:`<button class="lock" disabled>🔒</button>`}</div>`});
@@ -281,7 +394,7 @@ function abrir(n){if(n==0)return test("pretest");if(n==5)return test("postest",t
 const trKey=w=>`tesa_tr_${S.code}_${w}`;
 const trLoad=w=>{try{const a=JSON.parse(LS.g(trKey(w))||"null");if(a&&a.length==4)return a}catch(e){}return null};
 async function semana(n){const w=W(n),s=S.est.semanas.find(x=>x.numero==n);
- if(n==1&&!S.est.pretest_hecho)return show(`<div class="card">${back}<h2>Semana 1: ${w.t}</h2><p>Para abrir la Semana 1, primero responda la evaluación inicial (unos 5 minutos). Así sabremos desde dónde partimos.</p><button onclick="test('pretest')">Responder evaluación inicial</button></div>`);
+ if(n==1&&!S.est.pretest_hecho)return show(`<div class="card">${back}<h2>Semana 1: ${w.t}</h2><p>Para abrir la Semana 1, primero responda la evaluación inicial (unos 7 minutos). Así sabremos desde dónde partimos.</p><button onclick="test('pretest')">Responder evaluación inicial</button></div>`);
  if(!s.leccion_vista)rpc("marcar_progreso",{p_codigo:S.code,p_semana:n,p_leccion:true,p_reto:false}).catch(()=>{});
  let h=`<div class="card">${back}<h2>Semana ${n}: ${w.t}</h2></div>`;
  w.l.forEach(x=>h+=`<div class="card"><h3>${x[0]}</h3><p>${x[1]}</p></div>`);h+=consH(n);
@@ -299,9 +412,10 @@ function test(m,post){const e=S.est,hecho=post?e.postest_hecho:e.pretest_hecho;
  if(hecho){h+=msg("ok","Ya completó esta evaluación. ¡Gracias!")+(post&&e.postest_puntaje!=null?`<p>Su puntaje: <b>${e.postest_puntaje} de 10</b></p>`:"")+"</div>";if(post)h+=sat();return show(h)}
  h+=`<p class="small">10 preguntas, una respuesta por pregunta. No hay respuestas buenas o malas para su persona: sirve para mejorar la campaña.</p>`;
  Q.forEach((q,i)=>{h+=`<div class="q"><p>${i+1}. ${q[0]}</p>${q[1].map((o,j)=>`<label><input type="radio" name="q${i}" value="${L[j]}">${L[j]}) ${o}</label>`).join("")}</div>`});
+ if(m=="pretest")h+=`<div class="card" style="margin-top:12px"><h3>Sus hábitos de la última semana</h3><p class="small">Cuéntenos cómo fue la semana pasada (de 0 a 7 días). Así podremos ver cuánto cambia al final de la campaña.</p>${H().map(x=>`<label>${x[1]}</label>${sel("h0_"+x[0],0,7)}`).join("")}</div>`;
  h+=`<button onclick="enviarTest('${m}')">Enviar respuestas</button><div id="mt"></div></div>`;show(h)}
-async function enviarTest(m){const r=Q.map((_,i)=>{const x=document.querySelector(`input[name=q${i}]:checked`);return x?x.value:null});if(r.includes(null))return $("#mt").innerHTML=msg("err","Responda las 10 preguntas.");
- const b=event.target;busy(b,true);try{const d=await rpc("guardar_conocimientos",{p_codigo:S.code,p_momento:m,p_resp:r});celebra();S.est=await rpc("obtener_estado",{p_codigo:S.code});
+async function enviarTest(m){const r=Q.map((_,i)=>{const x=document.querySelector(`input[name=q${i}]:checked`);return x?x.value:null});if(r.includes(null))return $("#mt").innerHTML=msg("err","Responda las 10 preguntas.");const hv=m=="pretest"?H().map(x=>$("#h0_"+x[0]).value):null;if(hv&&hv.some(x=>x===""))return $("#mt").innerHTML=msg("err","Responda también las cuatro preguntas de hábitos.");
+ const b=event.target;busy(b,true);try{if(hv)await rpc("guardar_habitos",{p_codigo:S.code,p_semana:0,p_agua:+hv[0],p_lonchera:+hv[1],p_juego:+hv[2],p_pantallas:+hv[3]});const d=await rpc("guardar_conocimientos",{p_codigo:S.code,p_momento:m,p_resp:r});celebra();S.est=await rpc("obtener_estado",{p_codigo:S.code});
  show(`<div class="card" style="text-align:center"><h2>¡Gracias!</h2>${m=="postest"?`<p>Su puntaje: <b>${d.puntaje} de 10</b></p>`:(()=>{const w1=S.est.semanas.find(x=>x.numero==1);return w1&&w1.abierta?"<p>Sus respuestas fueron guardadas. Ya puede comenzar la Semana 1.</p>":"<p>Sus respuestas fueron guardadas. La Semana 1 se abrirá el "+(w1?fmt(w1.fecha_apertura):"día indicado")+".</p>"})()}<button onclick="${m=="postest"?"test('postest',true)":"ini()"}">Continuar</button></div>`)}catch(e){busy(b,false);$("#mt").innerHTML=msg("err",e.message)}}
 function sat(){if(S.est.satisfaccion_hecha)return"";const o=id=>sel(id,1,5);return`<div class="card"><h3>Encuesta de satisfacción</h3><p class="small">1 = muy bajo, 5 = muy alto</p><label>¿Qué tan útil le pareció la campaña?</label>${o("s1")}<label>¿Qué tan claros fueron los contenidos?</label>${o("s2")}<label>¿Recomendaría esta campaña a otras personas?</label>${o("s3")}<label>¿Qué mejoraría? (opcional)</label><textarea id="s4" rows="3" maxlength="1000"></textarea><button onclick="enviarSat()">Enviar encuesta</button><div id="ms"></div></div>`}
 async function enviarSat(){const v=["#s1","#s2","#s3"].map(i=>$(i).value);if(v.includes(""))return $("#ms").innerHTML=msg("err","Califique los tres aspectos.");const b=event.target;busy(b,true);
@@ -346,9 +460,9 @@ function extras(){const j=S.est.pretest_hecho,l=tipsList();if(TIP<0)TIP=Math.flo
  return`<div class="card tip dup"><h3>💡 Tip del día</h3><p id="tip"><span class="tag">${esc(t[0])}</span><br>${esc(t[1])}</p><button class="sec" style="margin:0" onclick="otroTip()">Otro tip</button></div>
 <div class="card dup"><h3>🧰 Mis herramientas</h3><div class="menu"><button onclick="biblio('ig')"><b>📚 Biblioteca</b><span class="small">Infografías, tríptico, fichas y guías</span></button><button onclick="videos()"><b>🎬 Videos</b><span class="small">Mini-videos para aprender en minutos</span></button><button onclick="refs()"><b>📖 Referencias</b><span class="small">Fuentes bibliográficas que respaldan la campaña</span></button><button onclick="recetario()"><b>🍽️ Recetario andino</b><span class="small">${REC.length} recetas con productos del Ecuador</span></button><button onclick="cal()"><b>📅 Calendario y registro</b><span class="small">Agua, fruta o verdura, ejercicio y pantallas</span></button><button class="${j?"":"lock"}" ${j?'onclick="juegos()"':"disabled"}><b>🎮 Juegos</b><span class="small">${j?"7 juegos para aprender jugando":"Se habilitan al completar la evaluación inicial"}</span></button></div></div>`}
 /* ---------- biblioteca ---------- */
-const BIBT=[["ig","📊 Infografías"],["tr","📄 Tríptico"],["fi","🗂️ Fichas"],["gu","📘 Guías"],["ac","🏃 Actividades"]];
+const BIBT=[["ig","📊 Infografías"],["tr","📄 Tríptico"],["fi","🗂️ Fichas"],["gu","📘 Guías"],["ac","🏃 Actividades"],["co","🔗 Compartir"]];
 function biblio(t){t=t||"ig";const bar=`<div class="seg noprint">${BIBT.map(x=>`<button class="${x[0]==t?"on":""}" onclick="biblio('${x[0]}')">${x[1]}</button>`).join("")}</div>`;
- const body={ig:bIg,tr:bTr,fi:bFi,gu:bGu,ac:bAc}[t]();
+ const body={ig:bIg,tr:bTr,fi:bFi,gu:bGu,ac:bAc,co:bCo}[t]();
  show(`<div class="card">${back}<h2>📚 Biblioteca virtual</h2><p class="small noprint">Material de la campaña en versión digital. Puede imprimirlo o guardarlo como PDF.</p>${bar}</div>${body}`)}
 function bIg(){const c=(t,h)=>`<div class="card"><h3>${t}</h3>${h}<button class="sec noprint" onclick="window.print()">Imprimir o guardar PDF</button></div>`;
  return c("Mi plato saludable",`<div class="plato"><div class="pt half">🥦🍎<b>½ Frutas y verduras</b><small>De varios colores</small></div><div class="pt q">🍚🥔<b>¼ Cereales y tubérculos</b><small>Mejor integrales</small></div><div class="pt">🫘🍗<b>¼ Proteínas</b><small>Legumbres, huevo, pescado, carnes magras</small></div></div><p class="small">Acompañe con agua simple. Los ultraprocesados no forman parte del plato de todos los días.</p>`)
@@ -358,7 +472,7 @@ function bIg(){const c=(t,h)=>`<div class="card"><h3>${t}</h3>${h}<button class=
 function bTr(){return`<div class="card"><h3>Tríptico de la campaña</h3><p class="small noprint">Tiene dos caras. Al imprimir, elija hoja A4 horizontal y doble por las líneas.</p><button class="y noprint" style="margin:0 0 10px" onclick="window.print()">Imprimir o guardar PDF</button>
 <div class="tri"><div class="yl"><h4>¿Cuándo consultar?</h4><ul><li>Cambios bruscos de peso.</li><li>Cansancio constante.</li><li>En menores de edad, si no crecen como se espera.</li><li>Antes de iniciar una dieta o un plan de ejercicio exigente.</li></ul><p>Acuda siempre al centro de salud más cercano.</p></div>
 <div><h4>Sobre la campaña</h4><p>Tres semanas con lecciones breves, retos y registro de hábitos para mejorar la alimentación y el movimiento, para usted, su hijo o hija, o toda la familia.</p><p>Ingrese a la plataforma con su código de participante.</p></div>
-<div class="cv"><h4>Siembra hábitos, cosecha salud</h4><p>Campaña de alimentación saludable y estilos de vida</p><p>🌱 🥕 🍎 💧</p><p style="font-size:12px">Instituto Superior Tecnológico San Antonio (TESA)<br>Estudiantes de Enfermería: Karen Yépez y Jacqueline Zambrano</p></div></div>
+<div class="cv"><h4>Siembra hábitos, cosecha salud</h4><p>Campaña de alimentación saludable y estilos de vida</p>${qrSafe(appUrl(),104,1)?`<div style="background:#fff;border-radius:8px;padding:4px;margin:6px auto;width:112px;line-height:0">${qrSafe(appUrl(),104,1)}</div><p style="font-size:11px">Escanee para ingresar</p>`:"<p>🌱 🥕 🍎 💧</p>"}<p style="font-size:12px">Instituto Superior Tecnológico San Antonio (TESA)<br>Estudiantes de Enfermería: Karen Yépez y Jacqueline Zambrano</p></div></div>
 <div class="tri"><div><h4>¿Qué es la malnutrición?</h4><p>Es un desequilibrio entre lo que se come y lo que el cuerpo necesita. Incluye la desnutrición, el sobrepeso y la obesidad, y puede darse a cualquier edad.</p></div>
 <div><h4>¿Cómo prevenirla?</h4><ul><li>💧 Agua como bebida principal.</li><li>🥦 La mitad del plato, frutas y verduras.</li><li>🏃 Moverse todos los días.</li><li>📵 Comer sin pantallas.</li><li>🍭 Limitar ultraprocesados y azúcar.</li></ul></div>
 <div class="yl"><h4>Mi plato saludable</h4><p>🥦🍎 ½ frutas y verduras<br>🍚🥔 ¼ cereales y tubérculos<br>🫘🍗 ¼ proteínas</p><p>Y un vaso de agua 💧</p></div></div></div>`}
@@ -569,11 +683,12 @@ const TEMAS=[["Malnutrición, doble carga y deficiencia de micronutrientes (como
 const SEMREF={1:[11,9,10,8,1],2:[8,5,11,4,3],3:[1,2,7,8,6]};
 const rlink=u=>`<a href="${u}" target="_blank" rel="noopener noreferrer">${u}</a>`;
 function refSem(n){return`<div class="card"><h3>📖 Fuentes de esta semana</h3><ul class="rl">${SEMREF[n].map(i=>`<li>[${i}] ${esc(REFS[i-1][2])}</li>`).join("")}</ul><p class="small"><a href="#" onclick="refs();return false">Ver todas las referencias</a></p></div>`}
-function refs(){show(`<div class="card">${back}<h2>📖 Referencias bibliográficas</h2><p class="small">Fuentes que respaldan la información de la campaña, en formato APA (7.ª edición). Los enlaces se abren en otra pestaña.</p><div class="row2"><button class="y noprint" onclick="refsCopy()">📋 Copiar referencias</button><button class="sec noprint" onclick="window.print()">🖨️ Imprimir</button></div><div id="mrc"></div></div>
+function refs0(){show(`<div class="card">${back}<h2>📖 Referencias bibliográficas</h2><p class="small">Fuentes que respaldan la información de la campaña, en formato APA (7.ª edición). Los enlaces se abren en otra pestaña.</p><div class="row2"><button class="y noprint" onclick="refsCopy()">📋 Copiar referencias</button><button class="sec noprint" onclick="window.print()">🖨️ Imprimir</button></div><div id="mrc"></div></div>
 <div class="card"><h3>¿Qué fuente respalda cada tema?</h3>${TEMAS.map(t=>`<p class="rt"><b>${t[0]}</b>${t[1].length?": "+t[1].map(i=>`[${i}]`).join(" "):""}</p>`).join("")}</div><div class="card"><h3>Videos</h3><p class="small">Mini-videos animados de la plataforma: fuentes en cada video y en esta página. Los videos de YouTube se citan abajo.</p><ol class="rl">${VF.map((f,i)=>`<li>${esc(VIDEOS[i].t)}: ${f.map(n=>`[${n}]`).join(" ")}${VFN[i]?" (consejos prácticos de apoyo)":""}</li>`).join("")}</ol></div>
 <div class="card"><h3>Lista de referencias</h3><ol class="rl">${REFS.map(r=>`<li>${esc(r[0])} ${rlink(r[1])}</li>`).join("")}</ol></div><div class="card"><h3>Videos de YouTube</h3><ul class="rl">${vidRefs().map(r=>`<li>${esc(r[0])} ${rlink(r[1])}</li>`).join("")}</ul></div>
 <div class="card tip"><h3>Notas importantes</h3><ul class="rl"><li>La meta de 8 vasos de agua del contador es orientativa: no es una cifra específica de la OMS y cambia con la edad, el clima y la actividad.</li><li>La equivalencia de unas 13 cucharaditas de azúcar en una gaseosa de 500 ml es aproximada (1 cucharadita ≈ 4 g). La OMS indica que una lata de gaseosa puede tener hasta unos 40 g de azúcares libres [10].</li><li>Las recomendaciones prácticas (pausas activas, comidas sin pantallas, recetas) son consejos educativos de apoyo y no reemplazan la consulta con un profesional de la salud.</li><li>Referencias verificadas en línea el 10 de noviembre de 2026.</li></ul></div>`)}
 function refsCopy(){const t=REFS.concat(vidRefs()).map(r=>r[0]+" "+r[1]).join("\n\n"),m=x=>{$("#mrc").innerHTML=msg("ok",x)};try{navigator.clipboard.writeText(t).then(()=>m("Referencias copiadas."),()=>m("No se pudo copiar. Use Imprimir o seleccione el texto."))}catch(e){m("No se pudo copiar. Use Imprimir o seleccione el texto.")}}
+function refs(){refs0();window._vw="refs";ytCargar(ch=>{if(ch&&window._vw=="refs"){refs0();window._vw="refs"}})}
 const VF=[[5,8],[9,10,8],[4,3],[1,2],[2,7,6],[5]],VFN=[0,0,0,0,0,1];
 function vRef(i){return`<p class="small">📖 Fuentes de este video: ${VF[i].map(n=>`[${n}]`).join(" ")}${VFN[i]?" · incluye consejos prácticos de apoyo":""} · <a href="#" onclick="refs();return false">Ver referencias</a></p>`}
 const vyt=x=>"https://www.youtube.com/watch?v="+x.id;
@@ -604,8 +719,8 @@ function stopVid(){if(VP&&VP.t)clearTimeout(VP.t);VP=null;try{if(window.speechSy
 let VT="mini";
 function videos(t){if(t)VT=t;const bar=`<div class="seg noprint"><button class="${VT=="mini"?"on":""}" onclick="videos('mini')">🎞️ Mini-videos</button>${VIDEOS_EXT.length?`<button class="${VT=="yt"?"on":""}" onclick="videos('yt')">▶️ Más videos</button>`:""}</div>`;
  const body=VT=="mini"||!VIDEOS_EXT.length?`<div class="vgrid">${VIDEOS.map((v,i)=>`<button class="vcard" onclick="verVideo(${i})"><span>${v.e}</span><b>${v.t}</b></button>`).join("")}</div>`:`<div id="vxp"></div><div class="vth">${VIDEOS_EXT.map((x,i)=>`<button onclick="vxPlay(${i},1)"><img loading="lazy" alt="" src="https://i.ytimg.com/vi/${encodeURIComponent(x.id)}/mqdefault.jpg"><span>${esc(x.t)}</span></button>`).join("")}</div>`;
- show(`<div class="card">${back}<h2>🎬 Videos</h2>${bar}${body}</div>`);if(VT=="yt"&&VIDEOS_EXT.length)vxPlay(Math.min(4,VIDEOS_EXT.length-1))}
-function vxPlay(i,auto){const x=VIDEOS_EXT[i],p=$("#vxp");if(!p)return;p.innerHTML=`<div class="vr"><iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(x.id)}?${x.s?"start="+(+x.s)+"&":""}${auto?"autoplay=1":""}" title="${esc(x.t)}" allowfullscreen allow="autoplay"></iframe></div><p class="small"><b>${esc(x.t)}</b> · <a href="#" onclick="refs();return false">📖 referencia</a></p>`}
+ show(`<div class="card">${back}<h2>🎬 Videos</h2>${bar}${body}</div>`);ytCargar(ch=>{if(ch)ytPaint()});if(VT=="yt"&&VIDEOS_EXT.length)vxPlay(Math.min(4,VIDEOS_EXT.length-1))}
+function vxPlay(i,auto){const x=VIDEOS_EXT[i],p=$("#vxp");if(!p)return;window._vxi=i;p.innerHTML=`<div class="vr"><iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(x.id)}?${x.s?"start="+(+x.s)+"&":""}${auto?"autoplay=1":""}" title="${esc(x.t)}" allowfullscreen allow="autoplay"></iframe></div><p class="small"><b>${esc(x.t)}</b> · <a href="#" onclick="refs();return false">📖 referencia</a></p>`}
 function verVideo(i){const v=VIDEOS[i];
  show(`<div class="card">${back}<button class="sec noprint" style="margin:0 0 12px 8px" onclick="videos('mini')">← Videos</button><h2>${v.e} ${esc(v.t)}</h2><div class="vp"><div class="vs" id="vs"></div><div class="vb"><i id="vbar"></i></div><div class="vc"><button class="sec" onclick="vNav(-1)" aria-label="Escena anterior">⏮</button><button class="y" id="vpp" onclick="vToggle()">⏸ Pausa</button><button class="sec" onclick="vNav(1)" aria-label="Escena siguiente">⏭</button><label class="vz" id="vvozl"><input type="checkbox" id="vvoz" onchange="vVoz(this.checked)">🔊 Narración</label></div></div>${vRef(i)}</div>`);
  VP={i,sc:v.s(),n:0,play:true,t:null};if(!window.speechSynthesis)$("#vvozl").style.display="none";else $("#vvoz").checked=VOZ;vScene()}
@@ -716,5 +831,6 @@ function bienvenida(){if(S.hola)return"";S.hola=true;const h=new Date().getHours
  const Vv=[`¡${sal}, ${nm}! ${ic} Qué alegría verle de nuevo.`,`${sal}, ${nm}. ¡Su huerta le estaba esperando! 🌱`,`¡Bienvenido/a de vuelta, ${nm}! Hoy es un buen día para sumar un hábito saludable 💜`];
  const p=!e.pretest_hecho?"Su primer paso: responder la evaluación inicial. Ya está disponible.":certFalta().length==0?"¡Cumplió todo! Ya puede obtener su certificado de participación.":`Su huerta tiene ${n} de 3 plantas florecidas.`;
  return`<div class="card hola"><h3 style="margin-bottom:4px">${Vv[Math.floor(Math.random()*Vv.length)]}</h3><p style="margin:0">${p}</p></div>`}
+ytCargar();
 S.code?load():start();
 </script></body></html>
