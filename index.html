@@ -20,6 +20,7 @@ button.sec{background:#fff;color:var(--g);border:1px solid var(--g)}button.y{bac
 .cert{background:#fff;border:10px double #c9a227;padding:34px 30px;text-align:center;font-family:Georgia,"Times New Roman",serif;color:#2a2a2a;margin:14px 0}
 .cert h2{font-size:30px;letter-spacing:3px;color:#5b2a86;margin:6px 0}.cert .nm{font-size:30px;font-style:italic;border-bottom:1px solid #999;display:inline-block;min-width:60%;padding:4px 14px;margin:10px 0}
 .cert .sg{display:flex;justify-content:space-around;gap:40px;margin-top:46px;font-size:13px}.cert .sg div{flex:1;border-top:1px solid #555;padding-top:6px}
+.rdl{background:var(--gl);border:1px dashed var(--b);border-radius:12px;padding:12px;margin:12px 0}.rdl select{max-width:260px}
 @media print{header,footer,.noprint,#fl,.side{display:none!important}body{background:#fff!important;display:block}.shell{display:block}main{max-width:none;padding:0}.card{box-shadow:none;border:1px solid #bbb;break-inside:avoid}.cert{margin:0;border-width:12px}@page{size:A4 landscape;margin:10mm}}
 .deco{font-size:26px;margin-bottom:4px}.deco span{display:inline-block;margin:0 6px;animation:bob 3s ease-in-out infinite}.deco span:nth-child(even){animation-delay:.6s}@keyframes bob{50%{transform:translateY(-6px)}}
 .plots{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;text-align:center;margin:10px 0}.plot{background:#f1ecf6;border-radius:10px;padding:8px 2px}.plot span{display:block;font-size:30px;filter:grayscale(1);opacity:.45}.plot.ok{background:var(--gl)}.plot.ok span{filter:none;opacity:1;animation:bob 3s ease-in-out infinite}.plot small{font-size:11px;color:var(--m)}
@@ -205,17 +206,17 @@ function ctSet(k,i){CT[k]=(k=="para"?PARAD:NIV)[i][0];ctxView(true)}
 function ctGuardar(){if(!CT.para||!CT.ins)return $("#cm").innerHTML=msg("err","Elija las dos opciones.");S.para=CT.para;S.nivel=CT.ins;LS.s("tesa_para",S.para);LS.s("tesa_nivel",S.nivel);TIP=-1;ini()}
 function home(){const e=S.est,sm=e.semanas;let h=`<div class="card"><span class="small">Su código</span><br><span class="code">${S.code}</span> <button class="sec" style="margin:0 0 0 8px;padding:6px 12px" onclick="salir()">Salir</button></div>`;
  h=bienvenida()+h;h+=ctxLinea()+huerta()+extras()+accion();
+ h+=`<div class="card"><h3>📝 Evaluación inicial</h3><div class="small">Antes de empezar · disponible desde ya</div>${e.pretest_hecho?'<span class="tag">Completada ✓</span><p class="small">Gracias. Su Semana 1 se abrirá en la fecha indicada abajo.</p>':'<p class="small">Son 10 preguntas (unos 5 minutos). No explica nada de la campaña: sirve para saber desde dónde partimos. Al terminar quedará habilitada la Semana 1.</p><button onclick="test(\'pretest\')">Responder evaluación inicial</button>'}</div>`;
  sm.filter(s=>s.numero<=3).forEach(s=>{const n=s.numero,ab=s.abierta;let tags=(s.leccion_vista?'<span class="tag">Lección vista</span>':'')+(s.reto_completado?'<span class="tag">Reto completado</span>':'')+(s.habitos_enviados?'<span class="tag">Hábitos registrados</span>':'');
-  if(n==1)tags+=e.pretest_hecho?'<span class="tag">Evaluación inicial ✓</span>':'<span class="tag w">Evaluación inicial pendiente</span>';
   if(n==3)tags+=(e.postest_hecho?'<span class="tag">Evaluación final ✓</span>':'<span class="tag w">Evaluación final pendiente</span>')+(e.satisfaccion_hecha?'<span class="tag">Encuesta enviada</span>':'');
-  h+=`<div class="card"><h3>${EM[n]} Semana ${n}: ${W(n).t}</h3><div class="small">${fmt(s.fecha_apertura)} al ${fmt(s.fecha_cierre)}</div>${ab?tags+`<br><button onclick="abrir(${n})">Abrir semana</button>`:`<br><button class="lock" disabled>Se abre el ${fmt(s.fecha_apertura)}</button>`}</div>`});
+  h+=`<div class="card"><h3>${EM[n]} Semana ${n}: ${W(n).t}</h3><div class="small">${fmt(s.fecha_apertura)} al ${fmt(s.fecha_cierre)}</div>${ab?tags+(n==1&&!e.pretest_hecho?`<br><button class="lock" disabled>Primero responda la evaluación inicial</button>`:`<br><button onclick="abrir(${n})">Abrir semana</button>`):`<br><button class="lock" disabled>Se abre el ${fmt(s.fecha_apertura)}</button>`}</div>`});
  h+=certCard();show(h);ninosIni()}
 function abrir(n){if(n==0)return test("pretest");if(n==5)return test("postest",true);semana(n)}
 /* registro diario (solo en este dispositivo) */
 const trKey=w=>`tesa_tr_${S.code}_${w}`;
 const trLoad=w=>{try{const a=JSON.parse(LS.g(trKey(w))||"null");if(a&&a.length==4)return a}catch(e){}return null};
 async function semana(n){const w=W(n),s=S.est.semanas.find(x=>x.numero==n);
- if(n==1&&!S.est.pretest_hecho)return show(`<div class="card">${back}<h2>Semana 1: ${w.t}</h2><p>Antes de empezar, responda la evaluación inicial (unos 5 minutos). Así sabremos desde dónde partimos.</p><button onclick="test('pretest')">Responder evaluación inicial</button></div>`);
+ if(n==1&&!S.est.pretest_hecho)return show(`<div class="card">${back}<h2>Semana 1: ${w.t}</h2><p>Para abrir la Semana 1, primero responda la evaluación inicial (unos 5 minutos). Así sabremos desde dónde partimos.</p><button onclick="test('pretest')">Responder evaluación inicial</button></div>`);
  if(!s.leccion_vista)rpc("marcar_progreso",{p_codigo:S.code,p_semana:n,p_leccion:true,p_reto:false}).catch(()=>{});
  let h=`<div class="card">${back}<h2>Semana ${n}: ${w.t}</h2></div>`;
  w.l.forEach(x=>h+=`<div class="card"><h3>${x[0]}</h3><p>${x[1]}</p></div>`);
@@ -236,7 +237,7 @@ function test(m,post){const e=S.est,hecho=post?e.postest_hecho:e.pretest_hecho;
  h+=`<button onclick="enviarTest('${m}')">Enviar respuestas</button><div id="mt"></div></div>`;show(h)}
 async function enviarTest(m){const r=Q.map((_,i)=>{const x=document.querySelector(`input[name=q${i}]:checked`);return x?x.value:null});if(r.includes(null))return $("#mt").innerHTML=msg("err","Responda las 10 preguntas.");
  const b=event.target;busy(b,true);try{const d=await rpc("guardar_conocimientos",{p_codigo:S.code,p_momento:m,p_resp:r});celebra();S.est=await rpc("obtener_estado",{p_codigo:S.code});
- show(`<div class="card" style="text-align:center"><h2>¡Gracias!</h2>${m=="postest"?`<p>Su puntaje: <b>${d.puntaje} de 10</b></p>`:"<p>Sus respuestas fueron guardadas. Ya puede comenzar la Semana 1.</p>"}<button onclick="${m=="postest"?"test('postest',true)":"semana(1)"}">Continuar</button></div>`)}catch(e){busy(b,false);$("#mt").innerHTML=msg("err",e.message)}}
+ show(`<div class="card" style="text-align:center"><h2>¡Gracias!</h2>${m=="postest"?`<p>Su puntaje: <b>${d.puntaje} de 10</b></p>`:(()=>{const w1=S.est.semanas.find(x=>x.numero==1);return w1&&w1.abierta?"<p>Sus respuestas fueron guardadas. Ya puede comenzar la Semana 1.</p>":"<p>Sus respuestas fueron guardadas. La Semana 1 se abrirá el "+(w1?fmt(w1.fecha_apertura):"día indicado")+".</p>"})()}<button onclick="${m=="postest"?"test('postest',true)":"ini()"}">Continuar</button></div>`)}catch(e){busy(b,false);$("#mt").innerHTML=msg("err",e.message)}}
 function sat(){if(S.est.satisfaccion_hecha)return"";const o=id=>sel(id,1,5);return`<div class="card"><h3>Encuesta de satisfacción</h3><p class="small">1 = muy bajo, 5 = muy alto</p><label>¿Qué tan útil le pareció la campaña?</label>${o("s1")}<label>¿Qué tan claros fueron los contenidos?</label>${o("s2")}<label>¿Recomendaría esta campaña a otras personas?</label>${o("s3")}<label>¿Qué mejoraría? (opcional)</label><textarea id="s4" rows="3" maxlength="1000"></textarea><button onclick="enviarSat()">Enviar encuesta</button><div id="ms"></div></div>`}
 async function enviarSat(){const v=["#s1","#s2","#s3"].map(i=>$(i).value);if(v.includes(""))return $("#ms").innerHTML=msg("err","Califique los tres aspectos.");const b=event.target;busy(b,true);
  try{await rpc("guardar_satisfaccion",{p_codigo:S.code,p_utilidad:+v[0],p_claridad:+v[1],p_recomendaria:+v[2],p_comentario:$("#s4").value});S.est.satisfaccion_hecha=true;celebra();show(`<div class="card" style="text-align:center"><h2>¡Gracias por participar!</h2><p>Completó la campaña “Siembra hábitos, cosecha salud”.</p><button onclick="ini()">Volver al inicio</button></div>`)}catch(e){busy(b,false);$("#ms").innerHTML=msg("err",e.message)}}
@@ -244,7 +245,7 @@ async function enviarSat(){const v=["#s1","#s2","#s3"].map(i=>$(i).value);if(v.i
 const nomG=()=>esc(LS.g("tesa_nombre")||LS.g("surcos_nombre")||"");
 const MIN_SEM=2;
 function certFalta(){const e=S.est,n=e.semanas.filter(x=>x.numero>=1&&x.numero<=3&&x.habitos_enviados).length,f=[];
- if(!e.pretest_hecho)f.push("la evaluación inicial (Semana 1)");if(n<MIN_SEM)f.push(`el registro de hábitos en ${MIN_SEM-n} semana${MIN_SEM-n>1?"s":""} más (de las semanas 1 a 3)`);
+ if(!e.pretest_hecho)f.push("la evaluación inicial");if(n<MIN_SEM)f.push(`el registro de hábitos en ${MIN_SEM-n} semana${MIN_SEM-n>1?"s":""} más (de las semanas 1 a 3)`);
  if(!e.postest_hecho)f.push("la evaluación final (Semana 3)");if(!e.satisfaccion_hecha)f.push("la encuesta de satisfacción (Semana 3)");return f}
 function certCard(){const f=certFalta();
  return f.length?`<div class="card"><h3>Certificado de participación</h3><p class="small">Se habilita al completar: ${f.join("; ")}.</p></div>`
@@ -387,6 +388,7 @@ const recGet=k=>{try{return JSON.parse(LS.g(`tesa_rec_${k}_${S.code}`)||"[]")}ca
 const recSet=(k,a)=>LS.s(`tesa_rec_${k}_${S.code}`,JSON.stringify(a));
 function recetario(){RF={q:"",cat:"Todas"};
  show(`<div class="card">${back}<h2>🍽️ Recetario andino</h2><p class="small">Platos, snacks y postres económicos con productos del Ecuador. ${V("Ajuste cantidades e ingredientes a lo que tenga en casa.","Un adulto maneja cuchillo, fuego y horno; los menores lavan, mezclan y sirven.","Un adulto maneja cuchillo, fuego y horno; los menores lavan, mezclan y sirven.")}</p>
+ <div class="rdl noprint"><b>⬇️ Llévese el recetario</b><p class="small" style="margin:4px 0 8px">Descargue un archivo que se abre sin internet y sirve aunque cambie la página. También puede imprimirlo o guardarlo como PDF.</p><select id="rdsel" aria-label="Qué recetas incluir"><option value="all">Todas las recetas</option><option value="fav">Solo mis favoritas</option></select><div class="row2" style="justify-content:flex-start"><button onclick="recDescargar('dl')">Descargar archivo</button><button class="sec" onclick="recDescargar('print')">Imprimir o guardar PDF</button></div></div>
  <input id="rq" type="search" placeholder="Buscar por nombre o ingrediente (quinua, banano…)" oninput="RF.q=this.value;recList()">
  <div class="seg" id="rcats" style="margin-top:10px"></div><p class="small" id="rcount"></p><div id="rl"></div>
  <div class="alert">Cantidades aproximadas para 3 o 4 porciones. Cocine siempre el pollo, el pescado y los huevos hasta que estén bien cocidos. Si hay alergias (maní, huevo, lácteos, gluten u otras), adapte la receta o consulte a un profesional. En menores de 4 años, corte los alimentos redondos o duros (uvas, tomate cherry, canguil, frutos secos) para evitar atoramientos.</div></div>`);recList()}
@@ -397,6 +399,32 @@ function recList(){const fav=recGet("fav"),cook=recGet("cook"),q=nrm(RF.q.trim()
  $("#rl").innerHTML=idx.map(i=>{const r=REC[i];return`<details class="rc"><summary><span style="font-size:26px">${r[0]}</span> ${esc(r[1])}<small>${esc(r[2])} · ${esc(r[3])}</small></summary><div class="rb"><b>Ingredientes</b><ul>${r[4].map(x=>`<li>${esc(x)}</li>`).join("")}</ul><b>Preparación</b><ol>${r[5].map(x=>`<li>${esc(x)}</li>`).join("")}</ol><div class="row2" style="justify-content:flex-start"><button class="sec" onclick="recFav(${i},this)">${fav.includes(i)?"⭐ En favoritas":"☆ Guardar en favoritas"}</button><button class="${cook.includes(i)?"":"sec"}" onclick="recCook(${i},this)">${cook.includes(i)?"✅ Ya la cocinamos":"👩‍🍳 Marcar como cocinada"}</button></div></div></details>`}).join("")||`<p class="small">No hay recetas con ese filtro.</p>`}
 function recFav(i,b){let a=recGet("fav");if(a.includes(i)){a=a.filter(x=>x!=i);b.textContent="☆ Guardar en favoritas"}else{a.push(i);b.textContent="⭐ En favoritas"}recSet("fav",a);if(RF.cat=="Favoritas")recList()}
 function recCook(i,b){let a=recGet("cook");if(a.includes(i)){a=a.filter(x=>x!=i);b.textContent="👩‍🍳 Marcar como cocinada";b.className="sec"}else{a.push(i);b.textContent="✅ Ya la cocinamos";b.className="";celebra()}recSet("cook",a);$("#rcc").textContent=a.length}
+
+/* ---------- descarga del recetario ---------- */
+const RAVISO=`Cantidades aproximadas para 3 o 4 porciones. Cocine siempre el pollo, el pescado y los huevos hasta que estén bien cocidos. Si hay alergias (maní, huevo, lácteos, gluten u otras), adapte la receta o consulte a un profesional. En menores de 4 años, corte los alimentos redondos o duros (uvas, tomate cherry, canguil, frutos secos) para evitar atoramientos.`;
+function recDescargar(modo){const sel=($("#rdsel")||{}).value||"all",fav=recGet("fav");
+ const items=REC.filter((r,i)=>sel!="fav"||fav.includes(i));
+ if(!items.length){alert("Aún no tiene favoritas. Abra una receta y pulse “Guardar en favoritas”.");return}
+ const cats=[...new Set(items.map(r=>r[3]))];
+ const cuerpo=cats.map(c=>`<h2>${esc(c)}</h2>`+items.filter(r=>r[3]==c).map(r=>`<details class="r" open><summary><span class="e">${r[0]}</span> ${esc(r[1])} <small>${esc(r[2])}</small></summary><b>Ingredientes</b><ul>${r[4].map(x=>`<li>${esc(x)}</li>`).join("")}</ul><b>Preparación</b><ol>${r[5].map(x=>`<li>${esc(x)}</li>`).join("")}</ol></details>`).join("")).join("");
+ const fecha=new Date().toLocaleDateString("es-EC");
+ const html=`<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Recetario andino · Siembra hábitos</title><style>
+body{margin:0;font-family:Arial,Helvetica,sans-serif;color:#241a30;line-height:1.5;background:#faf6ff}
+header{background:#3d1a5e;color:#fff;padding:16px;text-align:center}header h1{margin:0;font-size:22px}header p{margin:4px 0 0;font-size:13px;opacity:.85}
+main{max-width:760px;margin:0 auto;padding:14px}h2{color:#5b2a86;border-bottom:2px solid #f5c518;padding-bottom:4px;margin:22px 0 10px;font-size:19px}
+.np{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}.np input{flex:1;min-width:200px;padding:10px;border:1px solid #c5b3d8;border-radius:8px;font-size:15px}
+.np button{background:#5b2a86;color:#fff;border:0;border-radius:8px;padding:10px 16px;font-size:15px;font-weight:bold;cursor:pointer}
+details.r{background:#fff;border:1px solid #ddcfec;border-radius:12px;padding:10px 14px;margin-bottom:10px;break-inside:avoid}
+summary{cursor:pointer;font-weight:bold;font-size:16px;color:#3d1a5e}summary small{display:block;font-weight:normal;color:#6b5d7a;font-size:12px;margin-left:34px}.e{font-size:24px}
+b{color:#5b2a86;font-size:14px}ul,ol{margin:4px 0 8px;padding-left:22px;font-size:14px}.al{background:#fff4c7;color:#5a4300;border-radius:8px;padding:10px;font-size:13px;margin-top:18px}
+.pie{text-align:center;font-size:12px;color:#6b5d7a;margin:16px 0}
+@media print{body{background:#fff}.np{display:none}header{background:#fff;color:#241a30;border-bottom:2px solid #5b2a86}@page{size:A4 portrait;margin:12mm}}
+</style></head><body><header><h1>🍽️ Recetario andino</h1><p>Campaña “Siembra hábitos, cosecha salud” · ${items.length} recetas · ${fecha}</p></header><main>
+<div class="np"><input id="q" type="search" placeholder="Buscar por nombre o ingrediente (quinua, banano…)" oninput="f()"><button onclick="window.print()">Imprimir o guardar PDF</button></div>${cuerpo}<div class="al">${RAVISO}</div><p class="pie">Descargado de Siembra hábitos el ${fecha}. Este archivo funciona sin internet.</p></main>
+<script>function n(s){return s.normalize("NFD").replace(/[\\u0300-\\u036f]/g,"").toLowerCase()}function f(){var q=n(document.getElementById("q").value.trim());document.querySelectorAll("details.r").forEach(function(d){d.style.display=!q||n(d.textContent).indexOf(q)>-1?"":"none"})}<\/script></body></html>`;
+ const blob=new Blob([html],{type:"text/html;charset=utf-8"}),u=URL.createObjectURL(blob);
+ if(modo=="print"){const w=window.open(u,"_blank");if(!w){alert("Su navegador bloqueó la ventana. Use “Descargar archivo” y ábralo desde sus descargas.")}return}
+ const a=document.createElement("a");a.href=u;a.download="Recetario-Siembra-habitos.html";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000)}
 /* ---------- calendario y registro diario ---------- */
 const TRN=["💧 Agua simple","🍎 Fruta o verdura","🏃 Ejercicio","📵 Comida sin pantallas"];
 function cal(w){const sm=S.est.semanas.filter(x=>x.numero<=3);if(!w){const ab=sm.filter(x=>x.abierta);w=ab.length?ab[ab.length-1].numero:1}
@@ -533,7 +561,7 @@ function ninosIni(){clearInterval(window._ni);window._ni=setInterval(()=>nin(1),
 function plantas(){const e=S.est,hb=n=>!!(e.semanas.find(x=>x.numero==n)||{}).habitos_enviados;return[e.pretest_hecho&&hb(1),hb(2),hb(3)&&e.postest_hecho&&e.satisfaccion_hecha]}
 function bienvenida(){if(S.hola)return"";S.hola=true;const h=new Date().getHours(),sal=h<12?"Buenos días":h<19?"Buenas tardes":"Buenas noches",ic=h<12?"☀️":h<19?"🌤️":"🌙",r=nomG().split(" ")[0],nm=r?r.charAt(0).toUpperCase()+r.slice(1):"participante",e=S.est,n=plantas().filter(Boolean).length;
  const Vv=[`¡${sal}, ${nm}! ${ic} Qué alegría verle de nuevo.`,`${sal}, ${nm}. ¡Su huerta le estaba esperando! 🌱`,`¡Bienvenido/a de vuelta, ${nm}! Hoy es un buen día para sumar un hábito saludable 💜`];
- const p=!e.pretest_hecho?"Su primer paso: responder la evaluación inicial en la Semana 1.":certFalta().length==0?"¡Cumplió todo! Ya puede obtener su certificado de participación.":`Su huerta tiene ${n} de 3 plantas florecidas.`;
+ const p=!e.pretest_hecho?"Su primer paso: responder la evaluación inicial. Ya está disponible.":certFalta().length==0?"¡Cumplió todo! Ya puede obtener su certificado de participación.":`Su huerta tiene ${n} de 3 plantas florecidas.`;
  return`<div class="card hola"><h3 style="margin-bottom:4px">${Vv[Math.floor(Math.random()*Vv.length)]}</h3><p style="margin:0">${p}</p></div>`}
 S.code?load():start();
 </script></body></html>
