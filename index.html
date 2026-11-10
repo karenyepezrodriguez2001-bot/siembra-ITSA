@@ -122,6 +122,24 @@ input[type=range]{padding:0;accent-color:#5b2a86}
 @media(max-width:380px){.tools{grid-template-columns:repeat(2,1fr)}}
 .wk{display:flex;align-items:center;gap:12px;padding:14px 0;border-top:1px solid #efe7f6}.wk:first-of-type{border-top:0}.wk .wt{flex:1;min-width:0}.wk .wt b{display:block;font-size:16px}.wk .wt small{color:var(--m);font-size:13px}.wk button{margin:0;padding:10px 16px;font-size:15px;white-space:nowrap}
 .wk .em{font-size:32px}
+
+/* huerta interactiva */
+.gd{position:relative;overflow:hidden;border-radius:16px;background:linear-gradient(180deg,#d8efff 0%,#fffbe8 62%,#fffbe8 100%);padding:14px 10px 0;border:1px solid var(--b)}
+.gd .sunx{position:absolute;top:8px;right:14px;font-size:38px;animation:spin 18s linear infinite}
+.gd .nub{position:absolute;top:14px;left:16px;font-size:30px;opacity:.85;animation:bob 6s ease-in-out infinite}
+.gp{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:26px;position:relative;z-index:1}
+.gp button{margin:0;background:none;color:var(--t);border:0;padding:0;display:flex;flex-direction:column;align-items:center;gap:0;font-weight:normal}
+.gp .pl{font-size:84px;line-height:1;height:96px;display:flex;align-items:flex-end;justify-content:center;transition:transform .2s;cursor:pointer}
+.gp .pl.s{font-size:58px;opacity:.55;filter:grayscale(.6)}
+.gp .pl.f{animation:bob 3s ease-in-out infinite;filter:drop-shadow(0 4px 4px rgba(0,0,0,.18))}
+.gp button:hover .pl{transform:scale(1.1)}.gp button.hp .pl{animation:hop .6s}
+.gp .mound{width:100%;height:20px;background:#8a5a34;border-radius:50% 50% 0 0/100% 100% 0 0;margin-top:-4px}
+.gp b{display:block;font-size:14px;margin-top:6px;color:var(--g)}.gp small{font-size:12px;color:var(--m);padding-bottom:6px}
+.gsoil{height:14px;background:#6f4526;margin:0 -10px}
+.gmsg{min-height:44px;margin-top:10px;text-align:center;font-size:14px}
+.gbar{display:flex;gap:10px;align-items:center;margin-top:8px}.gbar .pb{flex:1}.gbar button{margin:0;white-space:nowrap}
+.dr{position:absolute;top:-20px;font-size:22px;z-index:3;pointer-events:none;animation:caer2 1.1s ease-in forwards}@keyframes caer2{to{transform:translateY(260px);opacity:.2}}
+@media (prefers-reduced-motion:reduce){.gd .sunx,.gd .nub,.gp .pl.f{animation:none}}
 </style></head><body>
 <div id="fl" aria-hidden="true"></div>
 <header class="hero"><div class="deco" aria-hidden="true"><span>🥕</span><span>🍎</span><span>🌱</span><span>🥦</span><span>🍌</span><span>💧</span></div>
@@ -236,15 +254,28 @@ function ctSet(k,i){CT[k]=(k=="para"?PARAD:(NIVD[CT.para]||NIV))[i][0];ctxView(t
 function ctGuardar(){if(!CT.para||!CT.ins)return $("#cm").innerHTML=msg("err","Elija las dos opciones.");S.para=CT.para;S.nivel=CT.ins;LS.s("tesa_para",S.para);LS.s("tesa_nivel",S.nivel);TIP=-1;ini()}
 function home(){const e=S.est,sm=e.semanas,j=e.pretest_hecho,pl=plantas(),G=["🥕","🍎","🌻"],nf=(nomG().split(" ")[0]||"");
  let h=`<div class="card"><div class="hd"><span><b>${nf?"Hola, "+esc(nf.charAt(0).toUpperCase()+nf.slice(1).toLowerCase()):"Hola"} 👋</b><span class="code">${S.code}</span></span><button class="sec" onclick="salir()">Salir</button></div>${S.para&&S.nivel?`<div class="small" style="margin-top:6px">🎯 ${esc(S.para)} · ${esc(S.nivel)} · <a href="#" onclick="cambiarCtx();return false" style="color:var(--g);font-weight:bold">Cambiar</a></div>`:`<div style="margin-top:6px"><button style="margin:0;padding:6px 12px" onclick="cambiarCtx()">Completar mi perfil</button></div>`}</div>`;
- h+=`<div class="card"><div class="hg" title="Mi huerta">${pl.map((ok,i)=>`<i class="${ok?"ok":""}">${ok?G[i]:"🌱"}</i>`).join("")}</div><p class="small" style="text-align:center;margin:4px 0 0">${pl.filter(Boolean).length} de 3 plantas florecidas</p></div>`;
+ h+=huertaCard();
  h+=`<div class="card"><div class="tools"><button onclick="biblio('ig')"><span>📚</span>Biblioteca</button><button onclick="videos()"><span>🎬</span>Videos</button><button onclick="recetario()"><span>🍽️</span>Recetas</button><button onclick="cal()"><span>📅</span>Registro</button><button class="${j?"":"lock"}" ${j?'onclick="juegos()"':"disabled"}><span>🎮</span>Juegos</button><button onclick="refs()"><span>📖</span>Fuentes</button></div></div>`;
+ h+=tipCard()+accion();
  h+=`<div class="card"><h3 style="margin-bottom:4px">Mi campaña</h3>`;
  h+=`<div class="wk"><span class="em">📝</span><div class="wt"><b>Evaluación inicial</b><small>${j?"Completada ✓":"10 preguntas · unos 5 minutos"}</small></div>${j?"":`<button onclick="test('pretest')">Responder</button>`}</div>`;
  sm.filter(s=>s.numero<=3).forEach(s=>{const n=s.numero,ab=s.abierta,bloq=n==1&&!j,done=s.habitos_enviados&&(n<3||(e.postest_hecho&&e.satisfaccion_hecha));
   const sub=!ab?"Se abre el "+fmt(s.fecha_apertura):bloq?"Primero la evaluación inicial":done?"Completada ✓":fmt(s.fecha_apertura)+" al "+fmt(s.fecha_cierre);
   h+=`<div class="wk"><span class="em">${EM[n]}</span><div class="wt"><b>Semana ${n}: ${W(n).t}</b><small>${sub}</small></div>${ab&&!bloq?`<button onclick="abrir(${n})">${done?"Repasar":"Abrir"}</button>`:`<button class="lock" disabled>🔒</button>`}</div>`});
  h+=`</div>`+certCard().replace('class="card"','class="card"');
- HOMEV=1;show(h)}
+ HOMEV=1;show(h);ninosIni()}
+function huertaCard(){const pl=plantas(),G=["🥕","🍎","🌻"],n=pl.filter(Boolean).length;
+ return`<div class="card"><h3>🌿 Mi huerta</h3><div class="gd" id="gd"><span class="sunx" aria-hidden="true">☀️</span><span class="nub" aria-hidden="true">☁️</span><div class="gp">${pl.map((ok,i)=>`<button onclick="hrt(${i})" aria-label="Planta de la Semana ${i+1}"><span class="pl ${ok?"f":"s"}">${ok?G[i]:"🌱"}</span><span class="mound"></span><b>Semana ${i+1}</b><small>${ok?"¡Floreció!":"Por crecer"}</small></button>`).join("")}</div><div class="gsoil"></div></div><div class="gmsg" id="gm">${n==3?"¡Su huerta floreció por completo! 🎉":"Toque una planta para ver cómo hacerla crecer, o riéguelas 💧"}</div><div class="gbar"><div class="pb"><i style="width:${Math.round(n*100/3)}%"></i></div><b class="small">${n} de 3</b><button class="y" onclick="hriega()">💧 Regar</button></div></div>`}
+function hrt(i){const e=S.est,pl=plantas(),b=document.querySelectorAll(".gp button")[i],m=$("#gm");if(!b||!m)return;b.classList.add("hp");setTimeout(()=>b.classList.remove("hp"),650);
+ const hb=n=>!!(e.semanas.find(x=>x.numero==n)||{}).habitos_enviados;
+ const falta=[()=>{const f=[];if(!e.pretest_hecho)f.push("responder la evaluación inicial");if(!hb(1))f.push("registrar sus hábitos de la Semana 1");return f},()=>hb(2)?[]:["registrar sus hábitos de la Semana 2"],()=>{const f=[];if(!hb(3))f.push("registrar sus hábitos de la Semana 3");if(!e.postest_hecho)f.push("responder la evaluación final");if(!e.satisfaccion_hecha)f.push("enviar la encuesta de satisfacción");return f}][i]();
+ if(pl[i]){m.innerHTML=msg("ok","🌟 ¡La planta de la Semana "+(i+1)+" ya floreció! Gracias por su constancia.");celebra()}
+ else m.innerHTML=msg("alert","🌱 Para que crezca la planta de la Semana "+(i+1)+": "+falta.join(", ")+".")}
+function hriega(){const g=$("#gd");if(!g)return;for(let k=0;k<14;k++){const d=document.createElement("span");d.className="dr";d.textContent="💧";d.style.left=(4+Math.random()*90)+"%";d.style.animationDelay=(Math.random()*.7)+"s";g.appendChild(d);setTimeout(()=>d.remove(),2000)}
+ document.querySelectorAll(".gp button").forEach((b,k)=>setTimeout(()=>{b.classList.add("hp");setTimeout(()=>b.classList.remove("hp"),650)},500+k*180));
+ const n=plantas().filter(Boolean).length;$("#gm").innerHTML=msg("ok",n==3?"💧 ¡Sus plantas están felices y florecidas!":"💧 ¡Gracias por el riego! Cada semana completada hace florecer una planta.")}
+function tipCard(){const l=tipsList();if(TIP<0)TIP=Math.floor(Math.random()*Math.max(1,tipsPers()));const t=l[TIP%l.length];
+ return`<div class="card tip"><h3>💡 Tip del día</h3><p id="tip"><span class="tag">${esc(t[0])}</span><br>${esc(t[1])}</p><button class="sec" style="margin:0" onclick="otroTip()">Otro tip</button></div>`}
 function abrir(n){if(n==0)return test("pretest");if(n==5)return test("postest",true);semana(n)}
 /* registro diario (solo en este dispositivo) */
 const trKey=w=>`tesa_tr_${S.code}_${w}`;
@@ -676,7 +707,8 @@ function datos(){const jg=$("#jg");let n=0;const tx=()=>"Toque cada tarjeta para
  jg.innerHTML=`<div class="card"><h3>🔎 Datos curiosos</h3><p class="small" id="dc">${tx()}</p><div class="flips">${DATOS.map(d=>`<div class="fc" role="button" tabindex="0"><div class="ff"><span style="font-size:40px">${d[0]}</span><br><small>¿Sabía que…?</small></div><div class="fb">${d[1]}</div></div>`).join("")}</div></div>`;
  jg.querySelectorAll(".fc").forEach(c=>{const f=()=>{if(c.classList.contains("on"))return;c.classList.add("on");n++;$("#dc").textContent=tx();if(n==DATOS.length)celebra()};c.onclick=f;c.onkeydown=e=>{if(e.key=="Enter"||e.key==" "){e.preventDefault();f()}}})}
 const ACC=[["🤸 🧘 🤸","Estiramientos en casa"],["🚴 🌳 🚴","Paseo en bicicleta"],["⚽ 🏃 🥅","Jugar a la pelota"],["💃 🎶 🕺","Bailar"],["🧑‍🍳 🥕 🧑‍🍳","Cocinar juntos"],["🏃‍♀️ 🌤️ 🏃‍♂️","Correr en el parque"],["🥾 🌄 🥾","Caminar en la naturaleza"],["🪜 🏢 🚶","Subir por las escaleras"]];let NI=0;
-function accion(){return`<div class="card dup"><h3>🏃 Muévase hoy</h3><div class="nino" id="ni">${ACC[NI][0]}</div><p style="text-align:center;margin:4px 0 8px" id="nit">${ACC[NI][1]}</p><div class="row2"><button class="sec" style="margin:0" onclick="nin(-1)">◀</button><button style="margin:0" onclick="celebra();this.textContent='¡Excelente actitud! 💪'">💪 ¡Lo intentaré!</button><button class="sec" style="margin:0" onclick="nin(1)">▶</button></div></div>`}
+function accion(){return`<div class="card"><h3>🏃 Muévase hoy</h3><div class="nino" id="ni">${ACC[NI][0]}</div><p style="text-align:center;margin:4px 0 8px;font-weight:bold" id="nit">${ACC[NI][1]}</p><div class="row2"><button class="sec" style="margin:0" onclick="nin(-1)" aria-label="Anterior">◀</button><button style="margin:0" onclick="accRes(1)">💪 Lo voy a intentar</button><button class="y" style="margin:0" onclick="accRes(2)">✅ Ya lo hice</button><button class="sec" style="margin:0" onclick="nin(1)" aria-label="Siguiente">▶</button></div><div id="accm" class="small" style="text-align:center;min-height:22px;margin-top:8px"></div></div>`}
+function accRes(t){celebra();const m=$("#accm");if(m)m.innerHTML=t==1?"💪 ¡Excelente actitud! Elija la hora y empiece con 10 minutos.":"🎉 ¡Muy bien! Moverse hoy ya suma a su salud."}
 function nin(d){NI=(NI+d+ACC.length)%ACC.length;const a=$("#ni"),t=$("#nit");if(!a)return;a.style.opacity=0;setTimeout(()=>{if(!$("#ni"))return;a.textContent=ACC[NI][0];t.textContent=ACC[NI][1];a.style.opacity=1},220)}
 function ninosIni(){clearInterval(window._ni);window._ni=setInterval(()=>nin(1),4000)}
 function plantas(){const e=S.est,hb=n=>!!(e.semanas.find(x=>x.numero==n)||{}).habitos_enviados;return[e.pretest_hecho&&hb(1),hb(2),hb(3)&&e.postest_hecho&&e.satisfaccion_hecha]}
