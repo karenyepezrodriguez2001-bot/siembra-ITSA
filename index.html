@@ -373,7 +373,7 @@ function home(){const e=S.est,sm=e.semanas,j=e.pretest_hecho,pl=plantas(),G=["�
  h+=tipCard()+accion();
  h+=`<div class="card"><h3 style="margin-bottom:4px">Mi campaña</h3>`;
  h+=`<div class="wk"><span class="em">📝</span><div class="wt"><b>Evaluación inicial</b><small>${j?"Completada ✓":"10 preguntas y 4 de hábitos · unos 7 minutos"}</small></div>${j?"":`<button onclick="test('pretest')">Responder</button>`}</div>`;
- sm.filter(s=>s.numero<=3).forEach(s=>{const n=s.numero,ab=s.abierta,bloq=n==1&&!j,done=s.habitos_enviados&&(n<3||(e.postest_hecho&&e.satisfaccion_hecha));
+ sm.filter(s=>s.numero>=1&&s.numero<=3).forEach(s=>{const n=s.numero,ab=s.abierta,bloq=n==1&&!j,done=s.habitos_enviados&&(n<3||(e.postest_hecho&&e.satisfaccion_hecha));
   const sub=!ab?"Se abre el "+fmt(s.fecha_apertura):bloq?"Primero la evaluación inicial":done?"Completada ✓":fmt(s.fecha_apertura)+" al "+fmt(s.fecha_cierre);
   h+=`<div class="wk"><span class="em">${EM[n]}</span><div class="wt"><b>Semana ${n}: ${W(n).t}</b><small>${sub}</small></div>${ab&&!bloq?`<button onclick="abrir(${n})">${done?"Repasar":"Abrir"}</button>`:`<button class="lock" disabled>🔒</button>`}</div>`});
  h+=`</div>`+certCard().replace('class="card"','class="card"');
@@ -608,7 +608,7 @@ b{color:#5b2a86;font-size:14px}ul,ol{margin:4px 0 8px;padding-left:22px;font-siz
  const a=document.createElement("a");a.href=u;a.download="Recetario-Siembra-habitos.html";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000)}
 /* ---------- calendario y registro diario ---------- */
 const TRN=["💧 Agua simple","🍎 Fruta o verdura","🏃 Ejercicio","📵 Comida sin pantallas"];
-function cal(w){const sm=S.est.semanas.filter(x=>x.numero<=3);if(!w){const ab=sm.filter(x=>x.abierta);w=ab.length?ab[ab.length-1].numero:1}
+function cal(w){const sm=S.est.semanas.filter(x=>x.numero>=1&&x.numero<=3);if(!w){const ab=sm.filter(x=>x.abierta);w=ab.length?ab[ab.length-1].numero:1}
  const s=sm.find(x=>x.numero==w),t=trLoad(w)||[0,1,2,3].map(()=>Array(7).fill(false)),d0=new Date(s.fecha_apertura+"T00:00:00");
  const days=[...Array(7)].map((_,j)=>{const d=new Date(d0);d.setDate(d.getDate()+j);return d.toLocaleDateString("es-EC",{weekday:"short",day:"numeric"})});
  show(`<div class="card">${back}<h2>📅 Calendario y registro diario</h2><p class="small">Marque cada día lo que cumplió. Los totales pasan solos a su registro semanal. Se guarda en este dispositivo.</p>
