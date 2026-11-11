@@ -146,6 +146,8 @@ a.btn{display:inline-block;background:var(--g);color:#fff;border-radius:8px;padd
 .qrc{text-align:center}.qrc .qrb{display:inline-block;background:#fff;border:2px solid var(--b);border-radius:14px;padding:8px;margin:10px 0}.qrc .lnk{word-break:break-all;font-size:13px;color:var(--m)}
 .cdbox{background:var(--gl);border:1px dashed var(--g);border-radius:12px;padding:12px;margin:12px 0;text-align:center}
 @media print{.qrc .noprint{display:none!important}}
+/* recetario: pestañas receta / reemplazos */
+.rbody[data-t="r"] .rp-s,.rbody[data-t="s"] .rp-r{display:none}.rbody .seg button{font-size:13px;padding:7px 12px}
 </style></head><body>
 <div id="fl" aria-hidden="true"></div>
 <header class="hero"><div class="deco" aria-hidden="true"><span>🥕</span><span>🍎</span><span>🌱</span><span>🥦</span><span>🍌</span><span>💧</span></div>
@@ -1036,20 +1038,201 @@ let RF={q:"",cat:"Todas"};
 const nrm=s=>String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
 const recGet=k=>{try{return JSON.parse(LS.g(`tesa_rec_${k}_${S.code}`)||"[]")}catch(e){return[]}};
 const recSet=(k,a)=>LS.s(`tesa_rec_${k}_${S.code}`,JSON.stringify(a));
-function recetario(){RF={q:"",cat:"Todas"};
+function recetario(){RF={q:"",cat:"Todas",n:persLoad()};
  show(`<div class="card">${back}<h2>🍽️ Recetario andino</h2><p class="small">Platos, snacks y postres económicos con productos del Ecuador. ${V("Ajuste cantidades e ingredientes a lo que tenga en casa.","Un adulto maneja cuchillo, fuego y horno; los menores lavan, mezclan y sirven.","Un adulto maneja cuchillo, fuego y horno; los menores lavan, mezclan y sirven.")}</p>
+ ${persBox()}
  <div class="rdl noprint"><b>⬇️ Llévese el recetario</b><p class="small" style="margin:4px 0 8px">Descargue un archivo que se abre sin internet y sirve aunque cambie la página. También puede imprimirlo o guardarlo como PDF.</p><select id="rdsel" aria-label="Qué recetas incluir"><option value="all">Todas las recetas</option><option value="fav">Solo mis favoritas</option></select><div class="row2" style="justify-content:flex-start"><button onclick="recDescargar('dl')">Descargar archivo</button><button class="sec" onclick="recDescargar('print')">Imprimir o guardar PDF</button></div></div>
  <input id="rq" type="search" placeholder="Buscar por nombre o ingrediente (quinua, banano…)" oninput="RF.q=this.value;recList()">
  <div class="seg" id="rcats" style="margin-top:10px"></div><p class="small" id="rcount"></p><div id="rl"></div>
- <div class="alert">Cantidades aproximadas para 3 o 4 porciones. Cocine siempre el pollo, el pescado y los huevos hasta que estén bien cocidos. Si hay alergias (maní, huevo, lácteos, gluten u otras), adapte la receta o consulte a un profesional. En menores de 4 años, corte los alimentos redondos o duros (uvas, tomate cherry, canguil, frutos secos) para evitar atoramientos.</div></div>`);recList()}
+ <div class="alert">Cantidades aproximadas para 3 o 4 porciones. Cocine siempre el pollo, el pescado y los huevos hasta que estén bien cocidos. Si hay alergias (maní, huevo, lácteos, gluten u otras), adapte la receta o consulte a un profesional. En menores de 4 años, corte los alimentos redondos o duros (uvas, tomate cherry, canguil, frutos secos) para evitar atoramientos.</div></div>`);persChips();recList()}
 function recList(){const fav=recGet("fav"),cook=recGet("cook"),q=nrm(RF.q.trim());
  const idx=REC.map((r,i)=>i).filter(i=>{const r=REC[i];if(RF.cat=="Favoritas"&&!fav.includes(i))return false;if(RF.cat!="Todas"&&RF.cat!="Favoritas"&&r[3]!=RF.cat)return false;return !q||nrm(r[1]+" "+r[4].join(" ")).includes(q)});
  $("#rcats").innerHTML=CATS.map(c=>`<button class="${c[0]==RF.cat?"on":""}" onclick="RF.cat='${c[0]}';recList()">${c[1]} ${c[0]}</button>`).join("");
  $("#rcount").innerHTML=`${idx.length} de ${REC.length} recetas · ${V("Cocinadas por mí","Cocinadas con mi hijo o hija","Cocinadas en familia")}: <b id="rcc">${cook.length}</b>`;
- $("#rl").innerHTML=idx.map(i=>{const r=REC[i];return`<details class="rc"><summary><span style="font-size:26px">${r[0]}</span> ${esc(r[1])}<small>${esc(r[2])} · ${esc(r[3])}</small></summary><div class="rb">${recCuerpo(r)}<div class="row2" style="justify-content:flex-start"><button class="sec" onclick="recFav(${i},this)">${fav.includes(i)?"⭐ En favoritas":"☆ Guardar en favoritas"}</button><button class="${cook.includes(i)?"":"sec"}" onclick="recCook(${i},this)">${cook.includes(i)?"✅ Ya la cocinamos":"👩‍🍳 Marcar como cocinada"}</button></div></div></details>`}).join("")||`<p class="small">No hay recetas con ese filtro.</p>`}
-function recCuerpo(r){const x=r[6]||{},bx=(c,ti,tx)=>tx?`<div style="background:${c};border-radius:8px;padding:8px 10px;margin:8px 0;font-size:14px"><b>${ti}</b> ${esc(tx)}</div>`:"";
- const pasos=r[5].map(p=>{const k=p.indexOf(" | ");return k>0?`<li style="margin:8px 0"><b>${esc(p.slice(0,k))}.</b> ${esc(p.slice(k+3))}</li>`:`<li style="margin:8px 0">${esc(p)}</li>`}).join("");
- return`<p style="margin:4px 0 8px;font-size:13px;color:#6b5d7a">🍽️ ${esc(x.p||"")}${x.p?" · ":""}⏱️ ${esc(r[2])}</p>`+(x.u?`<b>Utensilios</b><p style="margin:2px 0 8px;font-size:14px">${esc(x.u)}</p>`:"")+`<b>Ingredientes</b><ul>${r[4].map(i=>`<li>${esc(i)}</li>`).join("")}</ul><b>Paso a paso</b><ol>${pasos}</ol>`+bx("#e3f5e8","✅ Cómo saber que está listo:",x.l)+bx("#fff4c7","💡 Consejo:",x.c)+bx("#f1ecf6","🧊 Conservación:",x.g)}
+ $("#rl").innerHTML=idx.map(i=>{const r=REC[i];return`<details class="rc" ontoggle="recOpen(this)"><summary><span style="font-size:26px">${r[0]}</span> ${esc(r[1])}<small>${esc(r[2])} · ${esc(r[3])}</small></summary><div class="rb"><div class="rbody" data-i="${i}" data-t="r"></div><div class="row2" style="justify-content:flex-start"><button class="sec" onclick="recFav(${i},this)">${fav.includes(i)?"⭐ En favoritas":"☆ Guardar en favoritas"}</button><button class="${cook.includes(i)?"":"sec"}" onclick="recCook(${i},this)">${cook.includes(i)?"✅ Ya la cocinamos":"👩‍🍳 Marcar como cocinada"}</button></div></div></details>`}).join("")||`<p class="small">No hay recetas con ese filtro.</p>`}
+/* ---------- personas, cantidades y reemplazos ---------- */
+const PERS_OP=[1,2,3,4,5,6,8,10,12];
+const BASEP={"Chamoy casero (salsa de fruta con limón)":4,"Bolitas de dátil y avena":4,"Galletas de avena y banano":4};
+const persKey=()=>`tesa_pers_${S.code}`;
+function persLoad(){const v=parseInt(LS.g(persKey()),10);return v>=1&&v<=40?v:null}
+function rBase(r){if(BASEP[r[1]])return BASEP[r[1]];const m=String((r[6]||{}).p||"").match(/\d+/);return m?Math.max(1,+m[0]):4}
+const numP=t=>{t=String(t).trim();let m=t.match(/^(\d+)\s+(\d+)\/(\d+)$/);if(m)return +m[1]+m[2]/m[3];m=t.match(/^(\d+)\/(\d+)$/);if(m)return m[1]/m[2];return parseFloat(t.replace(",","."))};
+function numF(v,u){if(u){const st=v<100?5:v<1000?10:50;return String(Math.max(st,Math.round(v/st)*st))}
+ if(v<.19)return"1/8";
+ let r=v>=10?Math.round(v):v>=3?Math.round(v*2)/2:Math.round(v*4)/4;if(r<.25)r=.25;
+ const w=Math.floor(r),fr=({0:"",.25:"1/4",.5:"1/2",.75:"3/4"})[r-w];return w?(fr?w+" "+fr:String(w)):fr}
+/* singular y plural (solo para el sustantivo y los adjetivos que lo acompañan) */
+const IN_=/^(g|kg|ml|l|cm|mm)$/i;
+const STOPW=/^(más|menos|y|o|a|de|del|en|con|sin|para|por|al|el|la|los|las|un|una|unos|unas|que|se|su|sus)$/i;
+const ADJ=/^(median[oa]|pequeñ[oa]|grande|blanc[oa]|colorad[oa]|larg[oa]|madur[oa]|tiern[oa]|fresc[oa]|verde|enter[oa]|fin[oa]|grues[oa]|dulce|roj[oa]|congelad[oa]|sec[oa])s?$/i;
+const PART=/^[a-záéíóúñ]{3,}(ad|id)[oa]s?$/i;
+const MODW=/^(muy|bien|ya)$/i;
+const pl=w=>/s$/i.test(w)?w:/ón$/i.test(w)?w.slice(0,-2)+"ones":/[aeiouáéíóú]$/i.test(w)?w+"s":/z$/i.test(w)?w.slice(0,-1)+"ces":w+"es";
+const sg=w=>/ones$/i.test(w)?w.slice(0,-4)+"ón":/ces$/i.test(w)?w.slice(0,-3)+"z":/[aeiou]nes$/i.test(w)?w.slice(0,-2):/s$/i.test(w)?w.slice(0,-1):w;
+function inflect(rest,toPl){const t=rest.match(/\s+|\S+/g)||[];let head=true;const word=x=>x.replace(/^\(+|[,.;:)]+$/g,"");
+ for(let i=0;i<t.length;i++){if(/^\s+$/.test(t[i]))continue;const w=word(t[i]);if(!/^[a-záéíóúñ]+$/i.test(w))break;
+  if(head){head=false;if(STOPW.test(w)||IN_.test(w))break;t[i]=t[i].replace(w,toPl?pl(w):sg(w));continue}
+  if(/^y$/i.test(w)){let j=i+1;while(t[j]&&/^\s+$/.test(t[j]))j++;const nx=t[j]?word(t[j]):"";if(ADJ.test(nx)||PART.test(nx))continue;break}
+  if(MODW.test(w))continue;
+  if(ADJ.test(w)||PART.test(w)){t[i]=t[i].replace(w,toPl?pl(w):sg(w));continue}
+  break}
+ return t.join("")}
+const SKIPW=/^(pizcas?|cm|mm|minutos?|segundos?|horas?|d[ií]as?|semanas?|meses|veces)$/i;
+function qty(pre,un,n1,sep,n2,rest,f){const nw=(rest.trim().split(/\s+/)[0]||"").replace(/[.,;:)]+$/,"");
+ if(SKIPW.test(nw)||/^°/.test(nw))return null;
+ const u=/^(g|ml)$/i.test(nw)?nw.toLowerCase():"";
+ const a=numP(n1),b=n2?numP(n2):null,a2=a*f,b2=b==null?null:b*f,mx=Math.max(a2,b2||0),omx=Math.max(a,b||0);
+ const txt=pre+(un||"")+numF(a2,u)+(n2?sep+numF(b2,u):"");
+ return{txt,rest:(mx>1)!==(omx>1)?inflect(rest,mx>1):rest}}
+const NUM_="(\\d+\\s\\d\\/\\d|\\d+\\/\\d+|\\d+(?:[.,]\\d+)?)";
+const IRE="(^|[\\s(])((?:unos?|unas?)\\s+)?"+NUM_+"(?:(\\s+(?:a|o)\\s+)"+NUM_+")?(?=[\\s.,;:)]|$)";
+function scaleIng(s,f){if(f===1)return s;s=s.replace(/\s*\(\d+ litros? y \d\/\d\)/g,"");const re=new RegExp(IRE,"gi"),ms=[];let m;while((m=re.exec(s)))ms.push(m);if(!ms.length)return s;
+ let out=s.slice(0,ms[0].index);
+ ms.forEach((m,k)=>{const e=m.index+m[0].length,nx=k+1<ms.length?ms[k+1].index:s.length,rest=s.slice(e,nx),q=qty(m[1],m[2],m[3],m[4],m[5],rest,f);out+=q?q.txt+q.rest:m[0]+rest});
+ return out.replace(/(pechugas de pollo(?: \([^)]*\))?) (cortada|picada)\b/g,"$1 $2s").replace(/picadas muy fina o molida/g,"picadas muy finas o molidas")}
+const SRE="(^|[\\s(])(las\\s+)?(\\d+\\s\\d\\/\\d|\\d+\\/\\d+|\\d+(?:[.,]\\d+)?|una?)(?:(\\s+(?:a|o)\\s+)(\\d+\\/\\d+|\\d+(?:[.,]\\d+)?))?(\\s+de)?(\\s+(?:tazas?|cucharadas?|cucharaditas?|litros?|g|kg|ml))(?=[\\s.,;:)]|$)";
+function scaleStep(s,f){if(f===1)return s;
+ s=s.replace(new RegExp(SRE,"gi"),(m,pre,art,n1,sep,n2,de,unit,off,str)=>{
+  if(/\bcada\b/i.test(str.slice(off+m.length,off+m.length+60)))return m;
+  const wd=/^una?$/i.test(n1),a=wd?1:numP(n1),b=n2?numP(n2):null,a2=a*f,b2=b==null?null:b*f,uw=unit.trim(),u=/^(g|ml)$/i.test(uw)?uw.toLowerCase():"";
+  if(wd&&/^tazas?$/i.test(uw))return m;
+  if(/\bde a\s*$/i.test(str.slice(0,off+pre.length)))return m;
+  if(wd&&Math.abs(a2-1)<1e-9)return m;
+  const mx=Math.max(a2,b2||0),omx=wd?1:Math.max(a,b||0);let un=uw;
+  if(!/^(g|kg|ml)$/i.test(uw)&&(mx>1)!==(omx>1))un=mx>1?pl(uw):sg(uw);
+  return pre+((Number.isInteger(a2)&&a2>1)?(art||""):"")+numF(a2,u)+(n2?sep+numF(b2,u):"")+((de&&a2<1)?de:"")+" "+un});
+ s=s.replace(/(\b(?:unas?|unos?|forme)\s+)(\d+)(\s+)(croquetas|galletas|tortillas|bolas|nuggets|hamburguesitas|bolitas|paletas)/gi,(m,a,n,sp,nn)=>{const v=Math.max(1,Math.round(+n*f));return a+v+sp+(v==1?sg(nn):nn)});
+ return s}
+
+/* ---------- reemplazos de ingredientes: [patrón, nombre, qué usar, excluir] ---------- */
+const SUBI=[
+[/\bquinua\b/,"Quinua","Cebada perlada, arroz o trigo pelado (misma cantidad). El arroz se cocina más rápido: empiece a revisarlo a los 15 minutos."],
+[/\blentejas?\b/,"Lentejas","Arvejas secas, fréjol o garbanzos (misma cantidad). Si usa legumbres ya cocidas, escúrralas, enjuáguelas y cocínelas solo 10 minutos con el refrito."],
+[/\bfrejol\b/,"Fréjol","Lentejas, garbanzos, habas o arvejas cocidas. Las de frasco o lata se escurren y se enjuagan: así se ahorra el remojo."],
+[/\bchochos?\b/,"Chocho","Garbanzos o habas tiernas cocidas (misma cantidad)."],
+[/\bmote\b/,"Mote","Choclo desgranado cocido, maíz tierno de lata bien escurrido o arroz cocido."],
+[/\bhabas?\b/,"Habas","Arvejas, choclo desgranado o vainitas (misma cantidad)."],
+[/\barvejas?\b/,"Arveja","Choclo desgranado, habas tiernas o vainitas picadas."],
+[/\b(choclo|mazorcas?)\b/,"Choclo","Maíz tierno de lata o congelado, bien escurrido (1 taza ≈ 1 mazorca). El choclo duro necesita más tiempo de cocción."],
+[/\bpapas?\b/,"Papa","Camote, yuca o zanahoria blanca en cubos del mismo tamaño. Revise la cocción con un tenedor: cada una tarda un poco distinto."],
+[/\bzanahorias?\b/,"Zanahoria","Zapallo, remolacha o pimiento. Si va a cocinarlos, córtelos del mismo tamaño."],
+[/\bzapallo\b/,"Zapallo","Zambo, camote o zanahoria (misma cantidad). Cocine hasta que estén muy blandos."],
+[/\bcebollas?\b(?!\s+larga)/,"Cebolla","Cebolla paiteña (colorada), cebolla blanca o puerro. Si va cruda, déjela 5 minutos en agua con limón para suavizar el sabor."],
+[/\bcebolla larga\b/,"Cebolla larga","La parte blanca de una cebolla blanca picada muy fina, o puerro. Use menos cantidad: el sabor es más fuerte."],
+[/\bajo\b/,"Ajo","1 diente de ajo ≈ 1/4 de cucharadita de ajo en polvo. Si no tiene ninguno, omítalo y aumente un poco la cebolla o las hierbas."],
+[/\bcilantro\b/,"Cilantro","Perejil o albahaca picados. Si no tiene hierbas, omítalo: solo da aroma."],
+[/\bperejil\b/,"Perejil","Cilantro o la parte verde de la cebolla larga, picados."],
+[/\balbahaca\b/,"Albahaca","Perejil, cilantro o una pizca de orégano seco."],
+[/\b(menta|hierbaluisa)\b/,"Menta o hierbaluisa","Cedrón, manzanilla o cualquier hierba aromática que tenga, o solo la fruta."],
+[/\baguacates?\b/,"Aguacate","En ensaladas o tostadas: pepino, tomate o un puré de arveja o habas con limón. En el mousse: banano maduro bien licuado."],
+[/\btomates?\b/,"Tomate","Pimiento rojo, tomate de árbol en tiras finas o salsa de tomate casera sin azúcar.",/salsa de tomate|tomates? cherry/],
+[/\btomates? cherry\b/,"Tomate cherry","Tomate común en cubos, pimiento en cubitos o aceitunas. Para menores de 4 años, siempre en trozos pequeños."],
+[/\bsalsa de tomate\b/,"Salsa de tomate","Tomates maduros licuados y cocinados 10 minutos con ajo y cebolla, o pasta de tomate diluida en agua (siga la etiqueta)."],
+[/\bpimientos?\b/,"Pimiento","Zanahoria rallada, tomate o ají dulce sin picante."],
+[/\blimon(es)?\b/,"Limón","Lima o naranja agria (misma cantidad de jugo). En aliños también sirve 1 cucharada de vinagre mezclada con 1 cucharada de agua por limón. Un limón rinde unas 2 cucharadas de jugo."],
+[/\bnaranjas?\b/,"Naranja","Mandarina (misma cantidad de jugo), o piña o mora licuada y colada, diluidas con agua."],
+[/\baceite\b/,"Aceite","Aceite de oliva, girasol, canola o maíz. En sartén antiadherente basta con una gota; en el horno, un papel de hornear evita engrasar."],
+[/\bleche\b/,"Leche","Bebida vegetal sin azúcar (soya, avena o almendra), leche deslactosada o leche en polvo preparada según la etiqueta. En sopas y cremas también sirve más caldo o agua.",/bebida vegetal/],
+[/\bqueso\b/,"Queso","Queso mozzarella, requesón, ricotta o tofu firme desmenuzado con una pizca de sal. Sin lácteos: tofu o más legumbres."],
+[/\byogur\b/,"Yogur","Yogur griego (es más espeso: aclárelo con 1 cucharada de leche) o yogur vegetal sin azúcar. Siempre natural y sin azúcar añadida."],
+[/\bmantequilla de mani\b/,"Mantequilla de maní","Pasta de ajonjolí (tahini), de almendras o de girasol. Con alergia al maní, evite también pastas de otros frutos secos si no está seguro, y use yogur natural para acompañar la fruta."],
+[/\bhuevos?\b/,"Huevo","En masas (tortas, panqueques, croquetas): 1 huevo ≈ 1 cucharada de linaza o chía molida + 3 cucharadas de agua (reposar 5 minutos), o 1/4 de taza de banano aplastado. En tortillas y chaulafán: tofu firme desmenuzado."],
+[/\b(pollo|pechuga|muslos?)\b/,"Pollo","Pescado blanco, atún, huevos cocidos, pavo o legumbres (lentejas, fréjol). Si cambia el tipo de carne, el tiempo cambia: cocine siempre hasta que esté bien cocida, sin partes rosadas."],
+[/\batun\b/,"Atún","Sardinas en agua, pollo cocido desmenuzado o fréjol y lentejas cocidos. Escurra bien para que la masa no se deshaga."],
+[/\bpescado\b/,"Pescado","Otro pescado blanco (corvina, tilapia, dorado), trucha o pollo. Está listo cuando es opaco por dentro y se separa en láminas. Si es congelado, descongélelo en el refrigerador."],
+[/\bavena\b/,"Avena","Hojuelas de quinua, cebada o trigo. Para empanizar: pan molido o galletas de soda molidas. Con alergia al gluten, busque avena marcada «sin gluten»."],
+[/\bpan molido\b/,"Pan molido","Avena molida, galletas de soda o tostadas molidas, o harina de maíz."],
+[/\bpan integral\b|\bpanes de hamburguesa\b/,"Pan","Pan de molde, tortillas, tostadas o galletas de soda; o sirva el relleno sobre ensalada o con arroz."],
+[/\btortillas? de trigo\b/,"Tortilla de trigo","Pan pita, tortillas de maíz o hojas grandes de lechuga o col para enrollar."],
+[/\barroz\b/,"Arroz","Quinua, cebada, mote o fideo cocidos. Si cambia el cereal, ajuste el tiempo de cocción.",/cebada/],
+[/\bcebada\b/,"Cebada","Arroz, trigo pelado o quinua. El arroz tarda menos: revise a los 15 minutos."],
+[/\bmachica\b/,"Máchica","Harina de cebada tostada, avena molida muy fina o harina de quinua. Mézclela siempre con líquido frío antes de calentar para evitar grumos."],
+[/\bcanela\b/,"Canela","Una pizca de clavo de olor molido o nuez moscada, o unas gotas de vainilla. Si no tiene, omítala."],
+[/\bcomino\b/,"Comino","Orégano o pimentón dulce (menos cantidad). Si no tiene, omítalo."],
+[/\bpimenton\b/,"Pimentón","Una pizca de achiote en polvo o ají de color suave: solo aporta color y un sabor suave."],
+[/\bclavos?\b/,"Clavo de olor","Una pizca de canela o de nuez moscada, o suprímalo."],
+[/\b(miel|panela|azucar)\b/,"Endulzante","Panela rallada, miel, banano maduro aplastado o dátiles remojados. Empiece con la mitad y pruebe: la fruta madura ya aporta dulzor.",/sin azucar/],
+[/\bcacao\b/,"Cacao","Chocolate negro sin azúcar rallado. Si no tiene, prepárelo sin cacao y con canela: queda más ligero."],
+[/\bpasas\b/,"Pasas","Orejones de durazno picados, dátiles picados o uvas frescas cortadas por la mitad."],
+[/\bdatiles?\b/,"Dátiles","Pasas remojadas 10 minutos en agua tibia o higos secos (misma cantidad)."],
+[/\b(mango|durazno|papaya|uvas?|melon|pina|kiwi|frutillas?|fresas?|moras?|peras?)\b/,"Frutas","Use la fruta de temporada que tenga: mora, uvilla, durazno, pera, manzana, mango, papaya, melón… Para la gelatina evite piña, kiwi y papaya frescos: impiden que cuaje."],
+[/\bbananos?\b/,"Banano","Plátano maduro cocido, pera o papaya bien maduras, o manzana cocida y aplastada. Cuanto más madura la fruta, más dulce."],
+[/\bplatanos? verdes?\b/,"Plátano verde","Yuca o camote en láminas muy finas. Vigile el horno para que no se quemen."],
+[/\bplatanos? maduros?\b/,"Plátano maduro","Camote cocido o un banano grande bien maduro."],
+[/\bcamotes?\b/,"Camote","Zapallo, yuca o papa en bastones. Revise la cocción: cada uno tarda distinto."],
+[/\bmanzanas?\b/,"Manzana","Pera, durazno o membrillo firmes (misma cantidad)."],
+[/\bgelatina\b/,"Gelatina sin sabor","Agar-agar en polvo (siga las instrucciones del empaque; es vegetal)."],
+[/\bchia\b/,"Chía","Linaza (hidrata menos) o avena en hojuelas dejada toda la noche en la leche."],
+[/\bespinaca\b/,"Espinaca","Acelga, col o berro picados finos. Lave y seque muy bien."],
+[/\blechuga\b/,"Lechuga","Hojas de col, acelga o espinaca grande."],
+[/\bapio\b/,"Apio","Pepino o vainitas en palitos."],
+[/\bpepino\b/,"Pepino","Apio, rábano o zanahoria en palitos."],
+[/\bremolacha\b/,"Remolacha","Zanahoria rallada o col morada."],
+[/\bvainilla\b/,"Vainilla","Canela en polvo o cáscara rallada de naranja."],
+[/\baceitunas?\b/,"Aceitunas","Choclo, pimiento o rodajas de pepino para decorar."],
+[/\bsalsa de soya\b/,"Salsa de soya","1/4 de cucharadita de sal disuelta en 1 cucharada de agua, con unas gotas de limón. Pruebe antes de agregar más."],
+[/\bpolvo de hornear\b/,"Polvo de hornear","Por cada cucharadita: 1/4 de cucharadita de bicarbonato + 1/2 cucharadita de jugo de limón o vinagre. Mezcle justo antes de hornear."]
+];
+/* ---------- reemplazos de utensilios: [patrón, nombre, qué usar] ---------- */
+const SUBU=[
+[/\bolla\b/,"Olla con tapa","Cacerola, caldero o sartén honda con tapa. Si no tiene tapa, cubra con un plato plano o una bandeja que cierre bien."],
+[/\bcolador\b/,"Colador","Un paño o gasa limpios sobre un recipiente. Para escurrir líquidos: tape la olla dejando una rendija pequeña y vierta con cuidado, protegiéndose las manos con un paño."],
+[/\b(licuadora|procesador)\b/,"Licuadora o procesador","Batidora de mano, tenedor, pisapapas o mortero: la textura queda más rústica. Para cremas, pase por un colador presionando con una cuchara."],
+[/\bbatidora\b/,"Batidora de mano","Licuadora (con líquidos calientes llénela solo hasta la mitad y tape con un paño) o aplaste con un tenedor."],
+[/\bhorno\b/,"Horno","Sartén gruesa u olla tapada a fuego bajo (cocine por ambos lados), horno tostador o freidora de aire. Ajuste el tiempo y revise seguido para que no se queme."],
+[/\b(bandeja|fuente)\b/,"Bandeja o fuente de horno","Molde de torta, fuente de vidrio o metal que resista el calor, o una lámina de papel aluminio sobre la rejilla."],
+[/\bpapel de hornear\b/,"Papel de hornear","Papel aluminio con unas gotas de aceite, o la bandeja bien engrasada."],
+[/\b(tabla|cuchillo)\b/,"Tabla y cuchillo","Un plato plano firme sobre un paño húmedo (para que no resbale) y un cuchillo de mesa bien afilado, o tijeras de cocina para hierbas y verduras blandas. Un adulto debe cortar."],
+[/\b(tenedor|pisapapas)\b/,"Tenedor o pisapapas","El fondo de un vaso o de una taza gruesa, o un mortero, para aplastar."],
+[/\brallador\b/,"Rallador","Cuchillo bien afilado (tiras muy finas) o procesador."],
+[/\b(sarten|wok)\b/,"Sartén o wok","Olla ancha o caldero. Si no es antiadherente, use una gota más de aceite y no mueva el alimento hasta que se despegue solo."],
+[/\bespatula\b/,"Espátula","Una cuchara plana o dos cucharas. Para voltear tortillas: un plato plano."],
+[/\bcuchara de palo\b/,"Cuchara de palo","Cualquier cuchara resistente al calor (de metal o de silicona)."],
+[/\bbol\b/,"Bol","Olla, plato hondo o cualquier recipiente hondo y limpio."],
+[/\bpinzas\b/,"Pinzas","Dos cucharas, un tenedor grande o una espumadera."],
+[/\bmandolina\b/,"Mandolina","Cuchillo muy afilado o pelador de verduras para láminas largas y finas. Solo adultos."],
+[/\bpalitos? de brocheta\b/,"Palitos de brocheta","Sirva en vasitos o en un plato con tenedores pequeños. Evite palillos con punta con menores."],
+[/\bmoldes?\b/,"Moldes","Para paletas: vasitos desechables o tazas pequeñas con un palito de helado. Para tortas: fuente de horno de vidrio o metal, bien engrasada."],
+[/\bdescorazonador\b/,"Descorazonador","Cuchillo pequeño y una cuchara para sacar el centro."],
+[/\bpalillo\b/,"Palillo","Un cuchillo delgado limpio o un tenedor, para comprobar el centro."],
+[/\btostadora\b/,"Tostadora","Sartén seca a fuego medio, unos 2 minutos por lado."],
+[/\bjarra\b/,"Jarra","Un frasco grande, una botella limpia o una olla."],
+[/\bfrasco\b/,"Frasco","Un recipiente con tapa o una bolsa hermética."],
+[/\bcucharon\b/,"Cucharón","Una taza o un jarro limpio para servir."],
+[/\bcongelador\b/,"Congelador","Sin congelador: refrigere la mezcla y sírvala bien fría, como bebida o postre de vaso."]
+];
+function subsFor(r){const used=new Set(),I=[],U=[];
+ r[4].forEach(l=>{const n=nrm(l);SUBI.forEach((s,k)=>{if(!used.has(k)&&s[0].test(n)&&!(s[3]&&s[3].test(n))){used.add(k);I.push(s)}})});
+ const un=nrm(((r[6]||{}).u||"")+" "+r[4].join(" "));SUBU.forEach(s=>{if(s[0].test(un))U.push(s)});
+ return{I,U}}
+function recSubs(r){const{I,U}=subsFor(r),bx=(c,h)=>`<div style="background:${c};border-radius:8px;padding:8px 10px;margin:6px 0;font-size:14px">${h}</div>`,vacio=t=>`<p style="font-size:14px;margin:4px 0 8px">${t}</p>`;
+ return`<p style="margin:4px 0 8px;font-size:14px">¿Le falta algo? Use un reemplazo, pruebe y ajuste la sal y el punto de cocción.</p>`
+ +`<b>🥕 Ingredientes</b>`+(I.length?I.map(s=>bx("#f3ebfa",`<b>${s[1]}:</b> ${s[2]}`)).join(""):vacio("No hay reemplazos especiales para esta receta."))
+ +`<b>🍳 Utensilios</b>`+(U.length?U.map(s=>bx("#e3f5e8",`<b>${s[1]}:</b> ${s[2]}`)).join(""):vacio("No necesita utensilios especiales."))
+ +`<b>📏 Medidas sin tazas ni balanza</b>`+bx("#fff4c7","1 taza ≈ 240 ml (un vaso mediano) · 1 cucharada ≈ 15 ml (una cuchara sopera) · 1 cucharadita ≈ 5 ml (una cucharita de té). Los pesos entre paréntesis son aproximados: guíese por la vista y pruebe.")
+ +bx("#fde4e4","⚠️ <b>Alergias y seguridad:</b> no use un reemplazo al que alguien de la familia sea alérgico (maní, huevo, lácteos, gluten o frutos secos). El pollo, el pescado y los huevos siempre bien cocidos, aunque cambie de utensilio o de tiempo. Si cambia el horno por la sartén, vigile para que no se queme.")}
+
+/* ---------- cuerpo de la receta (ajustado a las personas) ---------- */
+function recCuerpo(r,o){o=o||{};const x=r[6]||{},base=rBase(r),N=o.n||base,f=N/base,ch=N!=base,t=o.t||"r",pp=(x.p||"").toLowerCase(),
+ bx=(c,ti,tx)=>tx?`<div style="background:${c};border-radius:8px;padding:8px 10px;margin:8px 0;font-size:14px"><b>${ti}</b> ${esc(tx)}</div>`:"";
+ const pasos=r[5].map(p=>{const k=p.indexOf(" | ");return k>0?`<li style="margin:8px 0"><b>${esc(p.slice(0,k))}.</b> ${esc(scaleStep(p.slice(k+3),f))}</li>`:`<li style="margin:8px 0">${esc(scaleStep(p,f))}</li>`}).join("");
+ const tm=`⏱️ ${esc(r[2])}`,per=N==1?"persona":"personas";
+ const cab=o.plain?`<p style="margin:4px 0 8px;font-size:13px;color:#6b5d7a">👥 ${ch?`Cantidades para ${N} ${per} (receta original: ${esc(pp)})`:esc(x.p||"")} · ${tm}</p>`
+ :`<div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:6px 0 4px;font-size:14px"><span>👥 <b>Personas</b></span><button type="button" class="sec" style="margin:0;padding:4px 14px" onclick="persStep(-1,${base})" aria-label="Menos personas">−</button><b style="min-width:84px;text-align:center">${N} ${per}</b><button type="button" class="sec" style="margin:0;padding:4px 14px" onclick="persStep(1,${base})" aria-label="Más personas">+</button>${ch?`<button type="button" class="sec" style="margin:0;padding:4px 10px;font-size:13px" onclick="persSet(null)">Ver receta original (${base})</button>`:""}</div><p style="margin:0 0 8px;font-size:13px;color:#6b5d7a">🍽️ ${ch?"Receta original: "+esc(pp):esc(x.p||"")} · ${tm}</p>`;
+ const nota=ch?bx("#e8f1ff","⚖️ Al cambiar las porciones:","los tiempos de cocción casi no cambian; guíese por «Cómo saber que está listo»."+(f>=2?" Si va a cocinar el doble o más, use una olla, sartén o bandeja más grande, o cocine por tandas sin amontonar.":"")+(f<=.5?" Para pocas porciones use un recipiente más pequeño y vigile la cocción: se hace más rápido.":"")):"";
+ const receta=cab+nota+(x.u?`<b>Utensilios</b><p style="margin:2px 0 8px;font-size:14px">${esc(x.u)}</p>`:"")+`<b>Ingredientes</b><ul>${r[4].map(i=>`<li>${esc(scaleIng(i,f))}</li>`).join("")}</ul><b>Paso a paso</b><ol>${pasos}</ol>`+bx("#e3f5e8","✅ Cómo saber que está listo:",x.l)+bx("#fff4c7","💡 Consejo:",x.c)+bx("#f1ecf6","🧊 Conservación:",x.g);
+ if(o.plain)return receta+`<p style="margin:16px 0 4px"><b>🔁 Si le falta algo: reemplazos</b></p>`+recSubs(r);
+ const sb=subsFor(r),nn=sb.I.length+sb.U.length;
+ return`<div class="seg noprint" style="margin:0 0 10px"><button type="button" data-tb="r" class="${t=="r"?"on":""}" onclick="recTab(this,'r')">📋 Receta</button><button type="button" data-tb="s" class="${t=="s"?"on":""}" onclick="recTab(this,'s')">🔁 Reemplazos${nn?" ("+nn+")":""}</button></div><div class="rp-r">${receta}</div><div class="rp-s">${recSubs(r)}</div>`}
+function recRender(el){const i=+el.dataset.i,t=el.dataset.t||"r";el.innerHTML=recCuerpo(REC[i],{n:RF.n,t});el.dataset.ok="1"}
+function recOpen(d){if(!d.open)return;const b=d.querySelector(".rbody");if(b&&!b.dataset.ok)recRender(b)}
+function recTab(b,t){const w=b.closest(".rbody");if(!w)return;w.dataset.t=t;w.querySelectorAll("[data-tb]").forEach(x=>x.classList.toggle("on",x.dataset.tb==t))}
+/* selector de personas */
+function persBox(){return`<div class="rdl noprint"><b>👥 ¿Para cuántas personas va a cocinar?</b><p class="small" style="margin:4px 0 8px">Elija la cantidad y todas las recetas ajustan sus ingredientes y medidas. Los tiempos de cocción casi no cambian: guíese por «Cómo saber que está listo». Dentro de cada receta también puede usar los botones − y +.</p><div class="seg" id="persc"></div><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><label for="persn" style="margin:0;font-weight:normal;font-size:13px">Otro número:</label><input id="persn" type="number" min="1" max="40" inputmode="numeric" style="width:90px" onchange="persCustom(this.value)"></div></div>`}
+function persChips(){const c=$("#persc");if(!c)return;c.innerHTML=`<button class="${RF.n==null?"on":""}" onclick="persSet(null)">Receta original</button>`+PERS_OP.map(n=>`<button class="${RF.n==n?"on":""}" onclick="persSet(${n})">${n}</button>`).join("");const i=$("#persn");if(i)i.value=RF.n&&!PERS_OP.includes(RF.n)?RF.n:""}
+function persSet(n){RF.n=n;if(n)LS.s(persKey(),String(n));else LS.d(persKey());persChips();document.querySelectorAll("#rl .rbody[data-ok]").forEach(recRender)}
+function persStep(d,base){persSet(Math.max(1,Math.min(40,(RF.n||base)+d)))}
+function persCustom(v){const n=parseInt(v,10);if(n>=1&&n<=40)persSet(n);else persChips()}
 function recFav(i,b){let a=recGet("fav");if(a.includes(i)){a=a.filter(x=>x!=i);b.textContent="☆ Guardar en favoritas"}else{a.push(i);b.textContent="⭐ En favoritas"}recSet("fav",a);if(RF.cat=="Favoritas")recList()}
 function recCook(i,b){let a=recGet("cook");if(a.includes(i)){a=a.filter(x=>x!=i);b.textContent="👩‍🍳 Marcar como cocinada";b.className="sec"}else{a.push(i);b.textContent="✅ Ya la cocinamos";b.className="";celebra()}recSet("cook",a);$("#rcc").textContent=a.length}
 
@@ -1059,7 +1242,7 @@ function recDescargar(modo){const sel=($("#rdsel")||{}).value||"all",fav=recGet(
  const items=REC.filter((r,i)=>sel!="fav"||fav.includes(i));
  if(!items.length){alert("Aún no tiene favoritas. Abra una receta y pulse “Guardar en favoritas”.");return}
  const cats=[...new Set(items.map(r=>r[3]))];
- const cuerpo=cats.map(c=>`<h2>${esc(c)}</h2>`+items.filter(r=>r[3]==c).map(r=>`<details class="r" open><summary><span class="e">${r[0]}</span> ${esc(r[1])} <small>${esc(r[2])}</small></summary>${recCuerpo(r)}</details>`).join("")).join("");
+ const cuerpo=cats.map(c=>`<h2>${esc(c)}</h2>`+items.filter(r=>r[3]==c).map(r=>`<details class="r" open><summary><span class="e">${r[0]}</span> ${esc(r[1])} <small>${esc(r[2])}</small></summary>${recCuerpo(r,{n:RF.n,plain:1})}</details>`).join("")).join("");
  const fecha=new Date().toLocaleDateString("es-EC");
  const html=`<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Recetario andino · Siembra hábitos</title><style>
 body{margin:0;font-family:Arial,Helvetica,sans-serif;color:#241a30;line-height:1.5;background:#faf6ff}
@@ -1072,7 +1255,7 @@ summary{cursor:pointer;font-weight:bold;font-size:16px;color:#3d1a5e}summary sma
 b{color:#5b2a86;font-size:14px}ul,ol{margin:4px 0 8px;padding-left:22px;font-size:14px}.al{background:#fff4c7;color:#5a4300;border-radius:8px;padding:10px;font-size:13px;margin-top:18px}
 .pie{text-align:center;font-size:12px;color:#6b5d7a;margin:16px 0}
 @media print{body{background:#fff}.np{display:none}header{background:#fff;color:#241a30;border-bottom:2px solid #5b2a86}@page{size:A4 portrait;margin:12mm}}
-</style></head><body><header><h1>🍽️ Recetario andino</h1><p>Campaña “Siembra hábitos, cosecha salud” · ${items.length} recetas · ${fecha}</p></header><main>
+</style></head><body><header><h1>🍽️ Recetario andino</h1><p>Campaña “Siembra hábitos, cosecha salud” · ${items.length} recetas · ${fecha}${RF.n?` · cantidades para ${RF.n} ${RF.n==1?"persona":"personas"}`:" · cantidades originales"}</p></header><main>
 <div class="np"><input id="q" type="search" placeholder="Buscar por nombre o ingrediente (quinua, banano…)" oninput="f()"><button onclick="window.print()">Imprimir o guardar PDF</button></div>${cuerpo}<div class="al">${RAVISO}</div><p class="pie">Descargado de Siembra hábitos el ${fecha}. Este archivo funciona sin internet.</p></main>
 <script>function n(s){return s.normalize("NFD").replace(/[\\u0300-\\u036f]/g,"").toLowerCase()}function f(){var q=n(document.getElementById("q").value.trim());document.querySelectorAll("details.r").forEach(function(d){d.style.display=!q||n(d.textContent).indexOf(q)>-1?"":"none"})}<\/script></body></html>`;
  const blob=new Blob([html],{type:"text/html;charset=utf-8"}),u=URL.createObjectURL(blob);
