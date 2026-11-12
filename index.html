@@ -1342,7 +1342,7 @@ function recetario(){RF={q:"",cat:"Todas",n:persLoad()};
  <div class="rdl noprint"><b>⬇️ Llévese el recetario</b><p class="small" style="margin:4px 0 8px">Descargue un archivo que se abre sin internet y sirve aunque cambie la página. También puede imprimirlo o guardarlo como PDF.</p><select id="rdsel" aria-label="Qué recetas incluir"><option value="all">Todas las recetas</option><option value="fav">Solo mis favoritas</option></select><div class="row2" style="justify-content:flex-start"><button onclick="recDescargar('dl')">Descargar archivo</button><button class="sec" onclick="recDescargar('print')">Imprimir o guardar PDF</button></div></div>
  <input id="rq" type="search" placeholder="Buscar por nombre o ingrediente (quinua, banano…)" oninput="RF.q=this.value;recList()">
  <div class="seg" id="rcats" style="margin-top:10px"></div><div class="seg" id="raud"></div><p class="small" id="rcount"></p><div id="rintro"></div><div id="rl"></div>
- <div class="alert">Cantidades aproximadas para 3 o 4 porciones. Cocine siempre el pollo, el pescado y los huevos hasta que estén bien cocidos. Si hay alergias (maní, huevo, lácteos, gluten u otras), adapte la receta o consulte a un profesional. En menores de 4 años, corte los alimentos redondos o duros (uvas, tomate cherry, canguil, frutos secos) para evitar atoramientos.</div></div>`);persChips();recList()}
+ <div class="alert">Cantidades y tiempos aproximados: cada receta rinde 3 o 4 porciones y, si elige otro número de personas, los ingredientes, los utensilios y los tiempos se ajustan de forma estimada. Cocine siempre el pollo, el pescado y los huevos hasta que estén bien cocidos. Si hay alergias (maní, huevo, lácteos, gluten u otras), adapte la receta o consulte a un profesional. En menores de 4 años, corte los alimentos redondos o duros (uvas, tomate cherry, canguil, frutos secos) para evitar atoramientos.</div></div>`);persChips();recList()}
 /* ---------- loncheras: público, contexto e introducción ---------- */
 const AUDS=[["Todos","📚"],["Niños","🧒"],["Adolescentes","🧑"],["Adulto joven","🎓"],["Adultos","💼"]];
 const AUDN={"Primaria":"Niños","Secundaria":"Adolescentes","Universidad o instituto":"Adulto joven","Trabajo":"Adultos"};
@@ -1363,7 +1363,7 @@ function recList(){const fav=recGet("fav"),cook=recGet("cook"),q=nrm(RF.q.trim()
  $("#raud").innerHTML=RF.cat=="Loncheras"?AUDS.map(a=>`<button class="${a[0]==(RF.aud||"Todos")?"on":""}" onclick="RF.aud='${a[0]}';recList()">${a[1]} ${a[0]}</button>`).join(""):"";
  $("#rintro").innerHTML=RF.cat=="Loncheras"?lonIntro():"";
  $("#rcount").innerHTML=`${idx.length} de ${REC.length} recetas · ${V("Cocinadas por mí","Cocinadas con mi hijo o hija","Cocinadas en familia")}: <b id="rcc">${cook.length}</b>`;
- $("#rl").innerHTML=idx.map(i=>{const r=REC[i];return`<details class="rc" ontoggle="recOpen(this)"><summary><span style="font-size:26px">${r[0]}</span> ${esc(r[1])}<small>${esc(r[2])} · ${esc(r[3])}</small></summary><div class="rb"><div class="rbody" data-i="${i}" data-t="r"></div><div class="row2" style="justify-content:flex-start"><button class="sec" onclick="recFav(${i},this)">${fav.includes(i)?"⭐ En favoritas":"☆ Guardar en favoritas"}</button><button class="${cook.includes(i)?"":"sec"}" onclick="recCook(${i},this)">${cook.includes(i)?"✅ Ya la cocinamos":"👩‍🍳 Marcar como cocinada"}</button></div></div></details>`}).join("")||`<p class="small">No hay recetas con ese filtro.</p>`}
+ $("#rl").innerHTML=idx.map(i=>{const r=REC[i];return`<details class="rc" ontoggle="recOpen(this)"><summary><span style="font-size:26px">${r[0]}</span> ${esc(r[1])}<small class="rt" data-i="${i}">${esc(recTLabel(r,RF.n,rBase(r)))} · ${esc(r[3])}</small></summary><div class="rb"><div class="rbody" data-i="${i}" data-t="r"></div><div class="row2" style="justify-content:flex-start"><button class="sec" onclick="recFav(${i},this)">${fav.includes(i)?"⭐ En favoritas":"☆ Guardar en favoritas"}</button><button class="${cook.includes(i)?"":"sec"}" onclick="recCook(${i},this)">${cook.includes(i)?"✅ Ya la cocinamos":"👩‍🍳 Marcar como cocinada"}</button></div></div></details>`}).join("")||`<p class="small">No hay recetas con ese filtro.</p>`}
 /* ---------- personas, cantidades y reemplazos ---------- */
 const PERS_OP=[1,2,3,4,5,6,8,10,12];
 const BASEP={"Chamoy casero (salsa de fruta con limón)":4,"Bolitas de dátil y avena":4,"Galletas de avena y banano":4};
@@ -1528,15 +1528,99 @@ function recSubs(r){const{I,U}=subsFor(r),bx=(c,h)=>`<div style="background:${c}
  +`<b>📏 Medidas sin tazas ni balanza</b>`+bx("#fff4c7","1 taza ≈ 240 ml (un vaso mediano) · 1 cucharada ≈ 15 ml (una cuchara sopera) · 1 cucharadita ≈ 5 ml (una cucharita de té). Los pesos entre paréntesis son aproximados: guíese por la vista y pruebe.")
  +bx("#fde4e4","⚠️ <b>Alergias y seguridad:</b> no use un reemplazo al que alguien de la familia sea alérgico (maní, huevo, lácteos, gluten o frutos secos). El pollo, el pescado y los huevos siempre bien cocidos, aunque cambie de utensilio o de tiempo. Si cambia el horno por la sartén, vigile para que no se queme.")}
 
+/* ---------- tiempos y utensilios según las personas ---------- */
+const rMin=t=>{const m=String(t||"").match(/\d+/);return m?+m[0]:15};
+const rSuf=t=>{const m=String(t||"").match(/^\s*\d+\s*min\s*\+?\s*(.*)$/i);return m?m[1].trim():""};
+const nzf=s=>parseFloat(String(s).replace(",","."));
+const tmRd=v=>v>=15?Math.round(v/5)*5:Math.max(1,Math.round(v));
+const tmRt=v=>v>=10?Math.round(v/5)*5:Math.max(1,Math.round(v));
+function tmCat(ti,bo,un,hasPan,aft){const b=bo.toLowerCase(),t=ti.toLowerCase(),near=b.slice(-60),a=(aft||"").toLowerCase().slice(0,22);
+ if(/\bcada\s*$/.test(b.slice(-14)))return"skip";
+ if(/^hora/.test(un)||/\ba los\s*$/.test(b.slice(-9)))return"wait";
+ if(/remoj|repos|descans|enfr[ií]|refriger|congel|macer|marin|adob|precalient|seque/.test(t+" "+near))return"wait";
+ if(/horne|horno|bandeja/.test(t+" "+near))return"oven";
+ if(/licu|proces/.test(t+" "+near))return"blend";
+ if(hasPan&&/por lado|primer lado|segundo lado|\blado\b|voltee|d[oó]re/.test(t+" "+near+" "+a))return"pan";
+ if(/huevo|desde que|hirviendo|termo|fideo|pasta|espagueti|hi[eé]rv|hervor|hervir|vapor|tape|compruebe|verifique/.test(t+" "+near))return"fixed";
+ if(/refrito|sofrito|salte|sof[rí]|dore|dorar|cocine la cebolla|caliente el aceite|cocine la|cocine el|cocine las|cocine los|cocine \d|cocin[ea]\b/.test(t+" "+near))return"saute";
+ return"other"}
+function recTM(r,f){const x=r[6]||{},u=(x.u||"").toLowerCase(),T0=rMin(r[2]);
+ const hasPan=/sart[eé]n|wok|plancha/.test(u),hasOven=/horno/.test(u)||r[5].some(p=>/horne|horno/i.test(p));
+ const base=rBase(r),N=f*base,um=(x.p||"").match(/(\d+)\s+(croquetas|hamburguesitas|tortillas|tortillitas|nuggets|galletas|panqueques|rollos|bolitas|muffins|barritas|panecillos)/i);
+ const panCap=um?Math.max(1,Math.round(4*base/Math.max(1,+um[1]))):Math.max(2,base),b0=Math.max(1,Math.ceil(base/panCap-1e-9));
+ const lg=Math.log2(f),g=Math.max(.85,Math.min(1.5,1+.15*lg)),go=Math.max(.85,Math.min(1.4,1+.12*lg));
+ const tPan=Math.max(1,Math.ceil(N/panCap-1e-9)),panMult=tPan/b0;
+ const trCap=Math.max(6,Math.round(base*1.5)),trays=f>1?Math.max(1,Math.ceil(N/trCap-1e-9)):1,ovenB=hasOven?Math.max(1,Math.ceil(trays/2)):1;
+ const blCap=Math.max(3,Math.round(base*1.5)),blendT=Math.max(1,Math.ceil(N/blCap-1e-9));
+ const sum={saute:0,oven:0,pan:0,blend:0};
+ const steps=r[5].map(p=>{const k=p.indexOf(" | "),ti=k>0?p.slice(0,k):"",bo=k>0?p.slice(k+3):p,ms=[],re=/(\d+(?:[.,]\d+)?)(?:(\s+(?:a|o)\s+)(\d+(?:[.,]\d+)?))?(\s+)(minutos?|segundos?|horas?)/gi;let m;
+  while((m=re.exec(bo))){const un=m[5].toLowerCase(),n1=nzf(m[1]),n2=m[3]?nzf(m[3]):null,uf=/^seg/.test(un)?1/60:/^hora/.test(un)?60:1,cat=tmCat(ti,bo.slice(0,m.index),un,hasPan,bo.slice(m.index+m[0].length)),mid=(n1+(n2==null?n1:n2))/2*uf*(/^\s*(?:por lado|de cada lado)/.test(bo.slice(m.index+m[0].length,m.index+m[0].length+20))?2:1);
+   ms.push({i:m.index,len:m[0].length,n1,n2,sep:m[2]||"",sp:m[4],un,cat,mid})}
+  const mx={};ms.forEach(q=>{if(sum[q.cat]!=null)mx[q.cat]=(cat=>cat=='oven'||cat=='pan'?Math.max(mx[cat]||0,q.mid):(mx[cat]||0)+q.mid)(q.cat)});Object.keys(mx).forEach(c=>sum[c]+=mx[c]);
+  return{ti,bo,ms}});
+ const boils=/olla/.test(u)&&r[5].some(p=>/hierv|hervor|hervir|vapor/i.test(p));
+ const prepBase=Math.max(3,Math.min(15,Math.round(T0*.25)));
+ const P={prep:prepBase*.6*(Math.pow(f,.8)-1),heat:boils?Math.max(-3,Math.min(25,.6*(N-base))):0,cook:sum.saute*(g-1),pan:sum.pan*(panMult-1),oven:sum.oven*(ovenB*go-1),blend:sum.blend*(blendT-1)};
+ let tot=T0+P.prep+P.heat+P.cook+P.pan+P.oven+P.blend;if(f<1)tot=Math.max(tot,Math.round(T0*.55));tot=Math.max(3,tot);
+ const vess=/molde/.test(u)?"moldes":/fuente/.test(u)?"fuentes":"bandejas";
+ return{vess,f,T0,total:f===1?T0:tmRt(tot),P,steps,g,go,b0,tPan,trays,ovenB,blendT,boils,hasPan,hasOven,suf:rSuf(r[2])}}
+function recTLabel(r,N,base){if(!N||N==base)return r[2];const M=recTM(r,N/base);return`≈ ${M.total} min${M.suf?" + "+M.suf:""} (para ${N})`}
+/* aplica el ajuste de tiempos a un paso (texto original, antes de escalar cantidades) */
+function recStepTM(M,k,first){const S=M.steps[k];if(!S||M.f===1)return S?S.bo:"";let out=S.bo;
+ for(let j=S.ms.length-1;j>=0;j--){const m=S.ms[j];if(!/^min/.test(m.un))continue;const fac=m.cat=="saute"?M.g:m.cat=="oven"?M.go:1;if(Math.abs(fac-1)<.02)continue;
+  const a=tmRd(m.n1*fac),b=m.n2==null?null:a+(m.n2-m.n1);if(a===m.n1)continue;
+  const unit=(b==null&&a===1)?"minuto":"minutos";out=out.slice(0,m.i)+a+(b==null?"":m.sep+b)+m.sp+unit+out.slice(m.i+m.len)}
+ const cats=S.ms.map(m=>m.cat),add=[];
+ if(M.boils&&!first.h&&/hierv|hervor|hervir|vapor/i.test(S.bo)){first.h=1;const h=Math.round(M.P.heat);if(M.f>1.3&&h>=2)add.push(`Con esta cantidad, el agua tarda unos ${h} minutos más en hervir.`);else if(M.f<.7&&h<=-1)add.push("Con menos cantidad, el agua hierve más rápido.")}
+ if(M.f>1){
+  if(!first.p&&cats.includes("pan")&&M.tPan>M.b0){first.p=1;add.push(`Con esta cantidad cocine en ${M.tPan} tandas, sin amontonar (con 2 sartenes el tiempo baja a la mitad).`)}
+  if(!first.o&&cats.includes("oven")){first.o=1;if(M.ovenB>1)add.push(`Use ${M.trays} ${M.vess} y hornee en ${M.ovenB} tandas (en un horno casero caben unas 2 bandejas a la vez).`);else if(M.trays>1)add.push(`Use ${M.trays} ${M.vess}, ${M.vess=="moldes"?"uno en cada nivel del horno, e intercámbielos":"una en cada nivel del horno, e intercámbielas"} de lugar a la mitad del tiempo para que se doren parejo.`)}
+  if(!first.b&&cats.includes("blend")&&M.blendT>1){first.b=1;add.push(`Licúe en ${M.blendT} tandas, sin llenar la jarra más de la mitad.`)}}
+ return add.length?out+" "+add.join(" "):out}
+function recTMNota(r,N,base){const M=recTM(r,N/base),P=M.P,ex=[],R=v=>Math.round(Math.abs(v)),sg=v=>v>0?"+":"−";
+ if(R(P.prep)>=1)ex.push(M.f>1?`Lavar, picar y armar más cantidad toma más tiempo (${sg(P.prep)}${R(P.prep)} min).`:`Con menos cantidad todo se prepara más rápido (${sg(P.prep)}${R(P.prep)} min).`);
+ if(R(P.heat)>=1)ex.push(M.f>1?`Una olla más llena tarda más en calentarse y hervir (${sg(P.heat)}${R(P.heat)} min).`:`Con menos agua, hierve antes (${sg(P.heat)}${R(P.heat)} min).`);
+ if(R(P.cook)>=1)ex.push(M.f>1?`Sofreír o saltear más cantidad toma más tiempo (${sg(P.cook)}${R(P.cook)} min).`:`Con menos cantidad el sofrito o salteado es más corto (${sg(P.cook)}${R(P.cook)} min).`);
+ if(P.pan>=1)ex.push(`En la sartén cocinará en ${M.tPan} tandas (+${R(P.pan)} min).`);
+ if(M.ovenB>1&&P.oven>=1)ex.push(`El horno trabaja en ${M.ovenB} tandas (+${R(P.oven)} min).`);else if(R(P.oven)>=1)ex.push(`El horno tarda ${P.oven>0?"un poco más":"un poco menos"} (${sg(P.oven)}${R(P.oven)} min).`);
+ if(P.blend>=1)ex.push(`La licuadora trabaja en ${M.blendT} tandas (+${R(P.blend)} min).`);
+ return{M,ex}}
+/* utensilios */
+const UT_SZ={f:["pequeña","mediana","grande","muy grande"],m:["pequeño","mediano","grande","muy grande"]};
+function utScale(r,f,N,base){const x=r[6]||{},src=(x.u||"").split(/,\s*/).map(s=>s.trim()).filter(Boolean),M=recTM(r,f),lon=r[3]=="Loncheras"&&base==1&&N>1,ch=N!=base;
+ const s=f<=.6?-1:f<=1.4?0:f<=2.8?1:f<=5.5?2:3,cap=c=>x=>x[0]===x[0].toUpperCase()&&c?c.toUpperCase()+x.slice(1):x;
+ const out=src.map((it,ix)=>{let t=it,chg=false;const low=it.toLowerCase(),up=ix==0,fix=v=>up?v[0].toUpperCase()+v.slice(1):v;
+  let m=low.match(/^(olla|sart[eé]n|bol)(?=\s|$)(?:\s+(peque[ñn][oa]|median[oa]|grande)(?=\s|$))?(.*)$/);
+  if(m&&s!==0){const nn=m[1],fem=nn!="bol",L=UT_SZ[fem?"f":"m"],bi=m[2]?(/^peq/.test(m[2])?0:/^med/.test(m[2])?1:2):1;let ni=bi+s;const capI=nn=="olla"?99:nn=="sartén"||nn=="sarten"?2:3;let cnt=1;
+   if(nn=="olla"&&ni>3){cnt=Math.ceil(Math.pow(2,ni-3));ni=3}ni=Math.max(0,Math.min(capI,ni));
+   if(ni!==bi||cnt>1){const pls=w=>w.replace(/(\w)$/,(a)=>/[aeo]/.test(a)?a+"s":a+"es"),sz=L[ni],rest=m[3];
+    const noun=cnt>1?(nn=="olla"?"ollas":nn=="bol"?"bols":"sartenes"):nn;const szt=cnt>1?(sz=="muy grande"?"muy grandes":sz=="grande"?"grandes":sz.replace(/o$/,"os").replace(/a$/,"as")):sz;
+    t=fix((cnt>1?cnt+" ":"")+noun+" "+szt+rest);chg=true}}
+  else if(f>1&&/^bandejas?\b/.test(low)){const c=M.trays;t=fix(c+" bandejas"+it.slice(low.match(/^bandejas?/)[0].length));chg=true}
+  else if(f>1&&/^moldes?\b/.test(low)){const c=M.trays;t=fix(c+" moldes"+it.slice(low.match(/^moldes?/)[0].length).replace(/^ cuadrado/," cuadrados").replace(/ o bandeja\b/," o bandejas"));chg=true}
+  else if(f>1&&/^fuente de horno/.test(low)){const c=M.trays;t=fix(c+" fuentes de horno");chg=true}
+  else if(ch&&/^(vasitos|vasos?|frasquitos?|frasco)$/.test(low)&&!/con tapa/.test(low)){const w=low.replace(/s$/,"");t=fix(N+" "+(N==1?w:w+"s"));chg=true}
+  else if(ch&&/^moldes o vasitos$/.test(low)){t=fix(N+" "+(N==1?"molde o vasito":"moldes o vasitos"));chg=true}
+  else if(lon&&/^(recipiente|termo|frasquito)/.test(low)){t=fix(N+" "+it.replace(/^recipiente\b/i,"recipientes").replace(/\btermo\b/i,"termos").replace(/^frasquito\b/i,"frasquitos").replace(/\bbolsita\b/i,"bolsitas").replace(/^termo\b/i,"termos").replace(/^./,c=>c.toLowerCase()));chg=true}
+  else if(M.blendT>1&&/^(licuadora|procesador)/.test(low)){t=it+` (licue en ${M.blendT} tandas)`;chg=true}
+  else if(M.ovenB>1&&low=="horno"){t=fix("horno (hornee en "+M.ovenB+" tandas)");chg=true}
+  else if(M.trays>1&&low=="papel de hornear"){t=fix("papel de hornear (uno por bandeja)");chg=true}
+  else if(M.f>1&&M.hasPan&&/^sart[eé]n/.test(low)&&s>=2){t=it+" (cocine por tandas)";chg=true}
+  return{t,chg}});
+ if(f>=3&&/cuchillo/.test((x.u||"").toLowerCase()))out.push({t:"una tabla y un cuchillo más para cada persona que ayude a picar",chg:true});
+ return out}
+const utHtml=(L,esc)=>L.map(o=>o.chg?`<span style="background:#fff4c7;border-radius:4px;padding:0 3px">${esc(o.t)}</span>`:esc(o.t)).join(", ");
+
 /* ---------- cuerpo de la receta (ajustado a las personas) ---------- */
 function recCuerpo(r,o){o=o||{};const x=r[6]||{},base=rBase(r),N=o.n||base,f=N/base,ch=N!=base,t=o.t||"r",pp=(x.p||"").toLowerCase(),
  bx=(c,ti,tx)=>tx?`<div style="background:${c};border-radius:8px;padding:8px 10px;margin:8px 0;font-size:14px"><b>${ti}</b> ${esc(tx)}</div>`:"";
- const pasos=r[5].map(p=>{const k=p.indexOf(" | ");return k>0?`<li style="margin:8px 0"><b>${esc(p.slice(0,k))}.</b> ${esc(scaleStep(p.slice(k+3),f))}</li>`:`<li style="margin:8px 0">${esc(scaleStep(p,f))}</li>`}).join("");
- const tm=`⏱️ ${esc(r[2])}`,per=N==1?"persona":"personas";
+  const per=N==1?"persona":"personas",tn=ch?recTMNota(r,N,base):null,M=tn?tn.M:null,fi={},UL=ch&&x.u?utScale(r,f,N,base):null,sfx=M&&M.suf?" + "+esc(M.suf):"",
+  tm=ch?`⏱️ ≈ ${M.total} min${sfx} (receta original: ${esc(r[2])})`:`⏱️ ${esc(r[2])}`;
+  const pasos=r[5].map((p,ix)=>{const k=p.indexOf(" | "),bo=k>0?p.slice(k+3):p,tx=scaleStep(ch?recStepTM(M,ix,fi):bo,f);return k>0?`<li style="margin:8px 0"><b>${esc(p.slice(0,k))}.</b> ${esc(tx)}</li>`:`<li style="margin:8px 0">${esc(tx)}</li>`}).join("");
  const cab=o.plain?`<p style="margin:4px 0 8px;font-size:13px;color:#6b5d7a">👥 ${ch?`Cantidades para ${N} ${per} (receta original: ${esc(pp)})`:esc(x.p||"")} · ${tm}</p>`
  :`<div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:6px 0 4px;font-size:14px"><span>👥 <b>Personas</b></span><button type="button" class="sec" style="margin:0;padding:4px 14px" onclick="persStep(-1,${base})" aria-label="Menos personas">−</button><b style="min-width:84px;text-align:center">${N} ${per}</b><button type="button" class="sec" style="margin:0;padding:4px 14px" onclick="persStep(1,${base})" aria-label="Más personas">+</button>${ch?`<button type="button" class="sec" style="margin:0;padding:4px 10px;font-size:13px" onclick="persSet(null)">Ver receta original (${base})</button>`:""}</div><p style="margin:0 0 8px;font-size:13px;color:#6b5d7a">🍽️ ${ch?"Receta original: "+esc(pp):esc(x.p||"")} · ${tm}</p>`;
- const nota=ch?bx("#e8f1ff","⚖️ Al cambiar las porciones:","los tiempos de cocción casi no cambian; guíese por «Cómo saber que está listo»."+(f>=2?" Si va a cocinar el doble o más, use una olla, sartén o bandeja más grande, o cocine por tandas sin amontonar.":"")+(f<=.5?" Para pocas porciones use un recipiente más pequeño y vigile la cocción: se hace más rápido.":"")):"";
- const receta=cab+nota+(x.u?`<b>Utensilios</b><p style="margin:2px 0 8px;font-size:14px">${esc(x.u)}</p>`:"")+`<b>Ingredientes</b><ul>${r[4].map(i=>`<li>${esc(scaleIng(i,f))}</li>`).join("")}</ul><b>Paso a paso</b><ol>${pasos}</ol>`+bx("#e3f5e8","✅ Cómo saber que está listo:",x.l)+bx("#fff4c7","💡 Consejo:",x.c)+bx("#f1ecf6","🧊 Conservación:",x.g)+(r[3]=="Loncheras"?lonBox(r):"");
+  const nota=ch?`<div style="background:#e8f1ff;border-radius:8px;padding:8px 10px;margin:8px 0;font-size:14px"><b>⚖️ Ajustado para ${N} ${per}</b> (la receta original es para ${base}). Cambian los ingredientes, los utensilios y los tiempos.<br>⏱️ <b>Tiempo total aproximado: ${M.total} min${sfx}</b>, en vez de ${esc(r[2])}.${tn.ex.length?`<ul style="margin:4px 0 4px;padding-left:20px">${tn.ex.map(e=>`<li>${esc(e)}</li>`).join("")}</ul>`:" "}<span style="font-size:13px;color:#6b5d7a">Es una estimación para una sola persona cocinando; si ayudan varias, la preparación baja. Lo que depende del alimento (hervir un huevo, cocer papas o lentejas, remojar, reposar o enfriar) no cambia. Guíese siempre por «Cómo saber que está listo».</span></div>`:"";
+ const receta=cab+nota+(x.u?`<b>Utensilios</b><p style="margin:2px 0 8px;font-size:14px">${UL?utHtml(UL,esc)+(UL.some(o=>o.chg)?` <span style="font-size:12px;color:#6b5d7a">(lo resaltado cambia por la cantidad)</span>`:""):esc(x.u)}</p>`:"")+`<b>Ingredientes</b><ul>${r[4].map(i=>`<li>${esc(scaleIng(i,f))}</li>`).join("")}</ul><b>Paso a paso</b><ol>${pasos}</ol>`+bx("#e3f5e8","✅ Cómo saber que está listo:",x.l)+bx("#fff4c7","💡 Consejo:",x.c)+bx("#f1ecf6","🧊 Conservación:",x.g)+(r[3]=="Loncheras"?lonBox(r):"");
  if(o.plain)return receta+`<p style="margin:16px 0 4px"><b>🔁 Si le falta algo: reemplazos</b></p>`+recSubs(r);
  const sb=subsFor(r),nn=sb.I.length+sb.U.length;
  return`<div class="seg noprint" style="margin:0 0 10px"><button type="button" data-tb="r" class="${t=="r"?"on":""}" onclick="recTab(this,'r')">📋 Receta</button><button type="button" data-tb="s" class="${t=="s"?"on":""}" onclick="recTab(this,'s')">🔁 Reemplazos${nn?" ("+nn+")":""}</button></div><div class="rp-r">${receta}</div><div class="rp-s">${recSubs(r)}</div>`}
@@ -1544,21 +1628,21 @@ function recRender(el){const i=+el.dataset.i,t=el.dataset.t||"r";el.innerHTML=re
 function recOpen(d){if(!d.open)return;const b=d.querySelector(".rbody");if(b&&!b.dataset.ok)recRender(b)}
 function recTab(b,t){const w=b.closest(".rbody");if(!w)return;w.dataset.t=t;w.querySelectorAll("[data-tb]").forEach(x=>x.classList.toggle("on",x.dataset.tb==t))}
 /* selector de personas */
-function persBox(){return`<div class="rdl noprint"><b>👥 ¿Para cuántas personas va a cocinar?</b><p class="small" style="margin:4px 0 8px">Elija la cantidad y todas las recetas ajustan sus ingredientes y medidas. Los tiempos de cocción casi no cambian: guíese por «Cómo saber que está listo». Dentro de cada receta también puede usar los botones − y +.</p><div class="seg" id="persc"></div><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><label for="persn" style="margin:0;font-weight:normal;font-size:13px">Otro número:</label><input id="persn" type="number" min="1" max="40" inputmode="numeric" style="width:90px" onchange="persCustom(this.value)"></div></div>`}
+function persBox(){return`<div class="rdl noprint"><b>👥 ¿Para cuántas personas va a cocinar?</b><p class="small" style="margin:4px 0 8px">Elija la cantidad y todas las recetas ajustan sus ingredientes, utensilios y tiempos (preparación, cocción y tiempo total). Los tiempos son estimados: guíese por «Cómo saber que está listo». Dentro de cada receta también puede usar los botones − y +.</p><div class="seg" id="persc"></div><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><label for="persn" style="margin:0;font-weight:normal;font-size:13px">Otro número:</label><input id="persn" type="number" min="1" max="40" inputmode="numeric" style="width:90px" onchange="persCustom(this.value)"></div></div>`}
 function persChips(){const c=$("#persc");if(!c)return;c.innerHTML=`<button class="${RF.n==null?"on":""}" onclick="persSet(null)">Receta original</button>`+PERS_OP.map(n=>`<button class="${RF.n==n?"on":""}" onclick="persSet(${n})">${n}</button>`).join("");const i=$("#persn");if(i)i.value=RF.n&&!PERS_OP.includes(RF.n)?RF.n:""}
-function persSet(n){RF.n=n;if(n)LS.s(persKey(),String(n));else LS.d(persKey());persChips();document.querySelectorAll("#rl .rbody[data-ok]").forEach(recRender)}
+function persSet(n){RF.n=n;if(n)LS.s(persKey(),String(n));else LS.d(persKey());persChips();document.querySelectorAll("#rl .rbody[data-ok]").forEach(recRender);document.querySelectorAll("#rl small.rt").forEach(e=>{const r=REC[+e.dataset.i];e.textContent=recTLabel(r,RF.n,rBase(r))+" · "+r[3]})}
 function persStep(d,base){persSet(Math.max(1,Math.min(40,(RF.n||base)+d)))}
 function persCustom(v){const n=parseInt(v,10);if(n>=1&&n<=40)persSet(n);else persChips()}
 function recFav(i,b){let a=recGet("fav");if(a.includes(i)){a=a.filter(x=>x!=i);b.textContent="☆ Guardar en favoritas"}else{a.push(i);b.textContent="⭐ En favoritas"}recSet("fav",a);if(RF.cat=="Favoritas")recList()}
 function recCook(i,b){let a=recGet("cook");if(a.includes(i)){a=a.filter(x=>x!=i);b.textContent="👩‍🍳 Marcar como cocinada";b.className="sec"}else{a.push(i);b.textContent="✅ Ya la cocinamos";b.className="";celebra()}recSet("cook",a);$("#rcc").textContent=a.length}
 
 /* ---------- descarga del recetario ---------- */
-const RAVISO=`Cantidades aproximadas para 3 o 4 porciones. Cocine siempre el pollo, el pescado y los huevos hasta que estén bien cocidos. Si hay alergias (maní, huevo, lácteos, gluten u otras), adapte la receta o consulte a un profesional. En menores de 4 años, corte los alimentos redondos o duros (uvas, tomate cherry, canguil, frutos secos) para evitar atoramientos.`;
+const RAVISO=`Cantidades y tiempos aproximados: cada receta rinde 3 o 4 porciones y, si elige otro número de personas, los ingredientes, los utensilios y los tiempos se ajustan de forma estimada. Cocine siempre el pollo, el pescado y los huevos hasta que estén bien cocidos. Si hay alergias (maní, huevo, lácteos, gluten u otras), adapte la receta o consulte a un profesional. En menores de 4 años, corte los alimentos redondos o duros (uvas, tomate cherry, canguil, frutos secos) para evitar atoramientos.`;
 function recDescargar(modo){const sel=($("#rdsel")||{}).value||"all",fav=recGet("fav");
  const items=REC.filter((r,i)=>sel!="fav"||fav.includes(i));
  if(!items.length){alert("Aún no tiene favoritas. Abra una receta y pulse “Guardar en favoritas”.");return}
  const cats=[...new Set(items.map(r=>r[3]))];
- const cuerpo=cats.map(c=>`<h2>${esc(c)}</h2>`+items.filter(r=>r[3]==c).map(r=>`<details class="r" open><summary><span class="e">${r[0]}</span> ${esc(r[1])} <small>${esc(r[2])}</small></summary>${recCuerpo(r,{n:RF.n,plain:1})}</details>`).join("")).join("");
+ const cuerpo=cats.map(c=>`<h2>${esc(c)}</h2>`+items.filter(r=>r[3]==c).map(r=>`<details class="r" open><summary><span class="e">${r[0]}</span> ${esc(r[1])} <small>${esc(recTLabel(r,RF.n,rBase(r)))}</small></summary>${recCuerpo(r,{n:RF.n,plain:1})}</details>`).join("")).join("");
  const fecha=new Date().toLocaleDateString("es-EC");
  const html=`<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Recetario andino · Siembra hábitos</title><style>
 body{margin:0;font-family:Arial,Helvetica,sans-serif;color:#241a30;line-height:1.5;background:#faf6ff}
