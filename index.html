@@ -156,7 +156,7 @@ a.btn{display:inline-block;background:var(--g);color:#fff;border-radius:8px;padd
 <svg class="wave" viewBox="0 0 1440 40" preserveAspectRatio="none" aria-hidden="true"><path d="M0,22 C240,48 480,0 720,22 C960,44 1200,6 1440,22 L1440,40 L0,40Z" fill="#f1e7fb"/></svg></header>
 <div class="shell"><aside class="side" id="sl" aria-hidden="true"><span class="big sun" onclick="wig(this)">☀️</span><span class="big" onclick="wig(this)">🥕</span><span class="big" onclick="wig(this)">🥦</span><span class="big" onclick="wig(this)">🍎</span><span class="big" onclick="wig(this)">🤸‍♀️</span><span class="big" onclick="wig(this)">🚴‍♂️</span><span class="big" onclick="wig(this)">🍇</span></aside>
 <main id="app"><div class="card">Cargando…</div></main><aside class="side" id="sr" aria-hidden="true"><span class="big" onclick="wig(this)">🌈</span><span class="big" onclick="wig(this)">🦋</span><span class="big" onclick="wig(this)">⚽</span><span class="big" onclick="wig(this)">🍓</span><span class="big" onclick="wig(this)">🏃‍♀️</span><span class="big" onclick="wig(this)">🧘‍♂️</span><span class="big" onclick="wig(this)">💧</span></aside></div>
-<footer class="foot"><div class="grass" aria-hidden="true"><span>🌿</span><span>🥕</span><span>🌻</span><span>🍅</span><span>🌱</span><span>🥦</span><span>🌽</span><span>🌿</span><span>🍓</span><span>🌻</span><span>🥕</span><span>🌱</span><span>🍅</span><span>🌿</span></div>Proyecto académico de Enfermería, Instituto Superior Tecnológico San Antonio (TESA). Sus datos son confidenciales y se usan solo con fines académicos.<br>Versión 11-nov-2026 · recetas con personas y reemplazos</footer>
+<footer class="foot"><div class="grass" aria-hidden="true"><span>🌿</span><span>🥕</span><span>🌻</span><span>🍅</span><span>🌱</span><span>🥦</span><span>🌽</span><span>🌿</span><span>🍓</span><span>🌻</span><span>🥕</span><span>🌱</span><span>🍅</span><span>🌿</span></div>Proyecto académico de Enfermería, Instituto Superior Tecnológico San Antonio (TESA). Sus datos son confidenciales y se usan solo con fines académicos.<br>Versión 12-nov-2026 · recetas con loncheras</footer>
 <script>
 /* ---------- generador de QR (modo byte, corrección M, versiones 1 a 10) ---------- */
 const QR=(()=>{
@@ -508,7 +508,7 @@ const ACT=[["🚶","Caminata diaria",["Camine 30 minutos a paso ligero, mejor si
 ["🪜","Escaleras",["Suba por las escaleras en vez del ascensor.","Cuenten juntos los escalones.","Reto familiar: más pisos por escaleras cada día."]]];
 function bAc(){return`<div class="card"><h3>🏃 Ideas de actividades</h3><p class="small">Adaptadas a: <b>${esc(S.para||"Para mí")}</b>. Cámbielo en “Mi contexto” del inicio.</p>${ACT.map(a=>`<div class="iz"><b>${a[0]} ${a[1]}</b><br>${V(a[2][0],a[2][1],a[2][2])}</div>`).join("")}</div>`}
 /* ---------- recetario ---------- */
-const CATS=[["Todas","📚"],["Plato principal","🍲"],["Snack o bebida","🥤"],["Snack divertido","🎉"],["Postre saludable","🍰"],["Favoritas","⭐"]];
+const CATS=[["Todas","📚"],["Plato principal","🍲"],["Snack o bebida","🥤"],["Snack divertido","🎉"],["Postre saludable","🍰"],["Loncheras","🎒"],["Favoritas","⭐"]];
 const REC=[
 /* ===== Plato principal ===== */
 ["🍲","Sopa de quinua con verduras","40 min","Plato principal",
@@ -1031,7 +1031,305 @@ const REC=[
 "Corte | Pique la fruta en cubos pequeños y las uvas por la mitad.",
 "Aliñe | Mezcle con el jugo de naranja para que no se oscurezca.",
 "Sirva | Sirva fría con menta, en un bol o en vasitos individuales.","Consejo de orden | Agregue primero las frutas más firmes (manzana, uvas) y al final las más blandas (banano, papaya) para que no se deshagan al mezclar."],
-{p:"Rinde 4 porciones",u:"Bol, cuchillo, tabla",c:"Agregue el banano al final para que no se ponga blando.",l:"La fruta está fresca y bañada en jugo.",g:"Dura 1 día en refrigeración."}]
+{p:"Rinde 4 porciones",u:"Bol, cuchillo, tabla",c:"Agregue el banano al final para que no se ponga blando.",l:"La fruta está fresca y bañada en jugo.",g:"Dura 1 día en refrigeración."}],
+/* ===== Loncheras ===== */
+["🥪","Sándwich de huevo duro y zanahoria","15 min","Loncheras",
+["2 rebanadas de pan integral","1 huevo","1/2 zanahoria pequeña rallada fina","1 cucharada de yogur natural sin azúcar","1 hoja de lechuga","1 pizca de sal"],
+["Cocine el huevo | Ponga el huevo en una olla pequeña, cúbralo con agua fría y lleve a hervir. Cuando hierva, baje el fuego y cocine 10 minutos. Pase el huevo a un bol con agua fría durante 5 minutos: así se pela con facilidad.",
+"Pele y aplaste | Golpee suavemente la cáscara contra la mesa, pélela y aplaste el huevo con un tenedor en un bol, hasta que no queden trozos grandes.",
+"Prepare la zanahoria | Pele la zanahoria y rállela por el lado fino del rallador. Si suelta mucho jugo, escúrrala con las manos.",
+"Mezcle | Agregue al huevo la zanahoria, el yogur y la sal. Mezcle hasta lograr una pasta untable. Pruebe y ajuste la sal.",
+"Arme el sándwich | Unte la mezcla sobre una rebanada de pan, ponga la hoja de lechuga seca encima y cierre con la otra rebanada. Corte en triángulos o en bastones para que sea fácil de comer.",
+"Empaque | Envuélvalo en papel o colóquelo en un recipiente con tapa. Manténgalo en la parte más fresca de la mochila o bolso."],
+{p:"Rinde 1 lonchera",u:"Olla pequeña, bol, tenedor, rallador, cuchillo",c:"El yogur reemplaza a la mayonesa: queda más ligero y económico. Si lo va a comer varias horas después, lleve la lechuga aparte para que el pan no se humedezca.",l:"El huevo está firme por dentro, sin partes líquidas, y la pasta se unta sin deshacerse.",g:"Prepare la pasta la víspera y arme el sándwich por la mañana. Manténgalo siempre en un lugar fresco.",a:["Niños","Adolescentes","Adulto joven","Adultos"]}],
+
+["🍱","Lonchera bento de huevo, queso y frutas","15 min","Loncheras",
+["1 huevo","2 rodajas gruesas de queso fresco (unos 40 g)","1 manzana pequeña o 1 banano","1/2 zanahoria pelada y cortada en bastones","4 galletas de soda o 1 rebanada de pan integral en cuadritos","Unas gotas de limón para la manzana"],
+["Cocine el huevo | Ponga el huevo en agua fría, lleve a hervir y cocine 10 minutos desde que hierva. Enfríelo 5 minutos en agua fría y pélelo.",
+"Corte | Corte el huevo por la mitad o en cuartos. Corte el queso en cubos de 1,5 cm y la zanahoria en bastones de 6 cm.",
+"Prepare la fruta | Lave la manzana, retire el corazón y córtela en gajos; rocíelos con limón para que no se oscurezcan. Si usa banano, pélelo justo antes de comer o llévelo entero con su cáscara.",
+"Arme los compartimentos | En un recipiente con divisiones, o en uno normal con separadores de papel, ponga cada alimento en su espacio: proteína (huevo y queso), fruta, verdura y galletas.",
+"Revise la combinación | Una buena lonchera tiene una proteína, una fruta, una verdura y un cereal. Si falta alguno, cámbielo por lo que tenga en casa.",
+"Empaque | Cierre bien el recipiente y póngalo con la botella de agua."],
+{p:"Rinde 1 lonchera",u:"Olla pequeña, cuchillo, tabla, recipiente con divisiones o con tapa",c:"A los niños les gusta elegir ellos mismos qué va en cada compartimento. Para menores de 4 años, corte los alimentos en trozos muy pequeños.",l:"El huevo está firme por dentro y todos los alimentos están fríos y secos antes de cerrar el recipiente.",g:"Arme la lonchera por la mañana o la noche anterior y guárdela en refrigeración hasta salir.",a:["Niños","Adolescentes"]}],
+
+["🌯","Wrap de atún con lechuga y tomate","15 min","Loncheras",
+["1 tortilla de trigo grande","1/2 lata de atún en agua (unos 70 g), bien escurrida","1 cucharada de yogur natural sin azúcar","2 hojas de lechuga lavadas y secas","1/2 tomate en rodajas finas","Unas gotas de limón","1 pizca de sal"],
+["Escurra el atún | Abra la lata, presione la tapa contra el atún para sacar toda el agua y desmenúcelo con un tenedor en un bol. Si queda con líquido, el wrap se humedece.",
+"Mezcle | Agregue el yogur, el limón y la sal. Mezcle y pruebe.",
+"Caliente la tortilla | Póngala en una sartén seca a fuego medio, 20 segundos por lado. Así se enrolla sin romperse.",
+"Arme | Sobre la tortilla ponga primero la lechuga (protege la tortilla de la humedad), luego el atún y al final las rodajas de tomate, sin llegar a los bordes. Sacuda las semillas del tomate si están muy jugosas.",
+"Enrolle | Doble los lados hacia adentro y enrolle apretando con firmeza, desde el lado más cercano a usted.",
+"Empaque | Envuélvalo en papel aluminio o papel film. Al momento de comer, córtelo por la mitad."],
+{p:"Rinde 1 lonchera",u:"Sartén, bol, tenedor, cuchillo, tabla",c:"Con pollo desmenuzado, huevo duro o fréjol aplastado en lugar de atún, se obtiene otra versión. La tortilla integral aporta más fibra.",l:"El wrap está firme, bien cerrado y la tortilla no se ve mojada.",g:"Se arma por la mañana. Llévelo en un lugar fresco, con hielo, y cómalo el mismo día.",a:["Adolescentes","Adulto joven","Adultos"]}],
+
+["🥗","Ensalada fría de fideo con verduras y atún","25 min","Loncheras",
+["1/2 taza de fideos secos tipo tornillo o codito (unos 50 g)","1/2 lata de atún en agua, bien escurrida","1/2 zanahoria rallada","1/4 de pimiento en cubitos pequeños","2 cucharadas de arveja o choclo ya cocidos","1 cucharada de aceite","Jugo de 1/2 limón","1 pizca de sal","Agua y sal para hervir los fideos"],
+["Hierva los fideos | Ponga agua con una pizca de sal a hervir en una olla. Agregue los fideos y cocine según el tiempo de la funda (unos 8 a 10 minutos), moviendo de vez en cuando para que no se peguen.",
+"Enfríe | Escurra y pase los fideos por agua fría en el colador, para cortar la cocción. Escurra muy bien y déjelos 5 minutos para que se seque el agua.",
+"Prepare los demás ingredientes | Ralle la zanahoria, corte el pimiento en cubitos muy pequeños y desmenuce el atún bien escurrido.",
+"Haga el aliño | En un bol pequeño mezcle el aceite, el limón y la sal.",
+"Mezcle | En un bol grande junte los fideos fríos, el atún, la zanahoria, el pimiento y la arveja o el choclo. Agregue el aliño y mezcle con suavidad.",
+"Repose y empaque | Deje reposar 10 minutos para que tome sabor y pase la ensalada a un recipiente con tapa."],
+{p:"Rinde 1 lonchera",u:"Olla, colador, bol grande, bol pequeño, tabla y cuchillo",c:"Es una buena forma de aprovechar los fideos que sobraron. Con huevo duro o pollo cocido en lugar de atún cambia el sabor.",l:"Los fideos están blandos pero firmes (no deshechos) y todos los ingredientes están fríos y bien mezclados.",g:"Dura 1 día en refrigeración. Llévela fría y cómala el mismo día.",a:["Adolescentes","Adulto joven","Adultos"]}],
+
+["🥣","Ensalada de quinua, choclo y queso","30 min","Loncheras",
+["1/3 taza de quinua (unos 60 g)","2/3 taza de agua para cocinarla","1/2 taza de choclo desgranado ya cocido","1/2 tomate en cubitos","40 g de queso fresco en cubos pequeños","1 cucharada de cilantro picado","Jugo de 1/2 limón","1 cucharadita de aceite","1 pizca de sal"],
+["Lave la quinua | Póngala en un colador fino y frótela con los dedos bajo el chorro de agua 1 a 2 minutos, hasta que el agua salga clara y sin espuma. Así pierde el amargor.",
+"Cocine la quinua | En una olla pequeña, ponga la quinua escurrida y el agua. Cuando hierva, baje el fuego al mínimo, tape y cocine 15 minutos, sin destapar.",
+"Compruebe el punto | La quinua está lista cuando el agua se secó y los granos se ven abiertos, con un pequeño anillo blanco. Apague, deje tapada 5 minutos y esponje con un tenedor.",
+"Enfríe | Extienda la quinua en un plato y déjela enfriar 10 minutos. No cierre un recipiente con comida caliente: se acumula vapor y se daña más rápido.",
+"Mezcle | En un bol junte la quinua fría con el choclo, el tomate, el queso y el cilantro.",
+"Aliñe y empaque | Agregue el limón, el aceite y la sal. Mezcle, pruebe y ajuste. Pase a un recipiente con tapa."],
+{p:"Rinde 1 lonchera",u:"Olla pequeña con tapa, colador fino, tenedor, bol, tabla y cuchillo",c:"Puede cocinar quinua para varios días y guardarla en refrigeración: así arma la ensalada en 5 minutos.",l:"La quinua está suave, suelta y fría antes de mezclarla.",g:"Dura 2 días en refrigeración, tapada. Añada el tomate y el limón al momento de empacar.",a:["Adolescentes","Adulto joven","Adultos"]}],
+
+["🧁","Muffins salados de verdura y queso","40 min","Loncheras",
+["1 taza de harina de trigo (unos 120 g)","1 cucharadita de polvo de hornear","2 huevos","1/2 taza de leche","1 cucharada de aceite","1/2 taza de zanahoria rallada fina","1/4 taza de espinaca o acelga picada muy fina","1/2 taza de queso fresco desmenuzado","1/4 cucharadita de sal","1 cucharadita de aceite para el molde"],
+["Precaliente | Encienda el horno a 180 °C y engrase con aceite los moldes de muffin pequeños (salen unos 2 por persona) o use capacillos de papel.",
+"Mezcle los secos | En un bol grande, junte la harina, el polvo de hornear y la sal.",
+"Mezcle los líquidos | En otro bol bata los huevos con la leche y el aceite.",
+"Una las mezclas | Vierta los líquidos sobre los secos y mezcle con una cuchara solo hasta que no se vea harina seca. No bata de más: los muffins quedan duros.",
+"Agregue las verduras y el queso | Incorpore la zanahoria, la espinaca y el queso con movimientos suaves.",
+"Llene los moldes | Reparta la masa llenando cada molde hasta tres cuartas partes, porque crece al hornear.",
+"Hornee | Hornee 20 a 25 minutos. Introduzca un palillo en el centro: debe salir limpio, sin masa pegada.",
+"Enfríe | Déjelos 10 minutos en el molde y luego sobre una rejilla o plato, hasta que estén completamente fríos antes de empacar."],
+{p:"Rinde 4 porciones (8 muffins pequeños, 2 por lonchera)",u:"Molde de muffins, 2 bols, cuchara, palillo, horno",c:"Es una buena manera de que los niños coman verduras sin notarlas. Puede cambiar la espinaca por choclo, brócoli picado fino o arveja.",l:"Están dorados por encima y un palillo en el centro sale limpio.",g:"Duran 3 días en refrigeración y 1 mes en congelador. Sáquelos de la noche a la mañana.",a:["Niños","Adolescentes","Adulto joven"]}],
+
+["🌽","Tortillitas de choclo con queso","30 min","Loncheras",
+["2 tazas de choclo desgranado tierno (unos 300 g)","1/2 taza de harina de trigo o de maíz","1 huevo","1/2 taza de queso fresco desmenuzado","1/2 cucharadita de polvo de hornear","1/4 cucharadita de sal","1 cucharadita de aceite"],
+["Procese el choclo | Licúe o procese el choclo con el huevo 30 segundos, hasta tener una masa gruesa (no debe quedar completamente lisa, la textura da gusto).",
+"Mezcle | Pase la masa a un bol y agregue la harina, el polvo de hornear, la sal y el queso. Mezcle bien y deje reposar 5 minutos.",
+"Caliente la sartén | Use una sartén antiadherente a fuego medio-bajo con la cucharadita de aceite, esparcida con un papel.",
+"Cocine | Vierta porciones de 3 cucharadas y aplánelas un poco. Cocine 3 a 4 minutos por lado, hasta que estén doradas. No las mueva antes de tiempo: se despegan solas al dorarse.",
+"Escurra y enfríe | Páselas a un plato con papel absorbente y déjelas enfriar completamente.",
+"Empaque | Coloque 3 o 4 por lonchera, con rodajas de tomate o ensalada y una fruta."],
+{p:"Rinde 4 porciones (unas 12 tortillitas)",u:"Licuadora, bol, sartén antiadherente, espátula, papel absorbente",c:"Se pueden preparar el fin de semana y congelar. Sirven también como acompañante de una sopa.",l:"Están doradas por ambos lados y firmes al presionarlas.",g:"Duran 2 días en refrigeración. Recaliente en sartén para que vuelvan a quedar crocantes.",a:["Niños","Adolescentes","Adultos"]}],
+
+["🍝","Fideos con salsa de tomate casera y queso","25 min","Loncheras",
+["1/2 taza de fideos secos (unos 50 g)","1 tomate maduro mediano","1/4 de cebolla pequeña picada muy fina","1/2 zanahoria rallada fina","1 cucharadita de aceite","2 cucharadas de queso fresco desmenuzado","1 pizca de sal","Agua y sal para hervir los fideos"],
+["Hierva los fideos | Ponga agua con sal a hervir, agregue los fideos y cocine según la funda (unos 8 a 10 minutos). Escúrralos.",
+"Prepare el tomate | Ralle el tomate por el lado grueso del rallador y deseche la cáscara que queda en la mano.",
+"Haga el sofrito | En una sartén, caliente el aceite a fuego medio y cocine la cebolla 3 minutos, hasta que esté transparente. Agregue la zanahoria y cocine 2 minutos.",
+"Cocine la salsa | Agregue el tomate rallado y la sal. Cocine a fuego bajo 8 minutos, moviendo de vez en cuando, hasta que espese y pierda el olor a crudo.",
+"Mezcle | Agregue los fideos a la salsa y mezcle 1 minuto. Apague el fuego y añada el queso.",
+"Enfríe y empaque | Déjelos enfriar 10 minutos antes de cerrar el recipiente. Se pueden comer tibios o fríos."],
+{p:"Rinde 1 lonchera",u:"Olla, sartén, rallador, colador, cuchara de palo",c:"La zanahoria rallada se cocina en la salsa y casi no se nota. Para llevar tibio, use un termo precalentado con agua caliente.",l:"La salsa está espesa y los fideos están bien cubiertos.",g:"Dura 2 días en refrigeración. Recaliente hasta que humee antes de llevar en termo.",a:["Niños","Adolescentes"]}],
+
+["🧀","Quesadilla de fréjol y queso","15 min","Loncheras",
+["1 tortilla de trigo grande","1/3 taza de fréjol cocido y escurrido","40 g de queso fresco desmenuzado","1 cucharada de cebolla colorada picada muy fina","1 cucharadita de aceite","1 pizca de comino"],
+["Aplaste el fréjol | En un bol, aplaste el fréjol con un tenedor hasta formar una pasta gruesa. Agregue el comino.",
+"Rellene | Unte la pasta sobre la mitad de la tortilla, agregue el queso y la cebolla y doble la tortilla por la mitad.",
+"Cocine | Caliente una sartén con el aceite a fuego medio. Cocine la quesadilla 2 a 3 minutos por lado, presionando suavemente con la espátula, hasta que esté dorada y el queso se derrita.",
+"Repose | Pásela a una tabla y deje reposar 2 minutos antes de cortarla en 3 triángulos.",
+"Enfríe | Déjela enfriar completamente sobre una rejilla o plato, sin taparla.",
+"Empaque | Colóquela en un recipiente con tapa, junto con rodajas de tomate o pepino y una fruta."],
+{p:"Rinde 1 lonchera",u:"Sartén, tenedor, bol, espátula, tabla y cuchillo",c:"Es una forma económica de aprovechar el fréjol sobrante. También sirven lentejas cocidas aplastadas.",l:"La tortilla está dorada y el queso, derretido.",g:"Dura 1 día en refrigeración. Se puede comer fría o recalentada en sartén.",a:["Adolescentes","Adulto joven","Adultos"]}],
+
+["🫘","Ensalada fría de lentejas con tomate y cebolla","20 min","Loncheras",
+["1 taza de lentejas cocidas y escurridas","1 tomate pequeño en cubitos","2 cucharadas de cebolla colorada picada muy fina","1 zanahoria pequeña rallada","1 cucharada de cilantro o perejil picado","Jugo de 1/2 limón","2 cucharaditas de aceite","1/4 cucharadita de sal","1 huevo cocido en cuartos (opcional)"],
+["Escurra las lentejas | Colóquelas en un colador, enjuáguelas con agua y déjelas escurrir 5 minutos: el exceso de líquido hace que la ensalada quede aguada.",
+"Prepare la cebolla | Corte la cebolla colorada muy fina, póngala 5 minutos en agua con unas gotas de limón y escúrrala. Así pierde el picante fuerte.",
+"Corte | Corte el tomate en cubitos, ralle la zanahoria y pique el cilantro.",
+"Mezcle | En un bol junte las lentejas, el tomate, la cebolla, la zanahoria y el cilantro.",
+"Aliñe | Agregue el limón, el aceite y la sal, y mezcle con cuidado. Pruebe y ajuste.",
+"Repose y empaque | Deje reposar 10 minutos. Pase a un recipiente con tapa y lleve el huevo en un espacio aparte."],
+{p:"Rinde 1 lonchera",u:"Bol, colador, tabla y cuchillo, rallador",c:"Si no tiene lentejas cocidas: cocine 1/2 taza de lentejas con 2 tazas de agua, 25 a 30 minutos, hasta que estén blandas. Escúrralas y enfríelas antes de mezclar.",l:"Las lentejas están blandas pero enteras y la ensalada está húmeda, no aguada.",g:"Dura 2 días en refrigeración. Llévela fría.",a:["Adulto joven","Adultos"]}],
+
+["🥔","Ensalada de papa, huevo y arveja","30 min","Loncheras",
+["2 papas pequeñas (unos 250 g)","1 huevo","2 cucharadas de arveja (fresca, o de lata o frasco bien escurrida)","1/2 zanahoria rallada","1 cucharada de yogur natural sin azúcar","1 cucharadita de aceite","Jugo de 1/2 limón","1 cucharada de cilantro picado","1/4 cucharadita de sal"],
+["Corte las papas | Lave, pele y corte las papas en cubos de 2 cm, para que se cocinen parejo.",
+"Cocine | Ponga las papas en una olla con agua fría y una pizca de sal. Cuando hierva, baje el fuego y cocine 15 minutos. A los 5 minutos de cocción agregue el huevo entero: así se cocina 10 minutos.",
+"Compruebe | Pinche una papa con un tenedor: debe entrar sin esfuerzo. Si todavía está dura, cocine 3 minutos más.",
+"Enfríe | Escurra las papas y deje enfriar 10 minutos. Pase el huevo a agua fría 5 minutos y pélelo.",
+"Mezcle | En un bol junte las papas, el huevo picado, la arveja, la zanahoria y el cilantro. Agregue el yogur, el aceite, el limón y la sal.",
+"Mezcle con suavidad | Mueva con una cuchara sin aplastar demasiado, para que queden trozos de papa. Pase a un recipiente con tapa."],
+{p:"Rinde 1 lonchera",u:"Olla, colador, bol, cuchara, tabla y cuchillo",c:"El yogur reemplaza a la mayonesa. Con remolacha cocida o pepino en cubos queda más colorida.",l:"Las papas se pinchan con facilidad pero no se deshacen y el huevo está firme.",g:"Dura 1 día en refrigeración. Es mejor llevarla fría y comerla el mismo día.",a:["Niños","Adolescentes","Adulto joven","Adultos"]}],
+
+["🥣","Avena de la víspera con fruta","10 min + reposo","Loncheras",
+["1/3 taza de avena en hojuelas","1/2 taza de leche o yogur natural sin azúcar","1 cucharada de chía o linaza (opcional)","1/2 banano o 1/2 manzana picados","1 pizca de canela","1 cucharadita de miel o panela rallada (opcional)"],
+["Elija el frasco | Use un frasco de vidrio o plástico con tapa que cierre bien, de unos 300 ml.",
+"Mezcle | En el frasco ponga la avena, la leche o el yogur, la chía y la canela. Mezcle con una cuchara hasta que la avena quede cubierta.",
+"Refrigere | Tape y deje en el refrigerador toda la noche (mínimo 6 horas). La avena absorbe el líquido y se ablanda sola.",
+"Revise la textura | Por la mañana debe verse espesa y cremosa. Si quedó muy seca, agregue 2 cucharadas de leche; si quedó líquida, déjela reposar un rato más.",
+"Agregue la fruta | Pique la fruta y añádala justo antes de salir, para que no se oscurezca ni se deshaga. Endulce con miel o panela si desea.",
+"Empaque | Cierre el frasco, llévelo frío y no olvide una cuchara."],
+{p:"Rinde 1 lonchera",u:"Frasco con tapa, cuchara, cuchillo, tabla",c:"Cambie la fruta según la temporada: mora, frutilla, pera o mango. No necesita azúcar si la fruta está madura.",l:"La avena está blanda y cremosa, sin granos duros.",g:"La mezcla sin fruta dura 2 días en refrigeración.",a:["Niños","Adolescentes","Adulto joven","Adultos"]}],
+
+["🥖","Pan con pollo desmenuzado y pepino","20 min","Loncheras",
+["2 rebanadas de pan integral o 1 pan pequeño","1/2 taza de pollo cocido y desmenuzado (unos 70 g)","1 cucharada de yogur natural sin azúcar","1/4 de aguacate maduro","Unas rodajas finas de pepino","Unas gotas de limón","1 pizca de sal"],
+["Prepare el pollo | Use pollo sobrante bien cocido, sin partes rosadas. Si no tiene, hierva una pechuga 20 minutos en agua con sal, déjela enfriar y desmenúcela con dos tenedores.",
+"Mezcle | En un bol mezcle el pollo desmenuzado con el yogur, el limón y la sal.",
+"Aplaste el aguacate | Con un tenedor, aplaste el aguacate con unas gotas de limón para que no se oscurezca.",
+"Arme | Unte el aguacate sobre una rebanada de pan, ponga el pollo y las rodajas de pepino y cierre con la otra rebanada.",
+"Corte y empaque | Corte por la mitad y envuélvalo en papel. Llévelo en un lugar fresco."],
+{p:"Rinde 1 lonchera",u:"Olla (si cocina el pollo), tenedores, bol, cuchillo, tabla",c:"Lave bien las manos, la tabla y el cuchillo después de tocar pollo crudo. Con atún o huevo cocido queda igual de rico.",l:"El pollo está blanco por dentro, sin partes rosadas, y se desmenuza con facilidad.",g:"Arme el pan por la mañana. Con pollo o aguacate no lo deje horas fuera de un lugar fresco.",a:["Adolescentes","Adulto joven","Adultos"]}],
+
+["🌰","Mix andino de tostado, pasas y semillas","5 min","Loncheras",
+["1/4 taza de tostado (maíz tostado)","2 cucharadas de pasas","2 cucharadas de maní o de pepas de zapallo tostadas, sin sal","2 cucharadas de coco rallado o fruta deshidratada picada (opcional)","1 pizca de canela (opcional)"],
+["Elija los ingredientes | Compre el tostado y las pasas en el mercado: son económicos y duran semanas. Revise que el maní o las pepas estén sin sal ni azúcar añadida.",
+"Mezcle | En un bol, mezcle el tostado, las pasas, las semillas y el coco. Agregue la canela.",
+"Reparta las porciones | Una porción es la cantidad que cabe en una mano. Colóquela en un frasquito, una bolsita reutilizable o una cajita pequeña.",
+"Combine | Acompáñela con una fruta fresca y agua: forma un refrigerio completo.",
+"Seguridad | Si hay alergias, retire el maní y use solo pepas de zapallo o girasol."],
+{p:"Rinde 1 lonchera",u:"Bol, cuchara, frasquito o bolsita con cierre",c:"Prepare la mezcla para toda la semana en un frasco grande y reparta cada día. No es apta para menores de 4 años (riesgo de atoramiento).",l:"Los ingredientes están bien mezclados y secos.",g:"Dura 2 semanas en un frasco hermético, en lugar seco.",a:["Adolescentes","Adulto joven","Adultos"]}],
+
+["🍙","Bolitas de arroz con atún y zanahoria","25 min","Loncheras",
+["1 taza de arroz cocido, tibio (no caliente)","1/2 lata de atún en agua, bien escurrida","1/2 zanahoria rallada fina","1 cucharadita de yogur natural sin azúcar","Unas gotas de limón","1 pizca de sal","1 cucharadita de ajonjolí (opcional)","Unas hojas de lechuga para acompañar"],
+["Prepare el relleno | Escurra bien el atún y desmenúcelo en un bol. Agregue la zanahoria, el yogur, el limón y la sal. Mezcle y pruebe.",
+"Moje las manos | Tenga un plato con agua cerca y humedezca las manos antes de cada bolita, para que el arroz no se pegue.",
+"Forme las bolitas | Tome 2 cucharadas de arroz tibio, haga un hueco con el dedo, ponga 1 cucharadita de relleno y cierre el arroz sobre él. Forme unas 6 bolitas del tamaño de una mandarina pequeña.",
+"Dé el toque final | Si desea, ruede las bolitas sobre el ajonjolí, que se pega solo gracias a la humedad.",
+"Enfríe | Déjelas sobre un plato 10 minutos para que se firmen y estén frías al empacar.",
+"Empaque | Coloque las bolitas en un recipiente, con las hojas de lechuga en el fondo, para que no se peguen entre sí."],
+{p:"Rinde 1 lonchera",u:"Bol, tenedor, plato con agua, rallador, recipiente con tapa",c:"Con huevo cocido picado o fréjol aplastado en lugar de atún se obtiene otra versión. Es una buena forma de aprovechar arroz sobrante.",l:"Las bolitas se mantienen firmes sin deshacerse al tomarlas.",g:"Dura 1 día en refrigeración. Es mejor llevarlas frías y comerlas el mismo día.",a:["Niños","Adolescentes","Adulto joven"]}],
+
+["🍛","Menestra de lentejas con arroz y ensalada, para llevar","30 min","Loncheras",
+["1 taza de arroz cocido","3/4 taza de lentejas cocidas (con un poco de su caldo)","1 cucharadita de aceite","2 cucharadas de cebolla blanca picada muy fina","1 diente de ajo pequeño picado","1/4 cucharadita de comino","1/2 tomate en cubitos","2 cucharadas de cebolla colorada en plumas finas","Jugo de 1/2 limón","Sal al gusto","1 huevo cocido o 30 g de queso fresco para acompañar"],
+["Haga el refrito | En una sartén, caliente el aceite a fuego medio y cocine la cebolla blanca, el ajo y el comino 3 minutos, hasta que la cebolla esté transparente.",
+"Agregue las lentejas | Añada las lentejas con un poco de su caldo y cocine 8 minutos a fuego medio-bajo, aplastando unas pocas con la cuchara para que espese. Pruebe y ajuste la sal.",
+"Prepare la ensalada | Mezcle el tomate con la cebolla colorada (remojada 5 minutos en agua con limón y escurrida), el limón y una pizca de sal.",
+"Arme el recipiente | Ponga el arroz a un lado, la menestra al otro y la ensalada en un recipiente aparte o en un compartimento propio, para que no se humedezca el arroz.",
+"Agregue la proteína | Coloque el huevo cocido o el queso en un espacio aparte.",
+"Para llevar caliente | Si va a llevar la comida en termo, caliéntelo antes con agua hirviendo 5 minutos, vacíelo y ponga la menestra bien caliente. Si no, llévela fría y caliéntela donde pueda hasta que humee."],
+{p:"Rinde 1 lonchera",u:"Sartén, cuchara de palo, recipiente con divisiones o termo, tabla y cuchillo",c:"Es el «almuerzo de siempre» llevado en recipiente: económico y completo con cereal, legumbre y ensalada. Cocine lentejas para varios días y congele porciones.",l:"La menestra está espesa y bien caliente al servirla (debe humear).",g:"Dura 3 días en refrigeración. Recaliente hasta que humee antes de llevar en termo.",a:["Adolescentes","Adulto joven","Adultos"]}],
+["🥪","Sánduche tostado de queso y tomate","15 min","Loncheras",
+["2 rebanadas de pan integral","2 lonchas de queso fresco o mozzarella (unos 40 g)","3 rodajas finas de tomate","Unas hojas de albahaca u orégano seco (opcional)","1 cucharadita de aceite"],
+["Arme el sánduche | Sobre una rebanada de pan coloque una loncha de queso, las rodajas de tomate, la albahaca y la otra loncha de queso. Cierre con la otra rebanada. El queso en contacto con el pan evita que el tomate lo humedezca.",
+"Caliente la sartén | Ponga una sartén antiadherente a fuego medio-bajo con el aceite, esparcido con un papel.",
+"Tueste | Coloque el sánduche y presiónelo suavemente con la espátula. Cocine 3 a 4 minutos por lado, hasta que el pan esté dorado y el queso, blando.",
+"Repose | Pase el sánduche a una tabla y déjelo reposar 3 minutos para que el queso no se salga al cortar.",
+"Corte y enfríe | Córtelo en triángulos y déjelo enfriar 5 minutos sobre un plato, sin tapar, para que no se ablande con el vapor.",
+"Empaque | Envuélvalo en papel o póngalo en un recipiente con tapa."],
+{p:"Rinde 1 lonchera",u:"Sartén antiadherente, espátula, tabla y cuchillo",c:"Es una forma práctica de aprovechar el pan del día anterior. Puede agregar espinaca o rodajas de champiñón entre el queso.",l:"El pan está dorado por ambos lados y el queso se ve blando y derretido.",g:"Se hace por la mañana. Llévelo en un lugar fresco y cómalo el mismo día, tibio o frío.",a:["Niños","Adolescentes","Adulto joven","Adultos"]}],
+
+["🌯","Wrap de huevo revuelto y espinaca","15 min","Loncheras",
+["1 tortilla de trigo grande","2 huevos","8 hojas de espinaca fresca bien lavadas y picadas","2 cucharadas de queso fresco desmenuzado","1 cucharadita de aceite","1/4 cucharadita de sal"],
+["Bata los huevos | En un bol, bata los huevos con la sal durante 30 segundos con un tenedor.",
+"Saltee la espinaca | En una sartén con el aceite, a fuego medio-bajo, cocine la espinaca 30 segundos, hasta que se ablande.",
+"Cocine los huevos | Vierta los huevos sobre la espinaca y revuelva 2 a 3 minutos con una cuchara, hasta que estén completamente cuajados y no se vea líquido.",
+"Agregue el queso | Apague el fuego, añada el queso y mezcle. Deje enfriar 5 minutos.",
+"Caliente la tortilla | Caliéntela 20 segundos por lado en una sartén seca para que se enrolle sin romperse.",
+"Arme y empaque | Ponga el huevo en el centro de la tortilla, doble los lados hacia adentro y enrolle apretando. Envuélvalo en papel aluminio y corte por la mitad al comerlo."],
+{p:"Rinde 1 lonchera",u:"Sartén, bol, tenedor, cuchara de palo",c:"El huevo debe quedar bien cocido, sin partes líquidas. Se puede reemplazar la espinaca por acelga, brócoli picado o choclo.",l:"Los huevos están completamente cuajados, opacos y sin partes líquidas.",g:"Se prepara por la mañana. Llévelo en un lugar fresco y cómalo el mismo día.",a:["Adolescentes","Adulto joven","Adultos"]}],
+
+["🥟","Empanaditas de tortilla con queso y espinaca","30 min","Loncheras",
+["2 tortillas de trigo pequeñas (de unos 20 cm)","1/2 taza de espinaca picada muy fina","50 g de queso fresco desmenuzado","1 cucharadita de aceite","1 pizca de sal","Un poco de agua para sellar los bordes"],
+["Precaliente | Encienda el horno a 180 °C y cubra una bandeja con papel de hornear.",
+"Prepare el relleno | En un bol, mezcle la espinaca picada, el queso y la sal.",
+"Corte las tortillas | Corte cada tortilla por la mitad: quedan 4 medias lunas.",
+"Rellene | Ponga 1 cucharada de relleno sobre cada media luna. Humedezca el borde con un dedo mojado y doble la tortilla para formar una empanadita.",
+"Selle | Presione los bordes con un tenedor para cerrarlos bien. Colóquelas sobre la bandeja y píntelas con el aceite.",
+"Hornee | Hornee 12 a 15 minutos, hasta que estén doradas. Déjelas enfriar 10 minutos antes de empacarlas."],
+{p:"Rinde 1 lonchera (4 empanaditas)",u:"Bol, cuchillo, tenedor, bandeja, papel de hornear, horno",c:"No ponga demasiado relleno: si sobra, se rompen. Se pueden congelar crudas y hornear sin descongelar, con 5 minutos más.",l:"Están doradas, bien selladas y el queso se ve derretido.",g:"Duran 2 días en refrigeración. Recaliente en horno o sartén.",a:["Niños","Adolescentes","Adulto joven"]}],
+
+["🍚","Ensalada de arroz con choclo, huevo y verduras","25 min","Loncheras",
+["1 taza de arroz cocido y frío","1 huevo","1/2 taza de choclo desgranado cocido","1/2 zanahoria rallada","1/2 tomate en cubitos","1 cucharada de cilantro picado","Jugo de 1/2 limón","2 cucharaditas de aceite","1/4 cucharadita de sal"],
+["Cocine el huevo | Ponga el huevo en agua fría, lleve a hervir y cocine 10 minutos desde que hierva. Pase a agua fría 5 minutos y pélelo.",
+"Suelte el arroz | Con un tenedor, deshaga los grumos del arroz frío. Si está muy compacto, páselo por agua fría en un colador y escúrralo bien.",
+"Prepare las verduras | Ralle la zanahoria, corte el tomate en cubitos y pique el cilantro.",
+"Mezcle | En un bol junte el arroz, el choclo, la zanahoria, el tomate y el cilantro.",
+"Aliñe | Agregue el limón, el aceite y la sal. Mezcle con cuidado y pruebe.",
+"Agregue el huevo y empaque | Pique el huevo y agréguelo encima. Pase a un recipiente con tapa."],
+{p:"Rinde 1 lonchera",u:"Olla pequeña, bol, tenedor, rallador, tabla y cuchillo",c:"Es ideal para aprovechar arroz sobrante. Con atún, fréjol o pollo cocido en lugar de huevo se obtienen otras versiones.",l:"Los granos de arroz están sueltos, fríos y bien aliñados.",g:"Dura 1 día en refrigeración. Llévela fría y cómala el mismo día.",a:["Adolescentes","Adulto joven","Adultos"]}],
+
+["🥗","Ensalada de fréjol, choclo y aguacate","15 min","Loncheras",
+["1/2 taza de fréjol cocido y escurrido","1/2 taza de choclo desgranado cocido","1/4 de aguacate maduro en cubos","1/2 tomate en cubitos","2 cucharadas de cebolla colorada picada muy fina","1 cucharada de cilantro picado","Jugo de 1/2 limón","2 cucharaditas de aceite","1 pizca de sal"],
+["Escurra el fréjol | Enjuáguelo con agua en un colador y déjelo escurrir 5 minutos.",
+"Prepare la cebolla | Póngala 5 minutos en agua con unas gotas de limón y escúrrala. Pierde el picante fuerte.",
+"Mezcle | En un bol junte el fréjol, el choclo, el tomate, la cebolla y el cilantro.",
+"Aliñe | Agregue el limón, el aceite y la sal. Mezcle con suavidad y pruebe.",
+"Agregue el aguacate | Corte el aguacate en cubos y mézclelo al final con cuidado, o llévelo aparte y agréguelo al comer, para que no se oscurezca.",
+"Empaque | Pase a un recipiente con tapa."],
+{p:"Rinde 1 lonchera",u:"Bol, colador, tabla y cuchillo",c:"Con lentejas o garbanzos cocidos en lugar de fréjol también queda muy bien. Puede acompañar con tostadas o galletas de soda.",l:"El fréjol está blando pero entero y la ensalada está húmeda, no aguada.",g:"Dura 1 día en refrigeración sin el aguacate. Llévela fría.",a:["Adolescentes","Adulto joven","Adultos"]}],
+
+["🥙","Ensalada de garbanzos con pepino y tomate","15 min","Loncheras",
+["3/4 taza de garbanzos cocidos (de lata o frasco, escurridos y enjuagados)","1/2 pepino en cubitos","1 tomate pequeño en cubitos","2 cucharadas de cebolla colorada picada muy fina","1 cucharada de perejil o cilantro picado","Jugo de 1/2 limón","2 cucharaditas de aceite","1/4 cucharadita de sal","1/4 cucharadita de comino (opcional)"],
+["Escurra y enjuague | Ponga los garbanzos en un colador, enjuáguelos con agua y déjelos escurrir 5 minutos. Así se elimina el exceso de sal y líquido.",
+"Prepare la cebolla | Póngala 5 minutos en agua con unas gotas de limón y escúrrala.",
+"Corte | Pele el pepino si la cáscara es dura y córtelo en cubitos. Corte el tomate del mismo tamaño y quite las semillas si están muy jugosas.",
+"Mezcle | En un bol junte los garbanzos, el pepino, el tomate, la cebolla y el perejil.",
+"Aliñe | Agregue el limón, el aceite, la sal y el comino. Mezcle con cuidado y pruebe.",
+"Reposo y empaque | Déjela reposar 10 minutos para que tome sabor y páselo a un recipiente con tapa."],
+{p:"Rinde 1 lonchera",u:"Bol, colador, tabla y cuchillo",c:"Si usa garbanzos secos: remójelos toda la noche y cocínelos 1 hora, o 25 minutos en olla a presión, hasta que estén blandos.",l:"Los garbanzos están blandos pero enteros y las verduras, crocantes.",g:"Dura 2 días en refrigeración. El pepino suelta agua: escúrralo antes de empacar.",a:["Adolescentes","Adulto joven","Adultos"]}],
+
+["🥑","Ensalada de pollo con choclo y aguacate","20 min","Loncheras",
+["1/2 taza de pollo cocido y desmenuzado (unos 70 g)","1/2 taza de choclo desgranado cocido","1/4 de aguacate maduro","1/2 tomate en cubitos","2 hojas de lechuga troceadas","Jugo de 1/2 limón","1 cucharadita de aceite","1 pizca de sal"],
+["Prepare el pollo | Use pollo sobrante bien cocido, sin partes rosadas. Desmenúcelo con dos tenedores en un bol.",
+"Mezcle | Agregue el choclo, el tomate y la lechuga seca y troceada.",
+"Aliñe | Agregue el limón, el aceite y la sal, y mezcle con suavidad. Pruebe y ajuste la sal.",
+"Agregue el aguacate | Córtelo en cubos y añádalo al final con cuidado, con unas gotas de limón.",
+"Empaque | Pase a un recipiente con tapa. Si la lleva para más tarde, ponga la lechuga y el aguacate aparte."],
+{p:"Rinde 1 lonchera",u:"Bol, tenedores, tabla y cuchillo",c:"Lave bien las manos y la tabla después de tocar pollo crudo. Con atún o huevo cocido también queda muy rica.",l:"El pollo está blanco por dentro y la ensalada se ve fresca.",g:"Dura 1 día en refrigeración. Llévela fría.",a:["Adulto joven","Adultos"]}],
+
+["🍠","Bowl de camote asado, fréjol y queso","40 min","Loncheras",
+["1 camote mediano (unos 200 g)","1/2 taza de fréjol cocido","40 g de queso fresco en cubos","1 cucharadita de aceite","1/4 cucharadita de pimentón dulce o comino","1/4 cucharadita de sal","2 hojas de lechuga o un puñado de col picada fina","Jugo de 1/2 limón"],
+["Precaliente | Encienda el horno a 200 °C.",
+"Prepare el camote | Lave bien el camote, pélelo y córtelo en cubos de 2 cm.",
+"Sazone | Mezcle los cubos con el aceite, el pimentón y la sal, y extiéndalos en una bandeja sin que se amontonen.",
+"Hornee | Hornee 25 minutos, volteando a los 12 minutos, hasta que estén dorados por fuera y blandos al pincharlos.",
+"Prepare el fréjol | Caliente el fréjol 3 minutos en una sartén con 2 cucharadas de agua, o úselo frío. Deje enfriar todo 10 minutos.",
+"Arme el bowl | En un recipiente ponga la lechuga, el camote, el fréjol y el queso, y rocíe con limón."],
+{p:"Rinde 1 lonchera",u:"Bandeja de hornear, bol, sartén, tabla y cuchillo, horno",c:"Puede asar camote para varios días y guardarlo: así arma el bowl en 5 minutos.",l:"El camote está dorado y se pincha con facilidad.",g:"Dura 3 días en refrigeración. Se puede comer frío o recalentado.",a:["Adolescentes","Adulto joven","Adultos"]}],
+
+["🥕","Crema de zanahoria y camote para termo","30 min","Loncheras",
+["2 zanahorias medianas peladas y en rodajas","1 camote pequeño (unos 150 g) pelado y en cubos","1/4 de cebolla blanca picada","1 diente de ajo pequeño picado","1 cucharadita de aceite","2 tazas de agua","1/4 taza de leche (opcional)","1/4 cucharadita de sal"],
+["Haga el refrito | En una olla mediana, caliente el aceite a fuego medio y cocine la cebolla y el ajo 3 minutos, hasta que estén transparentes.",
+"Cocine | Agregue la zanahoria, el camote y el agua. Cuando hierva, baje el fuego, tape y cocine 20 minutos, hasta que las verduras se deshagan al pincharlas.",
+"Licue con cuidado | Retire del fuego y deje reposar 5 minutos. Licue por tandas sin llenar la licuadora más de la mitad, sujetando la tapa con un paño. Con un adulto: el líquido caliente puede saltar y quemar.",
+"Regrese a la olla | Vierta la crema en la olla, agregue la leche y la sal, y caliente 3 minutos sin dejar que hierva fuerte. Pruebe y ajuste la sal.",
+"Caliente el termo | Llene el termo con agua hirviendo, tápelo 5 minutos y vacíelo.",
+"Empaque | Vierta la crema bien caliente en el termo y ciérrelo de inmediato. Acompañe con pan o tostadas."],
+{p:"Rinde 1 lonchera (unos 400 ml)",u:"Olla con tapa, licuadora o batidora de mano, termo, tabla y cuchillo",c:"El termo precalentado mantiene la sopa caliente por varias horas. Si la crema queda muy espesa, agregue un poco de agua caliente.",l:"Es una crema lisa, de color naranja, que cubre la parte de atrás de una cuchara.",g:"Dura 3 días en refrigeración. Recaliente hasta que humee antes de poner en el termo.",a:["Niños","Adolescentes","Adulto joven","Adultos"]}],
+
+["🍜","Caldo de pollo con fideos y verduras para termo","40 min","Loncheras",
+["1 muslo o pechuga pequeña de pollo sin piel (unos 120 g)","2 tazas de agua","1/2 papa pequeña en cubos","1/2 zanahoria en cubitos","2 cucharadas de fideos cortos","1/4 de cebolla blanca","1 cucharada de cilantro picado","1/4 cucharadita de sal"],
+["Cocine el pollo | En una olla, ponga el pollo, el agua y la cebolla. Cuando hierva, retire la espuma que suba y baje el fuego. Tape y cocine 20 minutos.",
+"Desmenuce | Retire el pollo, déjelo enfriar 5 minutos y desmenúcelo con dos tenedores. Revise que no tenga partes rosadas.",
+"Agregue las verduras | Al caldo agregue la papa y la zanahoria y cocine 10 minutos.",
+"Agregue los fideos | Añada los fideos y cocine 5 minutos más, hasta que estén blandos.",
+"Termine | Regrese el pollo, agregue la sal y el cilantro y cocine 2 minutos. Pruebe y ajuste.",
+"Empaque | Caliente el termo con agua hirviendo 5 minutos, vacíelo y llene con el caldo bien caliente. Ciérrelo de inmediato."],
+{p:"Rinde 1 lonchera (unos 500 ml)",u:"Olla con tapa, tenedores, termo, tabla y cuchillo",c:"Es un almuerzo económico que se ve muy bien en días fríos. Lave bien las manos y la tabla después de tocar pollo crudo.",l:"El pollo está blanco por dentro y las verduras y los fideos están blandos.",g:"Dura 2 días en refrigeración. Recaliente hasta que hierva antes de poner en el termo.",a:["Niños","Adolescentes","Adultos"]}],
+
+["🥕","Tortitas de zanahoria y avena","20 min","Loncheras",
+["1 zanahoria mediana rallada fina (unos 100 g)","1/3 taza de avena en hojuelas","1 huevo","2 cucharadas de queso fresco desmenuzado","1 cucharada de cebolla larga picada muy fina","1/4 cucharadita de sal","1 cucharadita de aceite"],
+["Ralle la zanahoria | Pele y ralle la zanahoria por el lado fino. Si suelta mucho jugo, escúrrala con las manos.",
+"Mezcle | En un bol junte la zanahoria, la avena, el huevo, el queso, la cebolla y la sal. Mezcle bien.",
+"Deje reposar | Deje la masa 5 minutos: la avena absorbe la humedad y la masa se vuelve más firme.",
+"Caliente la sartén | Use una sartén antiadherente a fuego medio-bajo con la cucharadita de aceite.",
+"Cocine | Vierta 2 cucharadas de masa por tortita y aplánela. Cocine 3 minutos por lado, hasta que estén doradas y firmes.",
+"Enfríe y empaque | Páselas a un plato con papel absorbente y déjelas enfriar antes de empacar, con un poco de yogur natural para mojar."],
+{p:"Rinde 1 lonchera (unas 4 tortitas)",u:"Rallador, bol, sartén antiadherente, espátula",c:"Se pueden preparar el fin de semana y recalentar en sartén. Sirven con arroz o con ensalada.",l:"Están doradas por ambos lados y firmes al presionarlas.",g:"Duran 2 días en refrigeración. Recaliente en sartén para que vuelvan a quedar crocantes.",a:["Niños","Adolescentes","Adulto joven"]}],
+
+["🍏","Barritas de avena y manzana","40 min","Loncheras",
+["2 tazas de avena en hojuelas","2 manzanas ralladas con cáscara bien lavada","2 bananos maduros aplastados","1 huevo","1/2 cucharadita de canela","2 cucharadas de pasas","1 cucharadita de aceite para el molde"],
+["Precaliente | Encienda el horno a 180 °C y engrase un molde cuadrado pequeño o una bandeja con papel de hornear.",
+"Aplaste los bananos | En un bol grande, aplaste los bananos con un tenedor hasta formar un puré.",
+"Mezcle | Agregue el huevo, las manzanas ralladas, la canela, las pasas y la avena. Mezcle bien.",
+"Extienda | Vierta la mezcla en el molde y alise con el dorso de una cuchara, con un grosor de 2 cm.",
+"Hornee | Hornee 25 a 30 minutos, hasta que estén dorados por encima y firmes al tocarlos.",
+"Enfríe y corte | Déjelos enfriar completamente en el molde antes de cortar, para que no se desarmen. Corte en 8 barritas."],
+{p:"Rinde 4 porciones (8 barritas, 2 por lonchera)",u:"Molde cuadrado o bandeja, bol grande, rallador, tenedor, horno",c:"No necesitan azúcar: el banano y las manzanas aportan el dulzor. Se pueden congelar cortadas y sacar el día anterior.",l:"Están firmes, dorados y un palillo en el centro sale limpio.",g:"Duran 4 días en refrigeración en un recipiente tapado.",a:["Niños","Adolescentes","Adulto joven","Adultos"]}],
+
+["🥖","Panecillos de yogur y queso","35 min","Loncheras",
+["1 taza de harina de trigo (unos 120 g)","1 cucharadita de polvo de hornear","1/4 taza de yogur natural sin azúcar","1/4 taza de queso fresco desmenuzado","2 cucharadas de aceite","2 a 3 cucharadas de agua o leche","1/4 cucharadita de sal"],
+["Precaliente | Encienda el horno a 190 °C y cubra una bandeja con papel de hornear.",
+"Mezcle los secos | En un bol, junte la harina, el polvo de hornear y la sal.",
+"Agregue los demás ingredientes | Añada el yogur, el queso, el aceite y 2 cucharadas de agua. Mezcle con las manos hasta lograr una masa suave. Si está seca, agregue la cucharada de agua restante.",
+"Forme los panecillos | Divida la masa en 4 bolitas y aplánelas un poco sobre la bandeja.",
+"Hornee | Hornee 15 a 18 minutos, hasta que estén dorados. Déjelos enfriar 10 minutos.",
+"Empaque | Acompañe con una fruta o con tajadas de queso fresco y tomate."],
+{p:"Rinde 4 porciones (4 panecillos)",u:"Bol, bandeja, papel de hornear, horno",c:"No necesitan levadura ni reposo, así que están listos en menos de una hora. Con cebolla larga picada o semillas de zapallo quedan más sabrosos.",l:"Están dorados por fuera y blandos por dentro.",g:"Duran 2 días en un recipiente tapado y 1 mes en congelador.",a:["Niños","Adolescentes","Adulto joven","Adultos"]}],
+
+["🥛","Quinua con leche, canela y manzana en frasco","30 min","Loncheras",
+["1/3 taza de quinua (unos 60 g)","2/3 taza de agua para cocinarla","1/2 taza de leche","1/2 manzana en cubitos","1 pizca de canela","1 cucharadita de miel o panela rallada (opcional)"],
+["Lave la quinua | Póngala en un colador fino y frótela con los dedos bajo el chorro de agua 1 a 2 minutos, hasta que el agua salga clara y sin espuma.",
+"Cocine | En una olla pequeña, ponga la quinua y el agua. Cuando hierva, baje el fuego, tape y cocine 15 minutos, hasta que el agua se seque.",
+"Agregue la leche | Añada la leche y la canela y cocine 5 minutos más a fuego bajo, moviendo, hasta que quede cremosa.",
+"Endulce y enfríe | Agregue la miel o panela si desea y deje enfriar 10 minutos antes de pasarla al frasco.",
+"Agregue la manzana | Mezcle la manzana picada justo antes de salir, para que no se oscurezca.",
+"Empaque | Cierre el frasco, llévelo frío y no olvide una cuchara."],
+{p:"Rinde 1 lonchera",u:"Olla pequeña con tapa, colador fino, frasco con tapa, cuchara",c:"Cambie la manzana por pera, banano o mora, según la fruta de temporada. Funciona como desayuno o como refrigerio.",l:"La quinua está blanda y cremosa, con granos abiertos.",g:"Dura 2 días en refrigeración sin la fruta.",a:["Niños","Adolescentes","Adulto joven","Adultos"]}]
 ];
 
 let RF={q:"",cat:"Todas"};
@@ -1039,15 +1337,31 @@ const nrm=s=>String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
 const recGet=k=>{try{return JSON.parse(LS.g(`tesa_rec_${k}_${S.code}`)||"[]")}catch(e){return[]}};
 const recSet=(k,a)=>LS.s(`tesa_rec_${k}_${S.code}`,JSON.stringify(a));
 function recetario(){RF={q:"",cat:"Todas",n:persLoad()};
- show(`<div class="card">${back}<h2>🍽️ Recetario andino</h2><p class="small">Platos, snacks y postres económicos con productos del Ecuador. ${V("Ajuste cantidades e ingredientes a lo que tenga en casa.","Un adulto maneja cuchillo, fuego y horno; los menores lavan, mezclan y sirven.","Un adulto maneja cuchillo, fuego y horno; los menores lavan, mezclan y sirven.")}</p>
+ show(`<div class="card">${back}<h2>🍽️ Recetario andino</h2><p class="small">Platos, snacks, postres y loncheras económicos con productos del Ecuador. ${V("Ajuste cantidades e ingredientes a lo que tenga en casa.","Un adulto maneja cuchillo, fuego y horno; los menores lavan, mezclan y sirven.","Un adulto maneja cuchillo, fuego y horno; los menores lavan, mezclan y sirven.")}</p>
  ${persBox()}
  <div class="rdl noprint"><b>⬇️ Llévese el recetario</b><p class="small" style="margin:4px 0 8px">Descargue un archivo que se abre sin internet y sirve aunque cambie la página. También puede imprimirlo o guardarlo como PDF.</p><select id="rdsel" aria-label="Qué recetas incluir"><option value="all">Todas las recetas</option><option value="fav">Solo mis favoritas</option></select><div class="row2" style="justify-content:flex-start"><button onclick="recDescargar('dl')">Descargar archivo</button><button class="sec" onclick="recDescargar('print')">Imprimir o guardar PDF</button></div></div>
  <input id="rq" type="search" placeholder="Buscar por nombre o ingrediente (quinua, banano…)" oninput="RF.q=this.value;recList()">
- <div class="seg" id="rcats" style="margin-top:10px"></div><p class="small" id="rcount"></p><div id="rl"></div>
+ <div class="seg" id="rcats" style="margin-top:10px"></div><div class="seg" id="raud"></div><p class="small" id="rcount"></p><div id="rintro"></div><div id="rl"></div>
  <div class="alert">Cantidades aproximadas para 3 o 4 porciones. Cocine siempre el pollo, el pescado y los huevos hasta que estén bien cocidos. Si hay alergias (maní, huevo, lácteos, gluten u otras), adapte la receta o consulte a un profesional. En menores de 4 años, corte los alimentos redondos o duros (uvas, tomate cherry, canguil, frutos secos) para evitar atoramientos.</div></div>`);persChips();recList()}
+/* ---------- loncheras: público, contexto e introducción ---------- */
+const AUDS=[["Todos","📚"],["Niños","🧒"],["Adolescentes","🧑"],["Adulto joven","🎓"],["Adultos","💼"]];
+const AUDN={"Primaria":"Niños","Secundaria":"Adolescentes","Universidad o instituto":"Adulto joven","Trabajo":"Adultos"};
+const LON_AUD={"Niños":"porciones pequeñas y trozos fáciles de masticar. Corte uvas, tomate cherry y alimentos redondos o duros; en menores de 4 años evite frutos secos enteros y canguil. Incluya siempre agua.",
+"Adolescentes":"necesitan más energía por el crecimiento: acompañe con una fruta y agua, y evite gaseosas y energizantes.",
+"Adulto joven":"pensada para clases o trabajo: recipiente hermético que no se riegue, sin depender de microondas, y una fruta de refuerzo.",
+"Adultos":"para la jornada laboral: priorice verduras, legumbres y porciones moderadas, y lleve su botella de agua para rellenarla durante el día."};
+const LON_SEG="Lave sus manos y los recipientes; deje enfriar bien la comida antes de cerrar la tapa; mantenga frías las preparaciones con huevo, atún, pollo o queso (con un empaque de hielo o una botella de agua congelada) y no deje la lonchera al sol. Si un alimento se ve, huele o sabe raro, deséchelo.";
+const recCat=c=>{RF.cat=c;if(c=="Loncheras"&&!RF.aud)RF.aud=AUDN[S.nivel]||"Todos";recList()};
+function lonBox(r){const x=r[6]||{},a=x.a||[],bx=(c,h)=>`<div style="background:${c};border-radius:8px;padding:8px 10px;margin:8px 0;font-size:14px">${h}</div>`;
+ const au=a.length?`<b>🎒 Para quién es:</b><ul style="margin:4px 0 0">${a.map(k=>`<li><b>${k}:</b> ${LON_AUD[k]}</li>`).join("")}</ul>`:"";
+ const cx=V("Para usted: prepare la víspera lo que se pueda (cocer, rallar, mezclar) y arme la lonchera por la mañana.","Para su hijo o hija: deje que elija la fruta o la forma de armarla y que ayude a lavar, mezclar y empacar. Un adulto maneja el cuchillo, el fuego y el horno. Verifique que lleve su botella de agua.","Para su familia: cocine por tandas el fin de semana y arme una lonchera por integrante. Cambie «Personas» arriba (1 persona = 1 lonchera) para ajustar las cantidades, y rotule cada recipiente con el nombre.");
+ return bx("#e3f5e8",au)+bx("#f3ebfa","<b>👪 "+V("Para mí","Para mi hijo o hija","Para mi familia")+":</b> "+cx)+bx("#fde4e4","⚠️ <b>Seguridad de la lonchera:</b> "+LON_SEG)}
+function lonIntro(){return`<div class="card" style="border-top-color:var(--o)"><h3>🎒 Loncheras prácticas</h3><p class="small">Recetas rápidas, económicas y con productos fáciles de encontrar, para llevar a la escuela, la universidad o el trabajo. Hay ${REC.filter(r=>r[3]=="Loncheras").length} recetas, suficientes para un mes sin repetir; no están atadas a un día, así que elija la que quiera. Elija el público (niños, adolescentes, adulto joven o adultos) y ajuste las cantidades en «Personas».</p><div class="why"><b>Fórmula de una lonchera completa:</b> 1 plato principal (cereal, tubérculo o legumbre con una proteína) + 1 fruta o verdura + agua. Un snack natural es opcional.</div><p class="small">${V("Prepárela la víspera: ahorra tiempo por la mañana.","Involucre a su hijo o hija en el armado: come mejor lo que ayuda a preparar.","Cocine por tandas y arme varias loncheras a la vez.")}</p></div>`}
 function recList(){const fav=recGet("fav"),cook=recGet("cook"),q=nrm(RF.q.trim());
- const idx=REC.map((r,i)=>i).filter(i=>{const r=REC[i];if(RF.cat=="Favoritas"&&!fav.includes(i))return false;if(RF.cat!="Todas"&&RF.cat!="Favoritas"&&r[3]!=RF.cat)return false;return !q||nrm(r[1]+" "+r[4].join(" ")).includes(q)});
- $("#rcats").innerHTML=CATS.map(c=>`<button class="${c[0]==RF.cat?"on":""}" onclick="RF.cat='${c[0]}';recList()">${c[1]} ${c[0]}</button>`).join("");
+ const idx=REC.map((r,i)=>i).filter(i=>{const r=REC[i];if(RF.cat=="Favoritas"&&!fav.includes(i))return false;if(RF.cat!="Todas"&&RF.cat!="Favoritas"&&r[3]!=RF.cat)return false;if(RF.cat=="Loncheras"&&RF.aud&&RF.aud!="Todos"&&!(((r[6]||{}).a)||[]).includes(RF.aud))return false;return !q||nrm(r[1]+" "+r[4].join(" ")).includes(q)});
+ $("#rcats").innerHTML=CATS.map(c=>`<button class="${c[0]==RF.cat?"on":""}" onclick="recCat('${c[0]}')">${c[1]} ${c[0]}</button>`).join("");
+ $("#raud").innerHTML=RF.cat=="Loncheras"?AUDS.map(a=>`<button class="${a[0]==(RF.aud||"Todos")?"on":""}" onclick="RF.aud='${a[0]}';recList()">${a[1]} ${a[0]}</button>`).join(""):"";
+ $("#rintro").innerHTML=RF.cat=="Loncheras"?lonIntro():"";
  $("#rcount").innerHTML=`${idx.length} de ${REC.length} recetas · ${V("Cocinadas por mí","Cocinadas con mi hijo o hija","Cocinadas en familia")}: <b id="rcc">${cook.length}</b>`;
  $("#rl").innerHTML=idx.map(i=>{const r=REC[i];return`<details class="rc" ontoggle="recOpen(this)"><summary><span style="font-size:26px">${r[0]}</span> ${esc(r[1])}<small>${esc(r[2])} · ${esc(r[3])}</small></summary><div class="rb"><div class="rbody" data-i="${i}" data-t="r"></div><div class="row2" style="justify-content:flex-start"><button class="sec" onclick="recFav(${i},this)">${fav.includes(i)?"⭐ En favoritas":"☆ Guardar en favoritas"}</button><button class="${cook.includes(i)?"":"sec"}" onclick="recCook(${i},this)">${cook.includes(i)?"✅ Ya la cocinamos":"👩‍🍳 Marcar como cocinada"}</button></div></div></details>`}).join("")||`<p class="small">No hay recetas con ese filtro.</p>`}
 /* ---------- personas, cantidades y reemplazos ---------- */
@@ -1171,6 +1485,8 @@ const SUBI=[
 [/\bvainilla\b/,"Vainilla","Canela en polvo o cáscara rallada de naranja."],
 [/\baceitunas?\b/,"Aceitunas","Choclo, pimiento o rodajas de pepino para decorar."],
 [/\bsalsa de soya\b/,"Salsa de soya","1/4 de cucharadita de sal disuelta en 1 cucharada de agua, con unas gotas de limón. Pruebe antes de agregar más."],
+[/\bfideos?\b/,"Fideos","Arroz, quinua o mote ya cocidos (misma cantidad cocida), o más verduras. Si cambia el cereal, el tiempo de cocción cambia."],
+[/\b(tostado|mani|pepas de zapallo|coco rallado)\b/,"Tostado, maní y semillas","Pepas de zapallo o de girasol, avena tostada o fruta deshidratada. Con alergia al maní o a los frutos secos, omítalos por completo."],
 [/\bpolvo de hornear\b/,"Polvo de hornear","Por cada cucharadita: 1/4 de cucharadita de bicarbonato + 1/2 cucharadita de jugo de limón o vinagre. Mezcle justo antes de hornear."]
 ];
 /* ---------- reemplazos de utensilios: [patrón, nombre, qué usar] ---------- */
@@ -1220,7 +1536,7 @@ function recCuerpo(r,o){o=o||{};const x=r[6]||{},base=rBase(r),N=o.n||base,f=N/b
  const cab=o.plain?`<p style="margin:4px 0 8px;font-size:13px;color:#6b5d7a">👥 ${ch?`Cantidades para ${N} ${per} (receta original: ${esc(pp)})`:esc(x.p||"")} · ${tm}</p>`
  :`<div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:6px 0 4px;font-size:14px"><span>👥 <b>Personas</b></span><button type="button" class="sec" style="margin:0;padding:4px 14px" onclick="persStep(-1,${base})" aria-label="Menos personas">−</button><b style="min-width:84px;text-align:center">${N} ${per}</b><button type="button" class="sec" style="margin:0;padding:4px 14px" onclick="persStep(1,${base})" aria-label="Más personas">+</button>${ch?`<button type="button" class="sec" style="margin:0;padding:4px 10px;font-size:13px" onclick="persSet(null)">Ver receta original (${base})</button>`:""}</div><p style="margin:0 0 8px;font-size:13px;color:#6b5d7a">🍽️ ${ch?"Receta original: "+esc(pp):esc(x.p||"")} · ${tm}</p>`;
  const nota=ch?bx("#e8f1ff","⚖️ Al cambiar las porciones:","los tiempos de cocción casi no cambian; guíese por «Cómo saber que está listo»."+(f>=2?" Si va a cocinar el doble o más, use una olla, sartén o bandeja más grande, o cocine por tandas sin amontonar.":"")+(f<=.5?" Para pocas porciones use un recipiente más pequeño y vigile la cocción: se hace más rápido.":"")):"";
- const receta=cab+nota+(x.u?`<b>Utensilios</b><p style="margin:2px 0 8px;font-size:14px">${esc(x.u)}</p>`:"")+`<b>Ingredientes</b><ul>${r[4].map(i=>`<li>${esc(scaleIng(i,f))}</li>`).join("")}</ul><b>Paso a paso</b><ol>${pasos}</ol>`+bx("#e3f5e8","✅ Cómo saber que está listo:",x.l)+bx("#fff4c7","💡 Consejo:",x.c)+bx("#f1ecf6","🧊 Conservación:",x.g);
+ const receta=cab+nota+(x.u?`<b>Utensilios</b><p style="margin:2px 0 8px;font-size:14px">${esc(x.u)}</p>`:"")+`<b>Ingredientes</b><ul>${r[4].map(i=>`<li>${esc(scaleIng(i,f))}</li>`).join("")}</ul><b>Paso a paso</b><ol>${pasos}</ol>`+bx("#e3f5e8","✅ Cómo saber que está listo:",x.l)+bx("#fff4c7","💡 Consejo:",x.c)+bx("#f1ecf6","🧊 Conservación:",x.g)+(r[3]=="Loncheras"?lonBox(r):"");
  if(o.plain)return receta+`<p style="margin:16px 0 4px"><b>🔁 Si le falta algo: reemplazos</b></p>`+recSubs(r);
  const sb=subsFor(r),nn=sb.I.length+sb.U.length;
  return`<div class="seg noprint" style="margin:0 0 10px"><button type="button" data-tb="r" class="${t=="r"?"on":""}" onclick="recTab(this,'r')">📋 Receta</button><button type="button" data-tb="s" class="${t=="s"?"on":""}" onclick="recTab(this,'s')">🔁 Reemplazos${nn?" ("+nn+")":""}</button></div><div class="rp-r">${receta}</div><div class="rp-s">${recSubs(r)}</div>`}
