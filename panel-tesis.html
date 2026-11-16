@@ -156,9 +156,9 @@ const ckp=(c,s)=>{const e=envi(c,s,"whatsapp");return e?{h:`<span class="pill">�
 function wa(c){const p=envi(c,RW,"whatsapp");if(p&&!confirm("Este WhatsApp ya lo envió "+p.quien+" ("+hora(p.creado)+"). ¿Enviarlo de nuevo?"))return false;rpc("registrar_envio",{p_clave:CLAVE,p_codigos:[c],p_semana:RW,p_canal:"whatsapp"}).then(cargarEnvios).then(render);return true}
 /* ---------- RECORDATORIOS ---------- */
 const base=()=>location.href.replace(/panel-tesis\.html.*$/,"");
-const MSG={1:"ya está abierta la Semana 1: Agua primero. Ingrese, responda la evaluación inicial (unos 5 minutos) y comience con la lección y el reto.",
-2:"ya está disponible la Semana 2: Plato arcoíris y cocina. Ingrese para ver el nuevo contenido y registrar su semana.",
-3:"ya está disponible la Semana 3: En movimiento y sin pantallas, la última semana. Ingrese, registre su semana y complete la evaluación final y la encuesta para recibir su certificado."};
+const MSG={1:"🌱 ¡Ya está abierta la *Semana 1: Agua primero*! Ingrese, responda la evaluación inicial (unos 5 minutos) y comience con la lección y el reto.",
+2:"🥕 ¡Ya comenzó la *Semana 2: Plato arcoíris y cocina*! Ingrese para ver el nuevo contenido y registrar su semana.",
+3:"🏃 ¡Ya comenzó la *Semana 3: En movimiento y sin pantallas*, la última semana! Ingrese, registre su semana y complete la evaluación final y la encuesta para recibir su certificado."};
 const pend=(f,n)=>n==1?!(f.pre&&hab(f,1)):n==3?!(hab(f,3)&&f.post&&f.sat):!hab(f,n);
 const tel=w=>{let d=(w||"").replace(/\D/g,"");if(!d)return"";if(d.startsWith("593"))return d;if(d.startsWith("0"))d=d.slice(1);return"593"+d};
 const falta=(f,n)=>{const a=[];
@@ -168,9 +168,18 @@ const falta=(f,n)=>{const a=[];
  return a};
 const lista=a=>a.length<2?a.join(""):a.slice(0,-1).join(", ")+" y "+a[a.length-1];
 const faltaTxt=(f,n)=>falta(f,n).join(" · ")||"Nada";
-const texto=(n,f)=>{const fl=f?falta(f,n):[];
- if(f&&fl.length)return `${f.nombre?"Estimado/a "+f.nombre:"Estimado/a participante"}: en la Semana ${n} aún le falta completar ${lista(fl)}. Ingrese con su código ${f.codigo} y complételo aquí: ${base()}`;
- return `${f&&f.nombre?"Estimado/a "+f.nombre:"Estimado/a participante"}: ${MSG[n]}${f?` Su código: ${f.codigo}.`:""} Enlace: ${base()}`};
+const saludo=()=>{const h=+new Date().toLocaleString("en-US",{hour:"numeric",hour12:false,timeZone:"America/Guayaquil"})%24;return h<12?"Buenos días":h<19?"Buenas tardes":"Buenas noches"};
+const TOT={1:2,2:1,3:3};
+const texto=(n,f)=>{const nom=f&&f.nombre?", "+f.nombre:"",
+ ant=f?[1,2,3].filter(k=>k<n).map(k=>[k,falta(f,k)]).filter(x=>x[1].length):[],
+ cur=f?falta(f,n):[],par=cur.length>0&&cur.length<TOT[n];
+ let t=`${saludo()}${nom} 👋\n\nLe agradecemos de corazón su participación en *Siembra hábitos*. Su compromiso con la alimentación y los hábitos de su familia es muy valioso.`;
+ if(f&&n>1&&!ant.length&&!par)t+=` ¡Va muy bien, está al día con las semanas anteriores!`;
+ if(ant.length)t+=`\n\n📌 *Para ponerse al día:*\n`+ant.map(x=>`• Semana ${x[0]}: ${lista(x[1]).replace(/ de la Semana \d/g,"")}`).join("\n")+`\nAún está a tiempo de completarlo; puede hacerlo cuando le quede cómodo.`;
+ if(par)t+=`\n\n📌 *Para cerrar la Semana ${n}* le falta: ${lista(cur)}.`;
+ t+=`\n\n${MSG[n]}`;
+ t+=f?`\n\n🔑 Su código: *${f.codigo}*\n🔗 Ingrese aquí: ${base()}`:`\n\n🔑 Ingrese con su código personal en este enlace: ${base()}`;
+ return t+`\n\nSi tiene alguna duda, con gusto le ayudamos. ¡Gracias por sembrar hábitos saludables! 🌿`};
 const L2=()=>F.filter(f=>!RP||pend(f,RW));
 let GAS="",ESTADO={},RES="",FORZAR=false,OCUP=false,VK="";
 try{GAS=localStorage.getItem("surcos_gas")||""}catch(e){}
@@ -208,7 +217,8 @@ function vRec(){const n=RW,L=L2(),s=SEM.find(x=>x.numero==n),ult=f=>{const e=EST
  <p class="step">En Apps Script: Implementar → Nueva implementación → Aplicación web → ejecutar como “Yo”, acceso “Cualquier persona”. Copie el enlace que termina en /exec.</p>
  <input id="gas" type="url" placeholder="https://script.google.com/macros/s/…/exec" value="${esc(GAS)}" style="width:100%;max-width:560px"><br><button class="s" onclick="guardarGas()">Guardar enlace</button></details></div>
  <div class="card"><h2>💬 WhatsApp y lista de familias</h2>
- <p class="step"><b>Mensaje general:</b> ${esc(texto(n,null))}</p>
+ <p class="step" style="white-space:pre-line"><b>Mensaje general:</b>
+${esc(texto(n,null))}</p>
  <p class="step">Cada WhatsApp de la lista sale personalizado con lo que le falta a esa persona.</p>
  <button onclick="navigator.clipboard.writeText(texto(RW,null)).then(()=>this.nextElementSibling.textContent='Copiado ✓')">Copiar mensaje</button><span class="ok"></span>
  <button class="s" onclick="navigator.clipboard.writeText(L2().map(f=>f.correo).filter(Boolean).join(', ')).then(()=>this.nextElementSibling.textContent='Copiado ✓')">Copiar correos (${L.filter(f=>f.correo).length})</button><span class="ok"></span>

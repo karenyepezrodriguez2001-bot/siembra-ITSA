@@ -52,9 +52,9 @@ const dash=v=>v==null||v===""?"–":v;
 const fecha=d=>d?new Date(d).toLocaleDateString("es-EC"):"–";
 const T=(h,r,vacio)=>`<div class="tw"><table><tr>${h.map(x=>`<th>${esc(x)}</th>`).join("")}</tr>${r.map(row=>`<tr${row.avg?' class="avg"':""}>${(row.avg?row.c:row).map((c,i)=>`<td${i==0?' class="l"':""}>${c&&c.h!==undefined?c.h:esc(c)}</td>`).join("")}</tr>`).join("")||`<tr><td colspan="${h.length}">${vacio||"Aún no hay registros."}</td></tr>`}</table></div>`;
 const AV=c=>({avg:1,c});
-const MSG={1:"ya está abierta la Semana 1: Agua primero. Ingrese, responda la evaluación inicial (unos 5 minutos) y comience con la lección y el reto.",
-2:"ya está disponible la Semana 2: Plato arcoíris y cocina. Ingrese para ver el nuevo contenido y registrar su semana.",
-3:"ya está disponible la Semana 3: En movimiento y sin pantallas, la última semana. Ingrese, registre su semana y complete la evaluación final y la encuesta para recibir su certificado."};
+const MSG={1:"🌱 ¡Ya está abierta la *Semana 1: Agua primero*! Ingrese, responda la evaluación inicial (unos 5 minutos) y comience con la lección y el reto.",
+2:"🥕 ¡Ya comenzó la *Semana 2: Plato arcoíris y cocina*! Ingrese para ver el nuevo contenido y registrar su semana.",
+3:"🏃 ¡Ya comenzó la *Semana 3: En movimiento y sin pantallas*, la última semana! Ingrese, registre su semana y complete la evaluación final y la encuesta para recibir su certificado."};
 const pend=(f,n)=>n==1?!(f.pre&&hab(f,1)):n==3?!(hab(f,3)&&f.post&&f.sat):!hab(f,n);
 const tel=w=>{let d=(w||"").replace(/\D/g,"");if(!d)return"";if(d.startsWith("593"))return d;if(d.startsWith("0"))d=d.slice(1);return"593"+d};
 const falta=(f,n)=>{const a=[];
@@ -64,9 +64,18 @@ const falta=(f,n)=>{const a=[];
  return a};
 const lista=a=>a.length<2?a.join(""):a.slice(0,-1).join(", ")+" y "+a[a.length-1];
 const faltaTxt=(f,n)=>falta(f,n).join(" · ")||"Nada";
-const texto=(n,f)=>{const fl=f?falta(f,n):[];
- if(f&&fl.length)return `${f.nombre?"Estimado/a "+f.nombre:"Estimado/a participante"}: en la Semana ${n} aún le falta completar ${lista(fl)}. Ingrese con su código ${f.codigo} y complételo aquí: ${base()}`;
- return `${f&&f.nombre?"Estimado/a "+f.nombre:"Estimado/a participante"}: ${MSG[n]}${f?` Su código: ${f.codigo}.`:""} Enlace: ${base()}`};
+const saludo=()=>{const h=+new Date().toLocaleString("en-US",{hour:"numeric",hour12:false,timeZone:"America/Guayaquil"})%24;return h<12?"Buenos días":h<19?"Buenas tardes":"Buenas noches"};
+const TOT={1:2,2:1,3:3};
+const texto=(n,f)=>{const nom=f&&f.nombre?", "+f.nombre:"",
+ ant=f?[1,2,3].filter(k=>k<n).map(k=>[k,falta(f,k)]).filter(x=>x[1].length):[],
+ cur=f?falta(f,n):[],par=cur.length>0&&cur.length<TOT[n];
+ let t=`${saludo()}${nom} 👋\n\nLe agradecemos de corazón su participación en *Siembra hábitos*. Su compromiso con la alimentación y los hábitos de su familia es muy valioso.`;
+ if(f&&n>1&&!ant.length&&!par)t+=` ¡Va muy bien, está al día con las semanas anteriores!`;
+ if(ant.length)t+=`\n\n📌 *Para ponerse al día:*\n`+ant.map(x=>`• Semana ${x[0]}: ${lista(x[1]).replace(/ de la Semana \d/g,"")}`).join("\n")+`\nAún está a tiempo de completarlo; puede hacerlo cuando le quede cómodo.`;
+ if(par)t+=`\n\n📌 *Para cerrar la Semana ${n}* le falta: ${lista(cur)}.`;
+ t+=`\n\n${MSG[n]}`;
+ t+=f?`\n\n🔑 Su código: *${f.codigo}*\n🔗 Ingrese aquí: ${base()}`:`\n\n🔑 Ingrese con su código personal en este enlace: ${base()}`;
+ return t+`\n\nSi tiene alguna duda, con gusto le ayudamos. ¡Gracias por sembrar hábitos saludables! 🌿`};
 const L2=()=>F.filter(f=>!RP||pend(f,RW));
 let GAS="",ESTADO={},RES="",FORZAR=false,OCUP=false,VK="";
 try{GAS=localStorage.getItem("surcos_gas")||""}catch(e){}
@@ -119,7 +128,8 @@ function vRec(){const n=RW,L=L2(),ok=VK&&VK==clv(),m=ENV.filter(e=>e.codigo=="*"
  <div class="card"><h2>📧 Correo</h2>${m?`<div class="res">✓ ${esc(m.quien)} ya envió los correos de la Semana ${n} (${hora(m.creado)}).</div>`:""}
  ${GAS?`<button ${OCUP?"disabled":""} onclick="envio('vista')">1. Ver a quiénes se enviaría</button>${ok?`<button ${OCUP?"disabled":""} onclick="envio('enviar')">2. Confirmar y enviar</button>`:""}`:'<p class="step">Pegue abajo el enlace del script de Google para activar el envío por correo.</p>'}
  <div>${RES}</div><details ${GAS?"":"open"}><summary style="cursor:pointer;font-size:13px;color:var(--g)">Enlace del script de Google</summary><input id="gas" type="url" placeholder="https://script.google.com/macros/s/…/exec" value="${esc(GAS)}" style="width:100%;max-width:560px"><br><button class="s" onclick="guardarGas()">Guardar enlace</button></details></div>
- <div class="card"><h2>💬 WhatsApp y lista de familias</h2><p class="step"><b>Mensaje:</b> ${esc(texto(n,null))}</p>
+ <div class="card"><h2>💬 WhatsApp y lista de familias</h2><p class="step" style="white-space:pre-line"><b>Mensaje:</b>
+${esc(texto(n,null))}</p>
  <button class="s" onclick="navigator.clipboard.writeText(L2().map(f=>f.correo).filter(Boolean).join(', ')).then(()=>this.nextElementSibling.textContent='Copiado ✓')">Copiar correos (${L.filter(f=>f.correo).length})</button><span class="ok"></span>
  <p class="step">Si envía correos a mano, péguelos en el campo <b>CCO</b> (copia oculta).</p>
  ${T(["Código","Nombre","Estado","Qué le falta","Correo","WhatsApp","Enviado"],L.map(f=>[f.codigo,dash(f.nombre),{h:pend(f,n)?'<span class="pill w">Pendiente</span>':'<span class="pill">Completó ✓</span>'},faltaTxt(f,n),dash(f.correo),{h:tel(f.whatsapp)?`<a href="https://wa.me/${tel(f.whatsapp)}?text=${encodeURIComponent(texto(n,f))}" onclick="return wa('${f.codigo}')" target="_blank" rel="noopener">Enviar WhatsApp</a>`:"–"},ckp(f.codigo,n)]),"Nadie pendiente en esta semana.")}</div>`}
