@@ -173,7 +173,7 @@ const TOT={1:2,2:1,3:3};
 const texto=(n,f)=>{const nom=f&&f.nombre?", "+f.nombre:"",
  ant=f?[1,2,3].filter(k=>k<n).map(k=>[k,falta(f,k)]).filter(x=>x[1].length):[],
  cur=f?falta(f,n):[],par=cur.length>0&&cur.length<TOT[n];
- let t=`${saludo()}${nom} 👋\n\nLe agradecemos de corazón su participación en *Siembra hábitos*. Su compromiso con la alimentación y los hábitos de su familia es muy valioso.`;
+ let t=`${saludo()}${nom} 👋\n\nGracias por participar en *Siembra hábitos*. Su compromiso con la alimentación y los hábitos de su familia es muy valioso.`;
  if(f&&n>1&&!ant.length&&!par)t+=` ¡Va muy bien, está al día con las semanas anteriores!`;
  if(ant.length)t+=`\n\n📌 *Para ponerse al día:*\n`+ant.map(x=>`• Semana ${x[0]}: ${lista(x[1]).replace(/ de la Semana \d/g,"")}`).join("\n")+`\nAún está a tiempo de completarlo; puede hacerlo cuando le quede cómodo.`;
  if(par)t+=`\n\n📌 *Para cerrar la Semana ${n}* le falta: ${lista(cur)}.`;
