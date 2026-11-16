@@ -52,6 +52,14 @@ const dash=v=>v==null||v===""?"–":v;
 const fecha=d=>d?new Date(d).toLocaleDateString("es-EC"):"–";
 const T=(h,r,vacio)=>`<div class="tw"><table><tr>${h.map(x=>`<th>${esc(x)}</th>`).join("")}</tr>${r.map(row=>`<tr${row.avg?' class="avg"':""}>${(row.avg?row.c:row).map((c,i)=>`<td${i==0?' class="l"':""}>${c&&c.h!==undefined?c.h:esc(c)}</td>`).join("")}</tr>`).join("")||`<tr><td colspan="${h.length}">${vacio||"Aún no hay registros."}</td></tr>`}</table></div>`;
 const AV=c=>({avg:1,c});
+let BUSCA="",SUB="";
+const KQ=["B","B","B","A","C","B","B","C","A","B"]; // misma clave que el panel principal
+const sc=a=>Array.isArray(a)?a.reduce((n,x,i)=>n+(String(x).toUpperCase()==KQ[i]?1:0),0):null;
+const nv=p=>p==null?"":p<=4?"Bajo":p<=7?"Medio":"Alto";
+const avg=a=>{a=a.filter(x=>x!=null&&x!==""&&!isNaN(x));return a.length?(a.reduce((s,x)=>s+ +x,0)/a.length).toFixed(1):"–"};
+const flt=()=>{const q=BUSCA.trim().toLowerCase();return q?F.filter(f=>((f.codigo||"")+" "+(f.nombre||"")).toLowerCase().includes(q)):F};
+const buscador=()=>`<input id="bs" type="search" placeholder="Buscar por código o nombre…" value="${esc(BUSCA)}" oninput="BUSCA=this.value;render();const b=$('#bs');b.focus();b.setSelectionRange(b.value.length,b.value.length)">`;
+const sub=l=>`<div class="sub">${l.map(x=>`<button class="${SUB==x[0]?"on":""}" onclick="SUB='${x[0]}';render()">${x[1]}</button>`).join("")}</div>`;
 const MSG={1:"🌱 ¡Ya está abierta la *Semana 1: Agua primero*! Ingrese, responda la evaluación inicial (unos 5 minutos) y comience con la lección y el reto.",
 2:"🥕 ¡Ya comenzó la *Semana 2: Plato arcoíris y cocina*! Ingrese para ver el nuevo contenido y registrar su semana.",
 3:"🏃 ¡Ya comenzó la *Semana 3: En movimiento y sin pantallas*, la última semana! Ingrese, registre su semana y complete la evaluación final y la encuesta para recibir su certificado."};
@@ -110,17 +118,17 @@ function wa(c){const p=envi(c,RW,"whatsapp");if(p&&!confirm("Este WhatsApp ya lo
 function login(m){nav.innerHTML="";app.innerHTML=`<div class="card"><h2>Ingreso</h2><p class="step">Escriba la clave que le entregó la investigadora.</p><input id="k" type="password" placeholder="Clave"> <button id="bk" onclick="entrar()">Entrar</button>${m?`<div class="err">${esc(m)}</div>`:""}</div>`;$("#k").addEventListener("keydown",e=>{if(e.key=="Enter")entrar()})}
 async function entrar(){CLAVE=$("#k").value;const b=$("#bk");b.disabled=true;b.textContent="Verificando…";await cargar()}
 async function cargar(){try{const d=await rpc("colab_participantes",{p_clave:CLAVE});F=d.filas||[];GEN=d.generado;await semanas();await cargarEnvios();render()}catch(e){login(e.message)}}
-const TABS=[["inicio","🏠 Resumen"],["fam","👥 Familias"],["rec","🔔 Recordatorios"]];
-function go(t){TAB=t;render();window.scrollTo(0,0);if(t=="rec")cargarEstado()}
+const TABS=[["inicio","🏠 Resumen"],["fam","👥 Familias"],["conoc","🧠 Conocimientos"],["hab","🌱 Hábitos"],["sat","⭐ Satisfacción"],["rec","🔔 Recordatorios"],["env","📋 Envíos"]];
+function go(t){TAB=t;SUB={conoc:"pre",hab:"1"}[t]||"";BUSCA="";render();window.scrollTo(0,0);if(t=="rec")cargarEstado();if(t=="env")cargarEnvios().then(render)}
 function render(){nav.innerHTML=`<div class="tabs">${TABS.map(t=>`<button class="${TAB==t[0]?"on":""}" onclick="go('${t[0]}')">${t[1]}</button>`).join("")}<button class="s" style="margin-left:auto" onclick="cargar()">↻ Actualizar</button><button class="s" onclick="CLAVE='';F=[];login()">Cerrar sesión</button></div>`;
- app.innerHTML=({inicio:vInicio,fam:vFam,rec:vRec})[TAB]()+`<p class="step">Datos actualizados: ${GEN?new Date(GEN).toLocaleString("es-EC"):"–"}</p>`}
+ app.innerHTML=({inicio:vInicio,fam:vFam,conoc:vConoc,hab:vHab,sat:vSat,rec:vRec,env:vEnv})[TAB]()+`<p class="step">Datos actualizados: ${GEN?new Date(GEN).toLocaleString("es-EC"):"–"}</p>`}
 function vInicio(){const n=F.length,c=a=>F.filter(a).length,pct=x=>n?Math.round(x*100/n):0,h=hoy();
  const et=[["Registro",n],["Evaluación inicial",c(f=>f.pre)],["Hábitos S1",c(f=>hab(f,1))],["Hábitos S2",c(f=>hab(f,2))],["Hábitos S3",c(f=>hab(f,3))],["Evaluación final",c(f=>f.post)],["Encuesta",c(f=>f.sat)]];
  const est=s=>h<s.fecha_apertura?{h:'<span class="pill n">Próxima</span>'}:h>s.fecha_cierre?{h:'<span class="pill">Cerrada</span>'}:{h:'<span class="pill w">Abierta ahora</span>'};
  return `<div class="card"><h2>Avance de la campaña</h2><p class="step">Porcentaje sobre el total de registrados.</p>${et.map(x=>`<div class="bar"><span>${x[0]}</span><div class="trk"><i style="width:${pct(x[1])}%"></i></div><b>${x[1]} (${pct(x[1])}%)</b></div>`).join("")}</div>
  <div class="card"><h2>Calendario</h2>${T(["Semana","Tema","Abre","Cierra","Estado"],SEM.map(s=>[s.numero,s.titulo,s.fecha_apertura,s.fecha_cierre,est(s)]),"No se pudieron cargar las semanas.")}</div>`}
-function vFam(){const m=(f,s)=>{const p=prog(f,s);return[p.l,p.r,hab(f,s)].filter(Boolean).length+"/3"};
- return `<div class="card"><h2>Familias (${F.length})</h2><p class="step">Cada semana muestra cuántas de 3 cosas hizo: lección, reto y hábitos.</p>${T(["Código","Nombre","Registro","Inicial","S1","S2","S3","Final","Encuesta"],F.map(f=>[f.codigo,dash(f.nombre),fecha(f.registrado),f.pre?"✓":"–",m(f,1),m(f,2),m(f,3),f.post?"✓":"–",f.sat?"✓":"–"]))}</div>`}
+function vFam(){const L=flt(),m=(f,s)=>{const p=prog(f,s);return[p.l,p.r,hab(f,s)].filter(Boolean).length+"/3"};
+ return `<div class="card"><h2>Familias (${L.length}${L.length!=F.length?" de "+F.length:""})</h2>${buscador()}<p class="step">Cada semana muestra cuántas de 3 cosas hizo: lección, reto y hábitos.</p>${T(["Código","Nombre","Registro","Inicial","S1","S2","S3","Final","Encuesta"],L.map(f=>[f.codigo,dash(f.nombre),fecha(f.registrado),f.pre?"✓":"–",m(f,1),m(f,2),m(f,3),f.post?"✓":"–",f.sat?"✓":"–"]),"Ninguna familia coincide con la búsqueda.")}</div>`}
 function vRec(){const n=RW,L=L2(),ok=VK&&VK==clv(),m=ENV.filter(e=>e.codigo=="*"&&e.semana==n&&e.canal=="correo").pop();
  return `<div class="card"><h2>Recordatorios semanales</h2><p class="step">Cada aviso queda marcado ✓ con quién lo envió, y el panel pregunta antes de repetirlo.</p>
  <label>Semana: <select onchange="RW=+this.value;VK='';RES='';render()">${[1,2,3].map(i=>`<option value="${i}" ${i==n?"selected":""}>Semana ${i}</option>`).join("")}</select></label>
@@ -133,5 +141,32 @@ ${esc(texto(n,null))}</p>
  <button class="s" onclick="navigator.clipboard.writeText(L2().map(f=>f.correo).filter(Boolean).join(', ')).then(()=>this.nextElementSibling.textContent='Copiado ✓')">Copiar correos (${L.filter(f=>f.correo).length})</button><span class="ok"></span>
  <p class="step">Si envía correos a mano, péguelos en el campo <b>CCO</b> (copia oculta).</p>
  ${T(["Código","Nombre","Estado","Qué le falta","Correo","WhatsApp","Enviado"],L.map(f=>[f.codigo,dash(f.nombre),{h:pend(f,n)?'<span class="pill w">Pendiente</span>':'<span class="pill">Completó ✓</span>'},faltaTxt(f,n),dash(f.correo),{h:tel(f.whatsapp)?`<a href="https://wa.me/${tel(f.whatsapp)}?text=${encodeURIComponent(texto(n,f))}" onclick="return wa('${f.codigo}')" target="_blank" rel="noopener">Enviar WhatsApp</a>`:"–"},ckp(f.codigo,n)]),"Nadie pendiente en esta semana.")}</div>`}
+/* ---------- CONOCIMIENTOS (solo lectura) ---------- */
+function vConoc(){const L=flt(),H=["Código"].concat(Array.from({length:10},(_,i)=>"P"+(i+1))),b0=buscador();let b="";
+ if(SUB=="pre"||SUB=="post"){const k=SUB,lab=k=="pre"?"Evaluación inicial":"Evaluación final",ps=F.map(f=>sc(f[k])).filter(x=>x!=null),
+  rows=L.map(f=>{const r=f[k],p=sc(r);return[f.codigo].concat(Array.isArray(r)?r:Array(10).fill("–"),[dash(p),dash(nv(p))])});
+  b=`<h3>${lab}</h3>${b0}<p class="step">Letra elegida en cada pregunta. Puntaje y nivel (Bajo 0–4, Medio 5–7, Alto 8–10).</p>${T(H.concat(["Puntaje","Nivel"]),rows.concat(ps.length?[AV(["Promedio ("+ps.length+")"].concat(Array(10).fill(""),[avg(ps),""]))]:[]),"Ninguna familia coincide con la búsqueda.")}`}
+ else{const rows=L.map(f=>{const a=sc(f.pre),p=sc(f.post);return[f.codigo,dash(a),dash(p),a!=null&&p!=null?(p-a>0?"+":"")+(p-a):"–"]}),
+  par=F.filter(f=>f.pre&&f.post),dif=par.map(f=>sc(f.post)-sc(f.pre));
+  b=`<h3>Comparación inicial y final</h3>${b0}${T(["Código","Inicial","Final","Cambio"],rows.concat([AV(["Promedio",avg(F.map(f=>sc(f.pre))),avg(F.map(f=>sc(f.post))),dif.length?(avg(dif)>0?"+":"")+avg(dif):"–"])]),"Ninguna familia coincide con la búsqueda.")}<p class="step">El cambio promedio se calcula solo con quienes hicieron las dos evaluaciones (${par.length}).</p>`}
+ return `<div class="card"><h2>Conocimientos</h2><p class="step">Vista de solo lectura.</p>${sub([["pre","Evaluación inicial"],["post","Evaluación final"],["comp","Comparación"]])}${b}</div>`}
+
+/* ---------- HÁBITOS (solo lectura) ---------- */
+function vHab(){const L=flt(),N=["Agua","Lonchera","Juego","Pantallas"],g=(f,s)=>{const v=hab(f,s);return Array.isArray(v)?v:["–","–","–","–"]};let b="";
+ if(SUB=="all")b=`<h3>Las 3 semanas juntas</h3>${buscador()}${T(["Código"].concat([1,2,3].flatMap(s=>N.map(x=>"S"+s+" "+x))),L.map(f=>[f.codigo].concat(g(f,1),g(f,2),g(f,3))),"Ninguna familia coincide con la búsqueda.")}`;
+ else{const s=+SUB||1,env=F.filter(f=>hab(f,s));
+  b=`<h3>Semana ${s}</h3>${buscador()}<p class="step">Días (de 0 a 7) en que se cumplió cada hábito. Enviaron: ${env.length} de ${F.length}.</p>${T(["Código"].concat(N),L.map(f=>[f.codigo].concat(g(f,s))).concat(env.length?[AV(["Promedio"].concat(N.map((_,i)=>avg(env.map(f=>g(f,s)[i])))))]:[]),"Ninguna familia coincide con la búsqueda.")}`}
+ return `<div class="card"><h2>Hábitos semanales</h2><p class="step">Vista de solo lectura.</p>${sub([["1","Semana 1"],["2","Semana 2"],["3","Semana 3"],["all","Las 3 semanas"]])}${b}</div>`}
+
+/* ---------- SATISFACCIÓN (solo lectura) ---------- */
+function vSat(){const L=flt(),con=F.filter(f=>Array.isArray(f.sat));
+ return `<div class="card"><h2>Encuesta de satisfacción</h2><p class="step">Vista de solo lectura. Valoraciones de 1 a 5. Respondieron ${con.length} de ${F.length}.</p>${buscador()}
+ ${T(["Código","Utilidad","Claridad","Recomendaría","Comentario"],L.map(f=>{const x=Array.isArray(f.sat)?f.sat:[];return[f.codigo,dash(x[0]),dash(x[1]),dash(x[2]),{h:x[3]?`<span style="white-space:normal;display:inline-block;min-width:220px;text-align:left">${esc(x[3])}</span>`:"–"}]}).concat(con.length?[AV(["Promedio",avg(con.map(f=>f.sat[0])),avg(con.map(f=>f.sat[1])),avg(con.map(f=>f.sat[2])),""])]:[]),"Ninguna familia coincide con la búsqueda.")}</div>`}
+
+/* ---------- ENVÍOS (solo lectura) ---------- */
+function vEnv(){const W=ENV.filter(e=>e.canal=="whatsapp"),C=ENV.filter(e=>e.codigo=="*");
+ const rows=[1,2,3].map(s=>{const c=C.filter(e=>e.semana==s).pop(),w=W.filter(e=>e.semana==s),u=new Set(w.map(e=>e.codigo)).size,lw=w.pop();return[s,c?c.quien+" · "+hora(c.creado):"Sin enviar",u+" de "+F.length,lw?lw.quien+" · "+hora(lw.creado):"–"]});
+ return `<div class="card"><h2>Control de envíos</h2><p class="step">Quién envió cada recordatorio, desde este panel o desde el principal.</p>${T(["Semana","Correos (último envío)","WhatsApp enviados","Último WhatsApp"],rows)}<h3>Últimos movimientos</h3>${T(["Fecha","Quién","Semana","Canal","Familia"],ENV.slice(-40).reverse().map(e=>[hora(e.creado),e.quien,e.semana,e.canal,e.codigo=="*"?"Todas (correo)":e.codigo]),"Aún no hay envíos registrados.")}</div>`}
+
 login();
 </script></body></html>
