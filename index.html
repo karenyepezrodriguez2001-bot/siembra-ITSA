@@ -511,6 +511,25 @@ const ACT=[["🚶","Caminata diaria",["Camine 30 minutos a paso ligero, mejor si
 function bAc(){return`<div class="card"><h3>🏃 Ideas de actividades</h3><p class="small">Adaptadas a: <b>${esc(S.para||"Para mí")}</b>. Cámbielo en “Mi contexto” del inicio.</p>${ACT.map(a=>`<div class="iz"><b>${a[0]} ${a[1]}</b><br>${V(a[2][0],a[2][1],a[2][2])}</div>`).join("")}</div>`}
 /* ---------- recetario ---------- */
 const CATS=[["Todas","📚"],["Plato principal","🍲"],["Snack o bebida","🥤"],["Snack divertido","🎉"],["Postre saludable","🍰"],["Loncheras","🎒"],["Favoritas","⭐"]];
+/* subpestañas de «Plato principal»: para mover una receta, cambie su nombre de lista aquí */
+const MEALS=[["Todos","📚"],["Desayuno","🌅"],["Almuerzo","🍲"],["Merienda","🍎"],["Cena","🌙"]];
+const MEALINFO={"Desayuno":"Para empezar el día con energía: huevo, plátano verde, avena y cereales.","Almuerzo":"La comida fuerte del día: sopas, legumbres, cereal y proteína.","Merienda":"Comida ligera de la tarde, fácil de preparar y de llevar.","Cena":"Platos suaves y livianos para el final del día."};
+const COMIDA={
+"Sopa de quinua con verduras":["Almuerzo","Cena"],"Locro de lentejas":["Almuerzo"],"Fréjol con arroz y ensalada de aguacate":["Almuerzo"],
+"Chaulafán casero de verduras y huevo":["Almuerzo","Cena"],"Croquetas de atún y papa al horno":["Almuerzo","Cena"],"Crema de zapallo y habas":["Almuerzo","Cena"],
+"Hamburguesitas de lenteja y avena":["Almuerzo","Cena"],"Arroz con pollo y verduras en una sola olla":["Almuerzo"],"Tortilla de espinaca y queso":["Desayuno","Cena"],
+"Ensalada tibia de mote y chocho":["Almuerzo","Merienda"],"Sopa de cebada con verduras":["Almuerzo","Cena"],"Pollo al horno con papas y zanahoria":["Almuerzo"],
+"Tortillas de papa con ensalada":["Merienda","Cena"],"Sudado de pescado con verduras":["Almuerzo"],
+"Revuelto de huevo con tomate y cebolla":["Desayuno"],"Bolón de verde con queso en sartén":["Desayuno"],"Avena cocida con manzana y canela":["Desayuno","Merienda"],
+"Estofado de pollo con papa y arveja":["Almuerzo"],"Ensalada de atún, papa y huevo":["Almuerzo","Cena"],"Choclo con queso y habas":["Merienda"],
+"Camote al horno con queso fresco":["Merienda"],"Crema de brócoli y papa":["Cena"],
+"Encebollado de pescado":["Desayuno","Almuerzo"],"Tigrillo con huevo y queso":["Desayuno","Merienda"],"Patacones con queso y ensalada":["Merienda"],
+"Menestra de lenteja con arroz y pollo a la plancha":["Almuerzo"],"Caldo de pollo con verde y yuca":["Cena","Almuerzo"],
+"Machica con leche y banano":["Desayuno"],"Locro de papa con queso y aguacate":["Almuerzo","Cena"],"Empanadas de queso al horno":["Merienda"],"Ensalada de quinua con verduras":["Almuerzo","Cena"],
+"Maduro al horno con queso":["Merienda"],"Cazuela de pescado con verde":["Almuerzo"],"Seco de pollo con arroz":["Almuerzo"],"Tortillas de choclo con queso":["Desayuno","Merienda"],
+"Habas con papa y huevo":["Almuerzo","Cena"],"Maito de pollo con yuca":["Almuerzo","Cena"],"Ensalada de palmito con tomate y aguacate":["Merienda","Cena"],
+"Panqueques de avena y banano":["Desayuno","Merienda"],"Sopa de fideo con verduras":["Cena"]};
+const REGION={"Encebollado de pescado":"Costa","Tigrillo con huevo y queso":"Costa","Patacones con queso y ensalada":"Costa","Menestra de lenteja con arroz y pollo a la plancha":"Costa","Caldo de pollo con verde y yuca":"Costa","Bolón de verde con queso en sartén":"Costa","Choclo con queso y habas":"Sierra","Camote al horno con queso fresco":"Sierra","Machica con leche y banano":"Sierra","Locro de papa con queso y aguacate":"Sierra","Empanadas de queso al horno":"Sierra","Ensalada de quinua con verduras":"Sierra","Sopa de quinua con verduras":"Sierra","Locro de lentejas":"Sierra","Sopa de cebada con verduras":"Sierra","Crema de zapallo y habas":"Sierra","Ensalada tibia de mote y chocho":"Sierra","Tortillas de papa con ensalada":"Sierra","Sudado de pescado con verduras":"Costa","Chaulafán casero de verduras y huevo":"Costa","Maduro al horno con queso":"Costa","Cazuela de pescado con verde":"Costa","Seco de pollo con arroz":"Costa","Tortillas de choclo con queso":"Sierra","Habas con papa y huevo":"Sierra","Maito de pollo con yuca":"Amazonía","Ensalada de palmito con tomate y aguacate":"Amazonía"};
 const REC=[
 /* ===== Plato principal ===== */
 ["🍲","Sopa de quinua con verduras","40 min","Plato principal",
@@ -1331,19 +1350,255 @@ const REC=[
 "Endulce y enfríe | Agregue la miel o panela si desea y deje enfriar 10 minutos antes de pasarla al frasco.",
 "Agregue la manzana | Mezcle la manzana picada justo antes de salir, para que no se oscurezca.",
 "Empaque | Cierre el frasco, llévelo frío y no olvide una cuchara."],
-{p:"Rinde 1 lonchera",u:"Olla pequeña con tapa, colador fino, frasco con tapa, cuchara",c:"Cambie la manzana por pera, banano o mora, según la fruta de temporada. Funciona como desayuno o como refrigerio.",l:"La quinua está blanda y cremosa, con granos abiertos.",g:"Dura 2 días en refrigeración sin la fruta.",a:["Niños","Adolescentes","Adulto joven","Adultos"]}]
+{p:"Rinde 1 lonchera",u:"Olla pequeña con tapa, colador fino, frasco con tapa, cuchara",c:"Cambie la manzana por pera, banano o mora, según la fruta de temporada. Funciona como desayuno o como refrigerio.",l:"La quinua está blanda y cremosa, con granos abiertos.",g:"Dura 2 días en refrigeración sin la fruta.",a:["Niños","Adolescentes","Adulto joven","Adultos"]}],
+
+/* ===== Plato principal: nuevas (desayuno, almuerzo, merienda y cena) ===== */
+["🍳","Revuelto de huevo con tomate y cebolla","15 min","Plato principal",
+["4 huevos","1 tomate mediano picado en cubitos","1/2 cebolla blanca pequeña picada fina","1 cucharada de aceite","1/4 cucharadita de sal","2 cucharadas de cilantro picado"],
+["Prepare | Pique el tomate y la cebolla en cubitos pequeños. Bata los huevos en un bol con la sal.",
+"Haga el refrito | En una sartén, caliente el aceite a fuego medio 1 minuto. Agregue la cebolla y cocine 2 minutos, hasta que se vea transparente.",
+"Agregue el tomate | Añada el tomate y cocine 2 minutos, moviendo, hasta que suelte su jugo.",
+"Agregue el huevo | Vierta los huevos, baje el fuego y mueva con suavidad 3 minutos.",
+"Compruebe | Retire cuando el huevo esté bien cocido, firme y sin partes líquidas. Espolvoree el cilantro y sirva con pan o tostada."],
+{p:"Rinde 4 porciones",u:"Sartén, bol, tenedor, tabla y cuchillo, espátula",c:"Acompañe con una fruta de temporada y un vaso de agua. Si no tiene cilantro, use perejil.",l:"El huevo está firme, sin partes líquidas ni transparentes.",g:"Es mejor comerlo al momento; si sobra, dura 1 día en refrigeración y se recalienta hasta que humee."}],
+
+["🍌","Bolón de verde con queso en sartén","30 min","Plato principal",
+["3 plátanos verdes grandes","150 g de queso fresco desmenuzado","1 cucharada de aceite","1/2 cucharadita de sal","6 tazas de agua para cocinar"],
+["Pele | Corte los extremos de los plátanos, haga un corte a lo largo en la cáscara y pélelos. Pártalos en 3 trozos cada uno.",
+"Cocine | Ponga el agua con 1/4 cucharadita de sal a hervir y cocine los plátanos 20 minutos, hasta que al pinchar con un tenedor estén blandos.",
+"Aplaste | Escurra y aplaste con un tenedor o pisapapas hasta lograr una masa sin grumos. Mezcle con el queso y el resto de la sal.",
+"Forme | Con las manos húmedas, haga 4 bolones y aplánelos un poco.",
+"Dore | En una sartén con el aceite a fuego medio, dore los bolones 3 minutos por lado. Sirva calientes."],
+{p:"Rinde 4 porciones (4 bolones)",u:"Olla con tapa, sartén, tenedor o pisapapas, colador, espátula",c:"Acompañe con una ensalada de tomate o una fruta. Con poco aceite quedan igual de ricos.",l:"Los bolones están dorados por fuera y suaves por dentro.",g:"Duran 1 día en refrigeración; recaliente en sartén."}],
+
+["🥣","Avena cocida con manzana y canela","15 min","Plato principal",
+["1 taza de hojuelas de avena","3 tazas de agua","1 manzana mediana en cubitos","1 pizca de canela","1 taza de leche","1 cucharadita de miel o panela rallada (opcional)"],
+["Lave la fruta | Lave bien la manzana y córtela en cubitos pequeños.",
+"Cocine la avena | En una olla, ponga el agua y la avena y lleve a hervor a fuego medio. Cocine 8 minutos, moviendo con una cuchara de palo.",
+"Agregue la manzana | Añada la manzana, la canela y la leche y cocine 3 minutos más.",
+"Compruebe | Debe quedar cremosa y la manzana tierna al pinchar con un tenedor.",
+"Sirva | Endulce con la miel o panela si desea y sirva tibia."],
+{p:"Rinde 4 porciones",u:"Olla, cuchara de palo, tabla y cuchillo, tazas medidoras",c:"Cambie la manzana por pera o banano. Si la prefiere más espesa, cocine 2 minutos más.",l:"La avena está cremosa y la manzana, blanda.",g:"Dura 2 días en refrigeración; agregue un poco de leche al recalentar."}],
+
+["🍗","Estofado de pollo con papa y arveja","50 min","Plato principal",
+["500 g de pollo en presas sin piel","3 papas medianas peladas y cortadas en cubos de 3 cm","1 taza de arvejas tiernas","1 zanahoria mediana en rodajas","1 cebolla blanca mediana picada fina","2 tomates medianos picados","2 dientes de ajo picados","1/2 cucharadita de comino","1 cucharada de aceite","2 tazas de agua","1/2 cucharadita de sal"],
+["Prepare | Lave el pollo, pele y corte las verduras y pique la cebolla, el tomate y el ajo.",
+"Haga el refrito | En una olla, caliente el aceite 1 minuto. Cocine la cebolla y el ajo 3 minutos, agregue el tomate y el comino y cocine 4 minutos más.",
+"Selle el pollo | Añada el pollo, la sal y cocine 5 minutos, dándolo vuelta, hasta que cambie de color.",
+"Agregue agua y verduras | Vierta el agua, la papa y la zanahoria. Tape y cocine a fuego medio-bajo 25 minutos.",
+"Agregue la arveja | Añada la arveja y cocine 5 minutos más.",
+"Compruebe | Pinche el pollo en la parte más gruesa: no debe haber partes rosadas y el jugo debe salir claro. La papa debe estar blanda."],
+{p:"Rinde 4 porciones",u:"Olla con tapa, tabla y cuchillo, cuchara de palo, tenedor",c:"Sirva con arroz y una ensalada fresca. Si no hay arveja fresca, use congelada.",l:"El pollo no tiene partes rosadas y la papa se deshace al presionarla.",g:"Dura 2 días en refrigeración; recaliente hasta que hierva."}],
+
+["🥗","Ensalada de atún, papa y huevo","25 min","Plato principal",
+["3 papas medianas","2 huevos","1 lata de atún (unos 140 g) escurrida","1 tomate mediano picado","1/2 cebolla colorada pequeña en pluma","Jugo de 1 limón","1 cucharada de aceite","1/4 cucharadita de sal","2 cucharadas de cilantro picado"],
+["Cocine | Ponga las papas y los huevos en una olla con agua fría. Cuando hierva, cocine los huevos 10 minutos y las papas 15 minutos, hasta que estén blandas.",
+"Enfríe | Escurra y deje enfriar 10 minutos. Pele los huevos y corte las papas y los huevos en cubos.",
+"Prepare el aderezo | Mezcle el limón, el aceite y la sal.",
+"Mezcle | En un bol, junte la papa, el huevo, el atún, el tomate y la cebolla. Agregue el aderezo y el cilantro y mezcle con suavidad.",
+"Sirva | Sirva fría o a temperatura ambiente, sobre hojas de lechuga si desea."],
+{p:"Rinde 4 porciones",u:"Olla, bol, colador, tabla y cuchillo, tenedor",c:"Escurra bien el atún para que la ensalada no quede aguada. Mantenga la ensalada fría hasta servir.",l:"Las papas están blandas y los huevos, duros por dentro.",g:"Dura 1 día en refrigeración, en recipiente tapado."}],
+
+["🌽","Choclo con queso y habas","30 min","Plato principal",
+["4 mazorcas de choclo","2 tazas de habas tiernas desgranadas","200 g de queso fresco en tajadas","1 tomate mediano en rodajas","6 tazas de agua","1/2 cucharadita de sal"],
+["Lave | Retire las hojas de las mazorcas y lávelas. Desgrane las habas.",
+"Cocine el choclo | En una olla, hierva el agua con la sal. Agregue las mazorcas y cocine 20 minutos, hasta que los granos estén tiernos.",
+"Cocine las habas | A los 10 minutos, agregue las habas a la misma olla.",
+"Escurra | Retire con pinzas y escurra. Deje reposar 3 minutos antes de comer.",
+"Sirva | Acompañe con el queso y el tomate."],
+{p:"Rinde 4 porciones",u:"Olla grande con tapa, pinzas, colador, tabla y cuchillo",c:"Si las habas están duras, pélelas después de cocinarlas. Es una merienda completa con carbohidrato, proteína y verdura.",l:"Los granos de choclo se aplastan con facilidad.",g:"Dura 2 días en refrigeración."}],
+
+["🍠","Camote al horno con queso fresco","40 min","Plato principal",
+["4 camotes medianos","200 g de queso fresco en tajadas","1 cucharadita de aceite","1/4 cucharadita de sal","1 pizca de comino"],
+["Precaliente | Encienda el horno a 200 °C.",
+"Prepare | Lave los camotes con un cepillo, séquelos y pínchelos con un tenedor por todos lados. Frótelos con el aceite.",
+"Hornee | Colóquelos en una bandeja y hornee 35 minutos, hasta que al pinchar con un cuchillo estén blandos.",
+"Abra | Déjelos enfriar 5 minutos, ábralos por la mitad y sazone con sal y comino.",
+"Sirva | Acompañe con el queso fresco y una ensalada o fruta."],
+{p:"Rinde 4 porciones",u:"Horno, bandeja de horno, tenedor, cuchillo, cepillo de verduras",c:"Con la cáscara tiene más fibra. Un adulto debe sacar la bandeja del horno.",l:"El cuchillo entra sin resistencia hasta el centro.",g:"Duran 2 días en refrigeración; recaliente en sartén u horno."}],
+
+["🥦","Crema de brócoli y papa","30 min","Plato principal",
+["2 tazas de brócoli en ramitos","2 papas medianas peladas y en cubos","1/2 cebolla blanca picada","1 diente de ajo picado","1 cucharada de aceite","4 tazas de agua","1/2 taza de leche","1/2 cucharadita de sal"],
+["Prepare | Lave el brócoli y córtelo en ramitos. Pele y corte las papas en cubos de 2 cm.",
+"Haga el refrito | En una olla, caliente el aceite 1 minuto, cocine la cebolla y el ajo 3 minutos.",
+"Cocine | Agregue el agua, la papa y el brócoli. Tape y cocine 15 minutos, hasta que la papa esté blanda.",
+"Licue | Deje enfriar 5 minutos y licue con la leche. Llene la licuadora solo hasta la mitad y tape con un paño.",
+"Sirva | Devuelva a la olla, caliente 2 minutos sin que hierva y sazone con la sal."],
+{p:"Rinde 4 porciones",u:"Olla con tapa, licuadora, tabla y cuchillo, cuchara de palo",c:"Sirva con una tostada o un poco de queso rallado. Si queda espesa, agregue un poco de agua caliente.",l:"La papa se deshace al pincharla y la crema queda lisa.",g:"Dura 3 días en refrigeración; recaliente a fuego bajo."}],
+
+/* ===== Plato principal: Costa y Sierra ===== */
+["🐟","Encebollado de pescado","45 min","Plato principal",
+["500 g de pescado albacora o atún fresco en trozos","2 yucas medianas peladas en trozos","1 cebolla colorada en pluma","2 tomates picados","1 diente de ajo picado","1/2 cucharadita de comino","Jugo de 2 limones","1 cucharada de aceite","6 tazas de agua","1/2 cucharadita de sal","2 cucharadas de cilantro picado"],
+["Cocine la yuca | Hierva el agua con la sal y cocine la yuca 20 minutos, hasta que esté blanda.",
+"Haga el refrito | En otra olla, caliente el aceite 1 minuto y cocine la mitad de la cebolla, el ajo, el tomate y el comino 5 minutos.",
+"Cocine el pescado | Agregue el pescado y el caldo de la yuca (4 tazas). Tape y cocine 15 minutos a fuego bajo, hasta que esté bien cocido y opaco.",
+"Prepare la cebolla | Mezcle la cebolla restante con el limón y 1/4 de cucharadita de sal; deje reposar 10 minutos.",
+"Sirva | Desmenuce el pescado, sirva con la yuca, la cebolla curtida y el cilantro."],
+{p:"Rinde 4 porciones",u:"Dos ollas con tapa, tabla y cuchillo, colador, tenedor, bol",c:"Es un plato de la Costa que se toma en el desayuno o el almuerzo. Acompañe con limón y poco ají.",l:"El pescado está opaco, se desmenuza con el tenedor y la yuca está blanda.",g:"Dura 1 día en refrigeración; recaliente hasta que hierva."}],
+
+["🍳","Tigrillo con huevo y queso","25 min","Plato principal",
+["3 plátanos verdes","2 huevos","100 g de queso fresco desmenuzado","1/2 cebolla colorada picada fina","1 cucharada de aceite","1/2 cucharadita de sal","5 tazas de agua para cocinar"],
+["Cocine el verde | Pele los plátanos, córtelos en trozos y hiérvalos 15 minutos con 1/4 de cucharadita de sal, hasta que estén blandos.",
+"Aplaste | Escurra y aplaste con un tenedor, dejando algo de textura.",
+"Haga el refrito | En una sartén, caliente el aceite y cocine la cebolla 3 minutos. Agregue el verde aplastado y mezcle 3 minutos.",
+"Agregue el huevo | Haga un hueco, agregue los huevos batidos y revuelva hasta que estén bien cocidos, 3 minutos.",
+"Sirva | Añada el queso, mezcle y sirva caliente."],
+{p:"Rinde 4 porciones",u:"Olla, sartén, tenedor, colador, tabla y cuchillo, bol",c:"Es un plato típico de Manabí. Acompañe con fruta o una ensalada de tomate.",l:"El verde está suave y el huevo, firme.",g:"Dura 1 día en refrigeración; recaliente en sartén."}],
+
+["🍌","Patacones con queso y ensalada","30 min","Plato principal",
+["2 plátanos verdes","2 cucharadas de aceite","1/2 cucharadita de sal","150 g de queso fresco en tajadas","2 tomates medianos en rodajas","1/2 cebolla colorada en pluma","Jugo de 1 limón"],
+["Pele y corte | Pele los plátanos y córtelos en rodajas gruesas de 2 cm.",
+"Dore | En una sartén con la mitad del aceite, cocine las rodajas a fuego medio 4 minutos por lado, hasta que estén doradas por fuera y blandas al pinchar.",
+"Aplaste | Retire y aplaste cada rodaja con el fondo de un vaso hasta que quede de 1 cm.",
+"Dore otra vez | Agregue el aceite restante y cocine 3 minutos por lado, hasta que estén crocantes. Salpimiente.",
+"Sirva | Mezcle el tomate, la cebolla y el limón y sirva sobre los patacones con el queso."],
+{p:"Rinde 4 porciones",u:"Sartén, espátula, vaso o taza gruesa, tabla y cuchillo, bol",c:"Seque con papel absorbente para quitar el exceso de aceite. Un adulto debe manejar el aceite caliente.",l:"Los patacones están dorados y crocantes por fuera.",g:"Es mejor comerlos al momento, calientes."}],
+
+["🍛","Menestra de lenteja con arroz y pollo a la plancha","50 min","Plato principal",
+["1 taza de lentejas remojadas 1 hora","2 tazas de arroz cocido","4 presas pequeñas de pollo o pechuga en filetes","1 cebolla colorada picada","2 tomates picados","1 diente de ajo picado","1/2 cucharadita de comino","1 cucharada de aceite","3 tazas de agua","1/2 cucharadita de sal"],
+["Cocine las lentejas | Escurra las lentejas, póngalas con el agua y hierva 25 minutos a fuego medio, hasta que estén blandas.",
+"Haga el refrito | En una sartén, cocine la cebolla, el ajo, el tomate y el comino con la mitad del aceite 5 minutos. Mezcle con las lentejas y cocine 5 minutos.",
+"Sazone el pollo | Salpimiente el pollo.",
+"Cocine el pollo | En una sartén con el aceite restante, cocine 8 minutos por lado, hasta que no haya partes rosadas.",
+"Sirva | Acompañe con el arroz, una ensalada de tomate y cebolla y una rodaja de limón."],
+{p:"Rinde 4 porciones",u:"Olla, sartén, colador, tabla y cuchillo, cuchara de palo",c:"En la Costa la menestra se sirve con arroz y carne a la plancha. El limón ayuda a absorber el hierro de las lentejas.",l:"Las lentejas están blandas y el pollo sale jugo claro al pincharlo.",g:"Dura 2 días en refrigeración; recaliente hasta que humee."}],
+
+["🥣","Caldo de pollo con verde y yuca","55 min","Plato principal",
+["4 presas de pollo sin piel","1 plátano verde en trozos","1 yuca mediana en trozos","1 zanahoria en rodajas","1/2 cebolla blanca picada","2 dientes de ajo","1/2 cucharadita de comino","6 tazas de agua","1/2 cucharadita de sal","2 cucharadas de cilantro picado"],
+["Hierva el pollo | En una olla, ponga el pollo, el agua, la cebolla, el ajo y el comino. Cocine 20 minutos a fuego medio y retire la espuma.",
+"Agregue las verduras | Añada el verde, la yuca y la zanahoria. Tape y cocine 25 minutos.",
+"Compruebe | El pollo debe estar bien cocido, sin partes rosadas, y la yuca blanda.",
+"Sazone | Agregue la sal y el cilantro y cocine 2 minutos.",
+"Sirva | Reparta el caldo con las verduras y una presa por plato."],
+{p:"Rinde 4 porciones",u:"Olla grande con tapa, tabla y cuchillo, cuchara, colador",c:"Es un caldo reconfortante de la Costa. Sirva con limón y aguacate.",l:"La yuca y el verde se pinchan sin resistencia y el pollo sale jugo claro.",g:"Dura 2 días en refrigeración; recaliente hasta que hierva."}],
+
+["🥛","Machica con leche y banano","10 min","Plato principal",
+["4 cucharadas de machica","2 tazas de leche","2 bananos maduros en rodajas","1 pizca de canela","1 cucharadita de miel o panela rallada (opcional)"],
+["Caliente la leche | Ponga la leche a calentar a fuego bajo 5 minutos, hasta que humee sin hervir.",
+"Mezcle | Reparta la machica en 2 tazones y agregue la leche tibia, moviendo hasta que no queden grumos.",
+"Agregue la fruta | Añada el banano y la canela.",
+"Endulce | Agregue la miel o panela si desea y sirva."],
+{p:"Rinde 2 porciones",u:"Olla pequeña, tazones, cuchara, tabla y cuchillo",c:"La machica es cebada tostada y molida de la Sierra: da energía y fibra. Con yogur en lugar de leche también queda rica.",l:"Queda espesa, sin grumos.",g:"Es mejor comerla al momento."}],
+
+["🥔","Locro de papa con queso y aguacate","40 min","Plato principal",
+["5 papas medianas peladas en cubos","1/2 cebolla blanca picada","1 diente de ajo picado","1 cucharada de aceite","1/2 cucharadita de achiote o pimentón","5 tazas de agua","1 taza de leche","150 g de queso fresco en cubos","1 aguacate maduro","1/2 cucharadita de sal"],
+["Haga el refrito | En una olla, caliente el aceite 1 minuto. Cocine la cebolla, el ajo y el achiote 3 minutos.",
+"Cocine las papas | Agregue el agua y la papa. Tape y cocine 20 minutos, hasta que estén blandas.",
+"Aplaste | Aplaste la mitad de las papas contra la pared de la olla con una cuchara para espesar.",
+"Agregue la leche | Añada la leche y la sal y cocine 5 minutos a fuego bajo.",
+"Sirva | Reparta el locro, agregue el queso y el aguacate en cubos."],
+{p:"Rinde 4 porciones",u:"Olla con tapa, cuchara de palo, tabla y cuchillo",c:"Es un clásico de la Sierra. Acompañe con ensalada o fruta.",l:"La papa se deshace y el caldo está cremoso.",g:"Dura 2 días en refrigeración; recaliente a fuego bajo sin hervir."}],
+
+["🥟","Empanadas de queso al horno","45 min","Plato principal",
+["2 tazas de harina de trigo","1/4 taza de aceite","1/2 taza de agua tibia","1/2 cucharadita de sal","200 g de queso fresco desmenuzado","1 huevo para pincelar"],
+["Precaliente | Encienda el horno a 180 °C y cubra una bandeja con papel de hornear.",
+"Haga la masa | Mezcle la harina, la sal, el aceite y el agua y amase 5 minutos, hasta que quede suave. Deje reposar 15 minutos.",
+"Forme | Estire la masa, corte 8 círculos, ponga 2 cucharadas de queso en cada uno y cierre.",
+"Pincele | Coloque en la bandeja y pincele con el huevo batido.",
+"Hornee | Hornee 20 minutos, hasta que estén dorados."],
+{p:"Rinde 4 porciones (8 empanadas)",u:"Bol, bandeja, papel de hornear, horno, tenedor, rodillo",c:"En la Sierra se comen con ají o café. Un adulto debe manejar el horno.",l:"Están doradas y firmes.",g:"Duran 2 días en un recipiente tapado y 1 mes en el congelador."}],
+
+["🥗","Ensalada de quinua con verduras","35 min","Plato principal",
+["1 taza de quinua (unos 180 g)","2 tazas de agua","1 tomate picado","1 zanahoria rallada","1/2 pepino en cubos","2 cucharadas de cilantro picado","Jugo de 2 limones","1 cucharada de aceite","1/4 cucharadita de sal","1 huevo duro picado"],
+["Lave | Lave la quinua en un colador fino, frotando 2 minutos, hasta que el agua salga clara.",
+"Cocine | Hierva el agua, agregue la quinua, tape y cocine 15 minutos a fuego bajo, hasta que los granos se abran. Deje enfriar 10 minutos.",
+"Prepare | Corte el tomate y el pepino y ralle la zanahoria.",
+"Mezcle | Combine la quinua con las verduras, el huevo y el cilantro. Aderece con limón, aceite y sal.",
+"Sirva | Sirva fría o a temperatura ambiente."],
+{p:"Rinde 4 porciones",u:"Olla con tapa, colador fino, bol, tabla y cuchillo, rallador",c:"Cambie las verduras según la temporada. Mantenga fría hasta servir.",l:"Los granos de quinua se ven abiertos, con un anillo blanco.",g:"Dura 2 días en refrigeración."}],
+
+/* ===== Plato principal: más recetas (Costa, Sierra y Amazonía) ===== */
+["🍌","Maduro al horno con queso","35 min","Plato principal",
+["3 plátanos maduros (con la cáscara amarilla y manchas negras)","150 g de queso fresco en tajadas","1 cucharadita de aceite","1 pizca de canela"],
+["Precaliente | Encienda el horno a 200 °C y engrase una bandeja con el aceite.",
+"Corte | Pele los plátanos y córtelos a lo largo en 2 mitades.",
+"Hornee | Colóquelos en la bandeja y hornee 15 minutos. Déles la vuelta y hornee 10 minutos más, hasta que estén dorados y blandos.",
+"Agregue el queso | Ponga el queso encima y hornee 5 minutos, hasta que se ablande.",
+"Sirva | Espolvoree la canela y sirva caliente."],
+{p:"Rinde 4 porciones",u:"Horno, bandeja de horno, cuchillo, tabla",c:"Es una forma más liviana de preparar el maduro de la Costa, sin freír. Acompañe con arroz y ensalada si lo quiere como almuerzo.",l:"Los plátanos están dorados y blandos al pincharlos.",g:"Duran 1 día en refrigeración; recaliente en el horno."}],
+
+["🐟","Cazuela de pescado con verde","50 min","Plato principal",
+["500 g de pescado en trozos","3 plátanos verdes pelados y cortados en trozos","1 cebolla colorada picada","2 tomates picados","1 pimiento en tiras","2 dientes de ajo picados","1/2 cucharadita de comino","Jugo de 1 limón","1 cucharada de aceite","3 tazas de agua","1/2 cucharadita de sal","2 cucharadas de cilantro picado"],
+["Sazone el pescado | Mezcle el pescado con el limón, el ajo y la sal y deje reposar 10 minutos.",
+"Haga el refrito | En una olla, caliente el aceite 1 minuto y cocine la cebolla, el pimiento, el tomate y el comino 5 minutos.",
+"Cocine el verde | Agregue el agua y el verde. Tape y cocine 20 minutos, hasta que esté blando.",
+"Agregue el pescado | Añada el pescado, tape y cocine 10 minutos a fuego bajo, hasta que esté opaco y se desmenuce.",
+"Sirva | Espolvoree el cilantro y sirva con arroz."],
+{p:"Rinde 4 porciones",u:"Olla ancha con tapa, tabla y cuchillo, cuchara de palo",c:"La cazuela costeña suele llevar maní; esta versión no lo usa. Aplaste un poco de verde para espesar el caldo.",l:"El pescado está opaco y el verde, blando.",g:"Dura 1 día en refrigeración; recaliente hasta que hierva."}],
+
+["🍗","Seco de pollo con arroz","50 min","Plato principal",
+["500 g de pollo en presas sin piel","1 cebolla colorada picada","2 tomates picados","1 pimiento picado","2 dientes de ajo picados","1/2 cucharadita de comino","1/2 taza de cilantro picado","1 cucharada de aceite","2 tazas de agua","1/2 cucharadita de sal","2 tazas de arroz cocido"],
+["Haga el refrito | En una olla, caliente el aceite 1 minuto y cocine la cebolla, el ajo, el pimiento, el tomate y el comino 6 minutos.",
+"Licue | Licue la mitad del cilantro con 1/2 taza de agua y agregue al refrito.",
+"Cocine el pollo | Añada el pollo, la sal y el agua restante. Tape y cocine 30 minutos a fuego medio-bajo.",
+"Compruebe | El pollo debe estar bien cocido, sin partes rosadas, y la salsa espesa.",
+"Sirva | Acompañe con arroz, ensalada de tomate y una rodaja de aguacate."],
+{p:"Rinde 4 porciones",u:"Olla con tapa, licuadora, tabla y cuchillo, cuchara de palo",c:"El seco se come en todo el país; esta versión lleva poco aceite y mucho cilantro. Agregue un poco de agua si la salsa se seca.",l:"El pollo se desprende con el tenedor y la salsa está espesa.",g:"Dura 2 días en refrigeración; recaliente hasta que hierva."}],
+
+["🌽","Tortillas de choclo con queso","30 min","Plato principal",
+["2 tazas de choclo desgranado (unas 3 mazorcas)","1/2 taza de harina de trigo","1 huevo","100 g de queso fresco desmenuzado","1/4 cucharadita de sal","1 cucharada de aceite"],
+["Licue | Licue el choclo con el huevo hasta que quede una masa gruesa.",
+"Mezcle | Pase a un bol y agregue la harina, el queso y la sal.",
+"Forme | Con las manos húmedas, haga 8 tortillas pequeñas y aplánelas.",
+"Cocine | En una sartén con el aceite a fuego medio-bajo, cocine 4 minutos por lado, hasta que estén doradas y firmes.",
+"Sirva | Acompañe con una fruta o con tomate y aguacate."],
+{p:"Rinde 4 porciones (8 tortillas)",u:"Licuadora, bol, sartén, espátula",c:"Use choclo tierno. Si la masa queda muy blanda, agregue una cucharada más de harina.",l:"Están doradas y firmes por ambos lados.",g:"Duran 1 día en refrigeración; recaliente en sartén."}],
+
+["🥔","Habas con papa y huevo","35 min","Plato principal",
+["2 tazas de habas desgranadas","4 papas medianas peladas","4 huevos","1/2 cebolla colorada en pluma","2 tomates picados","Jugo de 1 limón","1 cucharada de aceite","1/2 cucharadita de sal","6 tazas de agua"],
+["Cocine | Hierva el agua con la sal, agregue las papas y cocine 20 minutos. A los 10 minutos agregue las habas y los huevos y cocine los huevos 10 minutos.",
+"Enfríe | Escurra, pele los huevos y corte en mitades. Corte las papas en trozos.",
+"Prepare la salsa | Mezcle la cebolla, el tomate, el limón y el aceite.",
+"Sirva | Sirva las papas, las habas y los huevos con la salsa por encima."],
+{p:"Rinde 4 porciones",u:"Olla, colador, bol, tabla y cuchillo",c:"Si las habas están duras, retíreles la cáscara después de cocinarlas.",l:"Las papas y las habas están blandas y los huevos duros por dentro.",g:"Dura 1 día en refrigeración."}],
+
+["🍃","Maito de pollo con yuca","55 min","Plato principal",
+["4 filetes de pollo","2 yucas medianas peladas","1 cebolla blanca picada","2 dientes de ajo picados","1/2 cucharadita de comino","Jugo de 1 limón","4 hojas grandes de plátano o bijao (o papel aluminio)","1/2 cucharadita de sal","1 cucharada de aceite","6 tazas de agua"],
+["Marine | Mezcle el pollo con el limón, el ajo, el comino y la sal y deje reposar 15 minutos.",
+"Cocine la yuca | Hierva la yuca en el agua 20 minutos, hasta que esté blanda.",
+"Envuelva | Pase las hojas por la llama unos segundos para ablandarlas. Ponga un filete y un poco de cebolla en cada una y ciérrelas bien.",
+"Cocine | En una sartén con el aceite a fuego medio, cocine los paquetes 12 minutos por lado, hasta que no haya partes rosadas.",
+"Sirva | Abra con cuidado, el vapor quema, y sirva con la yuca."],
+{p:"Rinde 4 porciones",u:"Olla, sartén, tabla y cuchillo, pinzas, colador",c:"El maito es un plato de la Amazonía, cocinado envuelto en hojas. Con papel aluminio queda igual de jugoso.",l:"El pollo no tiene partes rosadas y el jugo sale claro.",g:"Dura 1 día en refrigeración; recaliente tapado."}],
+
+["🥑","Ensalada de palmito con tomate y aguacate","15 min","Plato principal",
+["1 frasco de palmito (unos 400 g) escurrido y en rodajas","2 tomates medianos en cubos","1 aguacate maduro en cubos","1/2 cebolla colorada en pluma","Jugo de 2 limones","1 cucharada de aceite","1/4 cucharadita de sal","2 cucharadas de cilantro picado"],
+["Escurra | Escurra el palmito y enjuáguelo para quitar el exceso de sal. Córtelo en rodajas.",
+"Prepare | Corte el tomate y el aguacate en cubos y la cebolla en pluma.",
+"Aderece | Mezcle el limón, el aceite y la sal.",
+"Mezcle | Junte todo en un bol con el cilantro y mezcle con suavidad.",
+"Sirva | Sirva de inmediato, con arroz o una tostada."],
+{p:"Rinde 4 porciones",u:"Bol, colador, tabla y cuchillo",c:"El palmito es un producto de la Amazonía. Añada atún o huevo duro si lo quiere más completo.",l:"Las verduras están frescas y bien mezcladas.",g:"Es mejor comerla al momento; el aguacate se oscurece."}],
+
+["🥞","Panqueques de avena y banano","20 min","Plato principal",
+["1 taza de hojuelas de avena","2 bananos maduros","2 huevos","1/2 taza de leche","1 cucharadita de polvo de hornear","1 cucharadita de aceite","1 pizca de canela"],
+["Licue | Licue la avena, los bananos, los huevos, la leche, el polvo de hornear y la canela hasta que no haya grumos.",
+"Caliente | Engrase una sartén con un poco de aceite y caliente a fuego medio-bajo.",
+"Cocine | Vierta 1/4 de taza de masa y cocine 2 minutos por lado, hasta que salgan burbujas y se dore.",
+"Repita | Siga con el resto de la masa.",
+"Sirva | Acompañe con fruta picada o un poco de miel."],
+{p:"Rinde 4 porciones (8 panqueques)",u:"Licuadora, sartén, espátula, tazas medidoras",c:"No necesita azúcar si los bananos están bien maduros. Un adulto debe manejar la sartén caliente.",l:"Tienen burbujas, se despegan solos y están dorados.",g:"Duran 2 días en refrigeración y 1 mes en el congelador."}],
+
+["🍜","Sopa de fideo con verduras","30 min","Plato principal",
+["100 g de fideos","1 zanahoria en cubitos","1 papa mediana en cubitos","1/2 taza de arvejas","1/2 cebolla blanca picada","1 diente de ajo picado","1 cucharada de aceite","5 tazas de agua","1/2 cucharadita de sal","2 cucharadas de cilantro picado"],
+["Haga el refrito | En una olla, caliente el aceite 1 minuto y cocine la cebolla y el ajo 3 minutos.",
+"Agregue agua y verduras | Añada el agua, la zanahoria, la papa y la arveja. Tape y cocine 15 minutos.",
+"Agregue los fideos | Añada los fideos y cocine 8 minutos, moviendo de vez en cuando, hasta que estén suaves.",
+"Sazone | Agregue la sal y el cilantro y apague.",
+"Sirva | Sirva caliente con una rodaja de limón."],
+{p:"Rinde 4 porciones",u:"Olla con tapa, tabla y cuchillo, cuchara de palo",c:"Si queda muy espesa por los fideos, agregue un poco de agua caliente. Cambie las verduras según lo que tenga.",l:"Los fideos y las verduras están suaves.",g:"Dura 1 día en refrigeración; los fideos absorben el caldo."}]
 ];
 
 let RF={q:"",cat:"Todas"};
 const nrm=s=>String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
 const recGet=k=>{try{return JSON.parse(LS.g(`tesa_rec_${k}_${S.code}`)||"[]")}catch(e){return[]}};
 const recSet=(k,a)=>LS.s(`tesa_rec_${k}_${S.code}`,JSON.stringify(a));
-function recetario(){RF={q:"",cat:"Todas",n:persLoad()};
+function recetario(){RF={q:"",cat:"Todas",meal:"Todos",n:persLoad()};
  show(`<div class="card">${back}<h2>🍽️ Recetario andino</h2><p class="small">Platos, snacks, postres y loncheras económicos con productos del Ecuador. ${V("Ajuste cantidades e ingredientes a lo que tenga en casa.","Un adulto maneja cuchillo, fuego y horno; los menores lavan, mezclan y sirven.","Un adulto maneja cuchillo, fuego y horno; los menores lavan, mezclan y sirven.")}</p>
  ${persBox()}
  <div class="rdl noprint"><b>⬇️ Llévese el recetario</b><p class="small" style="margin:4px 0 8px">Descargue un archivo que se abre sin internet y sirve aunque cambie la página. También puede imprimirlo o guardarlo como PDF.</p><select id="rdsel" aria-label="Qué recetas incluir"><option value="all">Todas las recetas</option><option value="fav">Solo mis favoritas</option></select><div class="row2" style="justify-content:flex-start"><button onclick="recDescargar('dl')">Descargar archivo</button><button class="sec" onclick="recDescargar('print')">Imprimir o guardar PDF</button></div></div>
  <input id="rq" type="search" placeholder="Buscar por nombre o ingrediente (quinua, banano…)" oninput="RF.q=this.value;recList()">
- <div class="seg" id="rcats" style="margin-top:10px"></div><div class="seg" id="raud"></div><p class="small" id="rcount"></p><div id="rintro"></div><div id="rl"></div>
+ <div class="seg" id="rcats" style="margin-top:10px"></div><div class="seg" id="rmeal"></div><div class="seg" id="raud"></div><p class="small" id="rcount"></p><div id="rintro"></div><div id="rl"></div>
  <div class="alert">Cantidades y tiempos aproximados: cada receta rinde 3 o 4 porciones y, si elige otro número de personas, los ingredientes, los utensilios y los tiempos se ajustan de forma estimada. Cocine siempre el pollo, el pescado y los huevos hasta que estén bien cocidos. Si hay alergias (maní, huevo, lácteos, gluten u otras), adapte la receta o consulte a un profesional. En menores de 4 años, corte los alimentos redondos o duros (uvas, tomate cherry, canguil, frutos secos) para evitar atoramientos.</div></div>`);persChips();recList()}
 /* ---------- loncheras: público, contexto e introducción ---------- */
 const AUDS=[["Todos","📚"],["Niños","🧒"],["Adolescentes","🧑"],["Adulto joven","🎓"],["Adultos","💼"]];
@@ -1360,12 +1615,13 @@ function lonBox(r){const x=r[6]||{},a=x.a||[],bx=(c,h)=>`<div style="background:
  return bx("#e3f5e8",au)+bx("#f3ebfa","<b>👪 "+V("Para mí","Para mi hijo o hija","Para mi familia")+":</b> "+cx)+bx("#fde4e4","⚠️ <b>Seguridad de la lonchera:</b> "+LON_SEG)}
 function lonIntro(){return`<div class="card" style="border-top-color:var(--o)"><h3>🎒 Loncheras prácticas</h3><p class="small">Recetas rápidas, económicas y con productos fáciles de encontrar, para llevar a la escuela, la universidad o el trabajo. Hay ${REC.filter(r=>r[3]=="Loncheras").length} recetas, suficientes para un mes sin repetir; no están atadas a un día, así que elija la que quiera. Elija el público (niños, adolescentes, adulto joven o adultos) y ajuste las cantidades en «Personas».</p><div class="why"><b>Fórmula de una lonchera completa:</b> 1 plato principal (cereal, tubérculo o legumbre con una proteína) + 1 fruta o verdura + agua. Un snack natural es opcional.</div><p class="small">${V("Prepárela la víspera: ahorra tiempo por la mañana.","Involucre a su hijo o hija en el armado: come mejor lo que ayuda a preparar.","Cocine por tandas y arme varias loncheras a la vez.")}</p></div>`}
 function recList(){const fav=recGet("fav"),cook=recGet("cook"),q=nrm(RF.q.trim());
- const idx=REC.map((r,i)=>i).filter(i=>{const r=REC[i];if(RF.cat=="Favoritas"&&!fav.includes(i))return false;if(RF.cat!="Todas"&&RF.cat!="Favoritas"&&r[3]!=RF.cat)return false;if(RF.cat=="Loncheras"&&RF.aud&&RF.aud!="Todos"&&!(((r[6]||{}).a)||[]).includes(RF.aud))return false;return !q||nrm(r[1]+" "+r[4].join(" ")).includes(q)});
+ const idx=REC.map((r,i)=>i).filter(i=>{const r=REC[i];if(RF.cat=="Favoritas"&&!fav.includes(i))return false;if(RF.cat!="Todas"&&RF.cat!="Favoritas"&&r[3]!=RF.cat)return false;if(RF.cat=="Plato principal"&&RF.meal&&RF.meal!="Todos"&&!(COMIDA[r[1]]||[]).includes(RF.meal))return false;if(RF.cat=="Loncheras"&&RF.aud&&RF.aud!="Todos"&&!(((r[6]||{}).a)||[]).includes(RF.aud))return false;return !q||nrm(r[1]+" "+r[4].join(" ")).includes(q)});
  $("#rcats").innerHTML=CATS.map(c=>`<button class="${c[0]==RF.cat?"on":""}" onclick="recCat('${c[0]}')">${c[1]} ${c[0]}</button>`).join("");
  $("#raud").innerHTML=RF.cat=="Loncheras"?AUDS.map(a=>`<button class="${a[0]==(RF.aud||"Todos")?"on":""}" onclick="RF.aud='${a[0]}';recList()">${a[1]} ${a[0]}</button>`).join(""):"";
- $("#rintro").innerHTML=RF.cat=="Loncheras"?lonIntro():"";
+ $("#rmeal").innerHTML=RF.cat=="Plato principal"?MEALS.map(m=>`<button class="${m[0]==(RF.meal||"Todos")?"on":""}" onclick="RF.meal='${m[0]}';recList()">${m[1]} ${m[0]}</button>`).join(""):"";
+ $("#rintro").innerHTML=RF.cat=="Loncheras"?lonIntro():(RF.cat=="Plato principal"&&MEALINFO[RF.meal]?`<p class="small">${MEALINFO[RF.meal]}</p>`:"");
  $("#rcount").innerHTML=`${idx.length} de ${REC.length} recetas · ${V("Cocinadas por mí","Cocinadas con mi hijo o hija","Cocinadas en familia")}: <b id="rcc">${cook.length}</b>`;
- $("#rl").innerHTML=idx.map(i=>{const r=REC[i];return`<details class="rc" ontoggle="recOpen(this)"><summary><span style="font-size:26px">${r[0]}</span> ${esc(r[1])}<small class="rt" data-i="${i}">${esc(recTLabel(r,RF.n,rBase(r)))} · ${esc(r[3])}</small></summary><div class="rb"><div class="rbody" data-i="${i}" data-t="r"></div><div class="row2" style="justify-content:flex-start"><button class="sec" onclick="recFav(${i},this)">${fav.includes(i)?"⭐ En favoritas":"☆ Guardar en favoritas"}</button><button class="${cook.includes(i)?"":"sec"}" onclick="recCook(${i},this)">${cook.includes(i)?"✅ Ya la cocinamos":"👩‍🍳 Marcar como cocinada"}</button></div></div></details>`}).join("")||`<p class="small">No hay recetas con ese filtro.</p>`}
+ $("#rl").innerHTML=idx.map(i=>{const r=REC[i];return`<details class="rc" ontoggle="recOpen(this)"><summary><span style="font-size:26px">${r[0]}</span> ${esc(r[1])}<small class="rt" data-i="${i}">${esc(recTLabel(r,RF.n,rBase(r)))} · ${esc(r[3])}${r[3]=="Plato principal"&&COMIDA[r[1]]?" · "+COMIDA[r[1]].join(", ")+(REGION[r[1]]?" · "+REGION[r[1]]:""):""}</small></summary><div class="rb"><div class="rbody" data-i="${i}" data-t="r"></div><div class="row2" style="justify-content:flex-start"><button class="sec" onclick="recFav(${i},this)">${fav.includes(i)?"⭐ En favoritas":"☆ Guardar en favoritas"}</button><button class="${cook.includes(i)?"":"sec"}" onclick="recCook(${i},this)">${cook.includes(i)?"✅ Ya la cocinamos":"👩‍🍳 Marcar como cocinada"}</button></div></div></details>`}).join("")||`<p class="small">No hay recetas con ese filtro.</p>`}
 /* ---------- personas, cantidades y reemplazos ---------- */
 const PERS_OP=[1,2,3,4,5,6,8,10,12];
 const BASEP={"Chamoy casero (salsa de fruta con limón)":4,"Bolitas de dátil y avena":4,"Galletas de avena y banano":4};
