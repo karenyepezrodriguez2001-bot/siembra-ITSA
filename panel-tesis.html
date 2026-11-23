@@ -34,7 +34,7 @@ tr.avg td{background:var(--gl);font-weight:bold}
 @media(max-width:600px){.bar{grid-template-columns:1fr}}
 .qa{border:1px solid var(--b);border-radius:10px;padding:12px;margin:10px 0;background:#fff}.qa h4{margin:0 0 8px;font-size:14px;color:#3d1a5e}
 .op{display:grid;grid-template-columns:minmax(0,1fr) 190px;gap:8px;align-items:center;margin:4px 0;padding:6px 8px;border-radius:8px;font-size:13px}.op.c{background:#e6f4ea}.op.w{background:#fdeeee}
-.pill.r{background:#fde8e8;color:#9b1c1c}.pill.g{background:#e6f4ea;color:#1e6b34}
+.pill.r{background:#fde8e8;color:#9b1c1c}.bdg{display:inline-block;margin-left:4px;background:#c0392b;color:#fff;border-radius:99px;padding:0 7px;font-size:12px}.pill.g{background:#e6f4ea;color:#1e6b34}
 .mk{display:inline-block;min-width:30px;padding:2px 6px;border-radius:6px;font-weight:bold;text-align:center}.mk.g{background:#e6f4ea;color:#1e6b34}.mk.r{background:#fde8e8;color:#9b1c1c}
 .trk i.vd{background:#4caf6a}.trk i.rj{background:#d96c6c}
 @media(max-width:600px){.op{grid-template-columns:1fr}}
@@ -46,14 +46,14 @@ tr.avg td{background:var(--gl);font-weight:bold}
 const URL="https://vokpjjidytayjrzjespr.supabase.co",KEY="sb_publishable_q6YCquh7-JYBEUrl1UCQfA_NDJ5ROGS";
 const esc=v=>String(v==null?"":v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const $=s=>document.querySelector(s),app=$("#app"),nav=$("#nav");
-let CLAVE="",F=[],SEM=[],GEN="",TAB="inicio",SUB="",BUSCA="",RW=1,RP=true;
+let LEC=[],LECERR="",CLAVE="",F=[],SEM=[],GEN="",TAB="inicio",SUB="",BUSCA="",RW=1,RP=true;
 // Claves de respuestas: la evaluación inicial y la final tienen PREGUNTAS DISTINTAS, cada una con su clave.
 const CLV={pre:["B","B","B","A","C","B","B","C","A","B"],post:["A","C","B","C","A","B","C","A","B","A"]};
 async function rpc(fn,a){let r;try{r=await fetch(`${URL}/rest/v1/rpc/${fn}`,{method:"POST",headers:{"Content-Type":"application/json",apikey:KEY},body:JSON.stringify(a)})}catch(e){throw new Error("Sin conexión")}
  const t=await r.text();let d;try{d=JSON.parse(t)}catch(e){d=t}if(!r.ok)throw new Error((d&&d.message)||"Error");return d}
 function login(m){nav.innerHTML="";app.innerHTML=`<div class="card"><h2>Ingreso</h2><p class="step">Escriba la clave que definió al crear el panel.</p><input id="k" type="password" placeholder="Clave" autocomplete="current-password"> <button id="bk" onclick="entrar()">Entrar</button>${m?`<div class="err">${esc(m)}</div>`:""}</div>`;$("#k").addEventListener("keydown",e=>{if(e.key=="Enter")entrar()})}
 async function entrar(){CLAVE=$("#k").value;const b=$("#bk");b.disabled=true;b.textContent="Verificando…";await cargar(true)}
-async function cargar(primera){try{const d=await rpc("admin_exportar",{p_clave:CLAVE});F=d.filas||[];GEN=d.generado;await semanas();await cargarEnvios();if(primera){TAB="inicio";SUB="";BUSCA=""}render()}catch(e){login(e.message)}}
+async function cargar(primera){try{const d=await rpc("admin_exportar",{p_clave:CLAVE});F=d.filas||[];GEN=d.generado;await semanas();await cargarEnvios();await cargarLec();if(primera){TAB="inicio";SUB="";BUSCA=""}render()}catch(e){login(e.message)}}
 const hoy=()=>new Date().toLocaleDateString("en-CA",{timeZone:"America/Guayaquil"});
 async function semanas(){try{const r=await fetch(`${URL}/rest/v1/semanas?select=numero,titulo,fecha_apertura,fecha_cierre&order=numero`,{headers:{apikey:KEY}});SEM=(await r.json()).filter(x=>x.numero<=3);RW=Math.max(1,SEM.filter(x=>x.fecha_apertura<=hoy()).reduce((a,x)=>Math.max(a,x.numero),1))}catch(e){SEM=[]}}
 function salirP(){CLAVE="";F=[];login()}
@@ -90,18 +90,18 @@ const T=(h,r,vacio)=>`<div class="tw"><table><tr>${h.map(x=>`<th>${esc(x)}</th>`
 const AV=c=>({avg:1,c});
 const buscador=()=>`<input id="bs" type="search" placeholder="Buscar por código o nombre…" value="${esc(BUSCA)}" oninput="BUSCA=this.value;render();const b=$('#bs');b.focus();b.setSelectionRange(b.value.length,b.value.length)">`;
 const sub=l=>`<div class="sub">${l.map(x=>`<button class="${SUB==x[0]?"on":""}" onclick="SUB='${x[0]}';render()">${x[1]}</button>`).join("")}</div>`;
-const TABS=[["inicio","🏠 Inicio"],["part","👥 Participantes"],["avance","📈 Avance"],["conoc","🧠 Conocimientos"],["resp","🔍 Respuestas"],["hab","🌱 Hábitos"],["sat","⭐ Satisfacción"],["rec","🔔 Recordatorios"],["env","📋 Envíos"]];
-function go(t){TAB=t;SUB={conoc:"pre",hab:"1",resp:"preg"}[t]||"";BUSCA="";PER="";render();window.scrollTo(0,0);if(t=="rec")cargarEstado();if(t=="env")cargarEnvios().then(render)}
+const TABS=[["inicio","🏠 Inicio"],["part","👥 Participantes"],["avance","📈 Avance"],["conoc","🧠 Conocimientos"],["resp","🔍 Respuestas"],["hab","🌱 Hábitos"],["sat","⭐ Satisfacción"],["rec","🔔 Recordatorios"],["env","📋 Envíos"],["lec","📖 Lectura"]];
+function go(t){TAB=t;SUB={conoc:"pre",hab:"1",resp:"preg"}[t]||"";BUSCA="";PER="";render();window.scrollTo(0,0);if(t=="rec")cargarEstado();if(t=="env")cargarEnvios().then(render);if(t=="lec")cargarLec().then(render)}
 function render(){
- nav.innerHTML=`<div class="tabs">${TABS.map(t=>`<button class="${TAB==t[0]?"on":""}" onclick="go('${t[0]}')">${t[1]}</button>`).join("")}<button class="s" style="margin-left:auto" onclick="cargar()">↻ Actualizar</button><button class="s" onclick="salirP()">Cerrar sesión</button></div>`;
- app.innerHTML=({inicio:vInicio,part:vPart,avance:vAvance,conoc:vConoc,resp:vResp,hab:vHab,sat:vSat,rec:vRec,env:vEnv})[TAB]()+`<p class="step">Datos actualizados: ${GEN?new Date(GEN).toLocaleString("es-EC"):"–"}</p>`}
+ nav.innerHTML=`<div class="tabs">${TABS.map(t=>`<button class="${TAB==t[0]?"on":""}" onclick="go('${t[0]}')">${t[1]}${t[0]=="lec"&&PEND()?`<span class="bdg">${PEND()}</span>`:""}</button>`).join("")}<button class="s" style="margin-left:auto" onclick="cargar()">↻ Actualizar</button><button class="s" onclick="salirP()">Cerrar sesión</button></div>`;
+ app.innerHTML=({inicio:vInicio,part:vPart,avance:vAvance,conoc:vConoc,resp:vResp,hab:vHab,sat:vSat,rec:vRec,env:vEnv,lec:vLec})[TAB]()+`<p class="step">Datos actualizados: ${GEN?new Date(GEN).toLocaleString("es-EC"):"–"}</p>`}
 
 /* ---------- INICIO: panorama general ---------- */
 function vInicio(){const n=F.length,c=a=>F.filter(a).length,pct=x=>n?Math.round(x*100/n):0;
  const k=[["Registrados",n],["Evaluación inicial",c(f=>f.pre)],["Evaluación final",c(f=>f.post)],["Encuesta",c(f=>f.sat)],["Completaron todo",c(elig)]];
  const et=[["Registro",n],["Evaluación inicial",c(f=>f.pre)],["Hábitos S1",c(f=>hab(f,1))],["Hábitos S2",c(f=>hab(f,2))],["Hábitos S3",c(f=>hab(f,3))],["Evaluación final",c(f=>f.post)],["Encuesta",c(f=>f.sat)]];
  const h=hoy(),est=s=>h<s.fecha_apertura?{h:'<span class="pill n">Próxima</span>'}:h>s.fecha_cierre?{h:'<span class="pill">Cerrada</span>'}:{h:'<span class="pill w">Abierta ahora</span>'};
- return `<div class="card"><h2>Panorama general</h2><div class="kp">${k.map(x=>`<div class="k"><b>${x[1]}</b><span>${x[0]}</span></div>`).join("")}</div></div>
+ return `${PEND()?`<div class="card" style="border-left:5px solid #c0392b"><h2>🔔 ${PEND()} solicitud${PEND()>1?"es":""} de acceso de lectura</h2><p class="step">Hay personas esperando que usted les dé acceso al contenido de lectura.</p><button onclick="go('lec')">Revisar solicitudes</button></div>`:""}<div class="card"><h2>Panorama general</h2><div class="kp">${k.map(x=>`<div class="k"><b>${x[1]}</b><span>${x[0]}</span></div>`).join("")}</div></div>
  <div class="card"><h2>Avance de la campaña</h2><p class="step">Porcentaje sobre el total de registrados.</p>${et.map(x=>`<div class="bar"><span>${x[0]}</span><div class="trk"><i style="width:${pct(x[1])}%"></i></div><b>${x[1]} (${pct(x[1])}%)</b></div>`).join("")}</div>
  <div class="card"><h2>Calendario</h2>${T(["Semana","Tema","Abre","Cierra","Estado"],SEM.map(s=>[s.numero,s.titulo,s.fecha_apertura,s.fecha_cierre,est(s)]),"No se pudieron cargar las semanas.")}</div>
  <div class="card"><h2>Secciones del panel</h2><div class="go">
@@ -225,6 +225,16 @@ function vMapa(){const m=MOM,Lp=flt().filter(f=>f[m]);
 
 /* ---------- control de envíos compartido ---------- */
 let ENV=[];
+const PEND=()=>LEC.filter(x=>x.quiere&&x.estado=="pendiente").length;
+async function cargarLec(){try{LEC=await rpc("admin_lector_listar",{p_clave:CLAVE})||[];LECERR=""}catch(e){LEC=[];LECERR=e.message}}
+async function lecRes(c,ok,b){if(!confirm(ok?"¿Dar acceso de lectura al código "+c+"?":"¿Rechazar la solicitud del código "+c+"?"))return;b.disabled=true;try{await rpc("admin_lector_resolver",{p_clave:CLAVE,p_codigo:c,p_aprobar:ok});await cargarLec();render()}catch(e){b.disabled=false;alert(e.message)}}
+function vLec(){const fm=d=>d?new Date(d).toLocaleString("es-EC",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):"–",pf=c=>F.find(f=>f.codigo==c)||{},
+ est=x=>!x.quiere?{h:'<span class="pill n">No desea</span>'}:x.estado=="aprobada"?{h:'<span class="pill g">Aprobada</span>'}:x.estado=="rechazada"?{h:'<span class="pill r">Rechazada</span>'}:{h:'<span class="pill w">Pendiente</span>'},
+ ac=x=>x.quiere&&x.estado!="aprobada"?{h:`<button onclick="lecRes('${esc(x.codigo)}',true,this)">Aprobar</button>${x.estado=="pendiente"?`<button class="s" onclick="lecRes('${esc(x.codigo)}',false,this)">Rechazar</button>`:""}`}:"–",
+ L=[...LEC].sort((a,b)=>(b.quiere&&b.estado=="pendiente")-(a.quiere&&a.estado=="pendiente")||String(b.creado).localeCompare(String(a.creado)));
+ return `<div class="card"><h2>📖 Acceso de lectura (${LEC.length})</h2><p class="step">Hasta el 27 de noviembre las personas se registran solas. Después del 27 piden acceso desde la plataforma y aquí le aparece la solicitud. Al aprobar, el código queda registrado y la persona ya puede entrar a lectura.html. Escríbale por correo o WhatsApp para avisarle.</p>
+ ${LECERR?`<div class="err">No se pudo cargar: ${esc(LECERR)}. ¿Ya ejecutó el archivo SQL en Supabase?</div>`:""}
+ ${T(["Código","Nombre","Contacto","Respuesta","Solicitado","Estado","Acción"],L.map(x=>[x.codigo,dash(pf(x.codigo).nombre),dash(pf(x.codigo).correo||pf(x.codigo).whatsapp),x.quiere?"Sí":"No",fm(x.creado),est(x),ac(x)]),"Aún no hay solicitudes.")}</div>`}
 async function cargarEnvios(){try{ENV=await rpc("listar_envios",{p_clave:CLAVE})||[]}catch(e){ENV=[]}}
 const envi=(c,s,k)=>ENV.filter(e=>e.codigo==c&&e.semana==s&&e.canal==k).pop();
 const hora=d=>new Date(d).toLocaleString("es-EC",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});
