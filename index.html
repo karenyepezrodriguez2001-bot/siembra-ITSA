@@ -149,6 +149,25 @@ a.btn{display:inline-block;background:var(--g);color:#fff;border-radius:8px;padd
 @media print{.qrc .noprint{display:none!important}}
 /* recetario: pestañas receta / reemplazos */
 .rbody[data-t="r"] .rp-s,.rbody[data-t="s"] .rp-r{display:none}.rbody .seg button{font-size:13px;padding:7px 12px}
+
+.nw{background:#fff;border:1px solid #d9dde3;border-radius:10px;padding:14px 18px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.07)}
+.nw>summary{list-style:none;cursor:pointer;font-weight:bold;font-size:15px;color:#202122;display:flex;align-items:center;gap:6px}
+.nw>summary::-webkit-details-marker{display:none}.nw>summary:after{content:"▾";font-size:14px}.nw:not([open])>summary:after{content:"▸"}
+.nw .tt{color:#006fbf;text-transform:uppercase;font-size:26px;line-height:1.2;margin:14px 0 8px;font-weight:normal;letter-spacing:.2px}
+.nw .by{font-size:12px;color:#3a3f45;margin:0 0 10px}
+.nw .dias{display:inline-block;margin-left:8px;background:#fff4c7;color:#7a5b00;border-radius:99px;padding:2px 10px;font-size:12px;font-weight:bold;text-transform:none;vertical-align:middle}
+.nwb{display:grid;grid-template-columns:34% 1fr;border-radius:4px;overflow:hidden;margin:12px 0;min-height:230px;background:#fff;border:1px solid #e3d9ee}
+.nwb .l{background:linear-gradient(180deg,#6b2d91,#4a1d6b);color:#fff;text-align:center;padding:14px 8px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:6px}
+.nwb .l .em{font-size:54px;line-height:1}.nwb .l b{font-size:15px;line-height:1.2}.nwb .l span{font-size:11px;opacity:.9}
+.nwb .l .conf{background:#f5c518;color:#3a2a00;border-radius:6px;padding:4px 8px;font-size:11px;font-weight:bold;margin-top:6px}
+.nwb .r{padding:14px 16px;display:flex;flex-direction:column;justify-content:center;gap:6px}
+.nwb .r h4{margin:0;color:#6b2d91;font-size:22px;line-height:1.15;text-transform:uppercase}
+.nwb .r .sm{color:#6b2d91;font-weight:bold;font-size:15px}
+.nwb .r .ps{font-weight:bold;font-size:13px;color:#222;margin-top:4px}.nwb .r ol{margin:2px 0 0;padding-left:18px;font-size:13px;color:#333}
+.nwb .r .pill{align-self:flex-start;background:#d9a400;color:#fff;font-weight:bold;font-size:13px;border-radius:99px;padding:8px 16px;margin-top:6px;text-transform:uppercase}
+.nw .mt{color:#006fbf;cursor:pointer;font-size:15px;text-decoration:none}.nw .mt:hover{text-decoration:underline}
+.nw ul{margin:8px 0 0;padding-left:20px;font-size:14px}.nw .falta{margin-top:10px}
+@media(max-width:600px){.nwb{grid-template-columns:1fr}.nw .tt{font-size:21px}}
 </style></head><body>
 <div id="fl" aria-hidden="true"></div>
 <header class="hero"><div class="deco" aria-hidden="true"><span>🥕</span><span>🍎</span><span>🌱</span><span>🥦</span><span>🍌</span><span>💧</span></div>
@@ -157,7 +176,7 @@ a.btn{display:inline-block;background:var(--g);color:#fff;border-radius:8px;padd
 <svg class="wave" viewBox="0 0 1440 40" preserveAspectRatio="none" aria-hidden="true"><path d="M0,22 C240,48 480,0 720,22 C960,44 1200,6 1440,22 L1440,40 L0,40Z" fill="#f1e7fb"/></svg></header>
 <div class="shell"><aside class="side" id="sl" aria-hidden="true"><span class="big sun" onclick="wig(this)">☀️</span><span class="big" onclick="wig(this)">🥕</span><span class="big" onclick="wig(this)">🥦</span><span class="big" onclick="wig(this)">🍎</span><span class="big" onclick="wig(this)">🤸‍♀️</span><span class="big" onclick="wig(this)">🚴‍♂️</span><span class="big" onclick="wig(this)">🍇</span></aside>
 <main id="app"><div class="card">Cargando…</div></main><aside class="side" id="sr" aria-hidden="true"><span class="big" onclick="wig(this)">🌈</span><span class="big" onclick="wig(this)">🦋</span><span class="big" onclick="wig(this)">⚽</span><span class="big" onclick="wig(this)">🍓</span><span class="big" onclick="wig(this)">🏃‍♀️</span><span class="big" onclick="wig(this)">🧘‍♂️</span><span class="big" onclick="wig(this)">💧</span></aside></div>
-<footer class="foot"><div class="grass" aria-hidden="true"><span>🌿</span><span>🥕</span><span>🌻</span><span>🍅</span><span>🌱</span><span>🥦</span><span>🌽</span><span>🌿</span><span>🍓</span><span>🌻</span><span>🥕</span><span>🌱</span><span>🍅</span><span>🌿</span></div>Proyecto académico de Enfermería, Instituto Superior Tecnológico San Antonio (TESA). Sus datos son confidenciales y se usan solo con fines académicos.<br>Versión 12-nov-2026 · recetas con loncheras</footer>
+<footer class="foot"><div class="grass" aria-hidden="true"><span>🌿</span><span>🥕</span><span>🌻</span><span>🍅</span><span>🌱</span><span>🥦</span><span>🌽</span><span>🌿</span><span>🍓</span><span>🌻</span><span>🥕</span><span>🌱</span><span>🍅</span><span>🌿</span></div>Proyecto académico de Enfermería, Instituto Superior Tecnológico San Antonio (TESA). Sus datos son confidenciales y se usan solo con fines académicos.<br>Versión 23-nov-2026 · noticias y acceso de lectura</footer>
 <script>
 /* ---------- generador de QR (modo byte, corrección M, versiones 1 a 10) ---------- */
 const QR=(()=>{
@@ -301,9 +320,9 @@ const opts=(sel,fn,k,arr,cls)=>`<div class="opts ${cls||""}">${arr.map((x,i)=>`<
 const selv=(id,arr,val)=>`<select id="${id}" onchange="REG.${id}=this.value"><option value="">Elija…</option>${arr.map(x=>`<option ${x==val?"selected":""}>${x}</option>`).join("")}</select>`;
 /* Cierre de inscripciones: true = no se admiten nuevos registros (cierre: domingo 15-nov-2026) */
 const REG_CERRADO=true;
-function start(){show(`<div class="card"><h2>Bienvenido/a</h2><p>Esta campaña de 3 semanas le ayudará a mejorar la alimentación y los hábitos de vida, suyos, de su hijo o hija, o de toda su familia. Cada semana se habilita sola en su fecha.</p>
+function start(){show(`${noticias()}<div class="card"><h2>Bienvenido/a</h2><p>Esta campaña de 3 semanas le ayudará a mejorar la alimentación y los hábitos de vida, suyos, de su hijo o hija, o de toda su familia. Cada semana se habilita sola en su fecha.</p>
 <h3 style="margin-top:16px">Ya me registré</h3><label>Mi código de participante</label><input id="cod" name="usuario" autocomplete="username" placeholder="Ej.: A3F9K2" maxlength="6" style="text-transform:uppercase" value="${esc(LS.g('tesa_ultimo')||'')}"><p class="small" style="margin:6px 0 0">¿No recuerda su código? Búsquelo en el mensaje de bienvenida que recibió por correo o WhatsApp.</p><button onclick="entrar()">Entrar</button><div id="m1"></div></div>
-${REG_CERRADO?`<div class="card" style="border-top-color:var(--o)"><h3>🔒 Registro cerrado</h3><p class="small">El período de inscripción terminó el domingo 15 de noviembre de 2026 y ya no se aceptan nuevos participantes. Si usted se registró antes de esa fecha, ingrese con su código en el recuadro de arriba. ¡Gracias por su interés!</p></div>`:`<div class="card"><h3>Soy nuevo/a</h3><p class="small">El registro tiene 4 pasos sencillos y toma menos de 2 minutos.</p><button class="y" onclick="REG={};regPaso(1)">Comenzar registro</button></div>`}`)}
+${REG_CERRADO?`<div class="card" style="border-top-color:var(--o)"><h3>🔒 Registro cerrado</h3><p class="small">El período de inscripción terminó el domingo 15 de noviembre de 2026 y ya no se aceptan nuevos participantes. Si usted se registró antes de esa fecha, ingrese con su código en el recuadro de arriba. ¡Gracias por su interés!</p></div>`:`<div class="card"><h3>Soy nuevo/a</h3><p class="small">El registro tiene 4 pasos sencillos y toma menos de 2 minutos.</p><button class="y" onclick="REG={};regPaso(1)">Comenzar registro</button></div>`}${lecCard("")}`)}
 function regSet(k,i){REG[k]=REGARR[k][i][0];if(k=="para")REG.rol=REG.para=="Para mí"?"Participo solo por mí":(ROLES.some(r=>r[0]==REG.rol)?REG.rol:"");regPaso(RP,true)}
 function regPaso(n,keep){if(REG_CERRADO)return start();RP=n;const p=REG.para;
  const bar=`<div class="stp">${[1,2,3,4].map(i=>`<i class="${i<n?"on":i==n?"cur":""}"></i>`).join("")}</div><p class="small" style="margin:0 0 10px">Paso ${n} de 4</p>`;let h="";
@@ -383,19 +402,43 @@ function ctSet(k,i){CT[k]=(k=="para"?PARAD:(NIVD[CT.para]||NIV))[i][0];ctxView(t
 function ctGuardar(){if(!CT.para||!CT.ins)return $("#cm").innerHTML=msg("err","Elija las dos opciones.");S.para=CT.para;S.nivel=CT.ins;LS.s("tesa_para",S.para);LS.s("tesa_nivel",S.nivel);TIP=-1;ini()}
 /* ---------- avisos / noticias de la pantalla de inicio ---------- */
 const FIN_PLAT="2026-11-27"; // último día de la plataforma (AAAA-MM-DD). Cambie aquí si la fecha se mueve.
+const NOT_FECHA="2026-11-23",NOT_AUTOR="Karen Yépez y Jacqueline Zambrano"; // fecha y autoras que se muestran en la noticia
+function nwMas(a){const m=$("#nwmas");if(!m)return;const o=m.style.display=="none";m.style.display=o?"block":"none";a.textContent=o?"Mostrar menos":"Mostrar todo"}
 function noticias(){
- const hoyG=new Date().toLocaleDateString("en-CA",{timeZone:"America/Guayaquil"}),d=Math.round((new Date(FIN_PLAT+"T00:00:00")-new Date(hoyG+"T00:00:00"))/864e5),fin=fmt(FIN_PLAT);
- if(d<0)return `<div class="card news"><h3>📢 Avisos</h3><p class="small" style="margin:0">La plataforma finalizó el ${fin}. ¡Gracias por participar en <b>Siembra hábitos</b>!</p></div>`;
+ const hoyG=new Date().toLocaleDateString("en-CA",{timeZone:"America/Guayaquil"}),d=Math.round((new Date(FIN_PLAT+"T00:00:00")-new Date(hoyG+"T00:00:00"))/864e5),fin=fmt(FIN_PLAT),
+ dia=new Date(FIN_PLAT+"T00:00:00").toLocaleDateString("es-EC",{weekday:"long"}),pub=new Date(NOT_FECHA+"T00:00:00").toLocaleDateString("es-EC",{day:"numeric",month:"long",year:"numeric"});
+ const by=`<p class="by">${NOT_AUTOR} publicado el ${pub}</p>`;
+ if(d<0)return `<details class="nw" open><summary>Noticias</summary><h3 class="tt">La plataforma finalizó el ${fin}</h3>${by}<p style="margin:0">¡Gracias por participar en <b>Siembra hábitos</b>!</p></details>`;
  const chip=d==0?"¡Hoy es el último día!":d==1?"Queda 1 día":"Quedan "+d+" días";
  let fl=[];try{fl=certFalta()}catch(e){}
- return `<div class="card news"><h3>📢 Avisos <span class="dias">${chip}</span></h3>
- <ul><li>La plataforma estará abierta <b>hasta el ${new Date(FIN_PLAT+"T00:00:00").toLocaleDateString("es-EC",{weekday:"long"})} ${fin}</b>.</li>
- <li>Puede completar <b>las semanas, las evaluaciones, los hábitos y la encuesta que le falten</b> el día y a la hora que prefiera, mientras sea antes de esa fecha. No es necesario hacerlo en un horario fijo.</li>
- <li>Si ya terminó todo, puede obtener su certificado de participación.</li></ul>
- ${fl.length?`<div class="falta"><b>Aún le falta:</b> ${fl.map(esc).join("; ")}.</div>`:""}</div>`}
+ return `<details class="nw" open><summary>Noticias</summary>
+ <h3 class="tt">Todas las actividades abiertas hasta el ${dia} ${fin} <span class="dias">${chip}</span></h3>${by}
+ <p style="margin:0 0 4px;font-size:15px">Puede realizar <b>todas las actividades pendientes de la Semana 1, la Semana 2 y la Semana 3 cualquier día y a cualquier hora</b>, hasta el ${dia} ${fin}.</p>
+ <div class="nwb"><div class="l"><span class="em">🌱</span><b>Siembra hábitos,<br>cosecha salud</b><span>Campaña TESA</span><div class="conf">Sus datos son confidenciales</div></div>
+ <div class="r"><h4>¡Complete la campaña a su ritmo!</h4><div class="sm">Semana 1 · Semana 2 · Semana 3</div>
+ <div class="ps">PASOS A SEGUIR:</div><ol><li>Ingrese con su código de participante.</li><li>Complete lo que tenga pendiente: evaluación inicial, semanas, hábitos, evaluación final y encuesta.</li><li>Descargue su certificado de participación.</li></ol>
+ <div class="pill">Disponible hasta el ${dia} ${fin}</div></div></div>
+ ${fl.length?`<div class="falta"><b>Aún le falta:</b> ${fl.map(esc).join("; ")}.</div>`:""}
+ <div id="nwmas" style="display:none"><ul><li>No es necesario hacerlo en un horario fijo: elija el día y la hora que le queden cómodos, siempre antes del ${fin}.</li><li>Si le falta alguna semana, puede completarla ahora; no importa que su fecha de apertura ya haya pasado.</li><li>Si ya terminó todo, puede obtener su certificado de participación.</li></ul></div>
+ <p style="margin:12px 0 0"><a class="mt" role="button" tabindex="0" onclick="nwMas(this)" onkeydown="if(event.key=='Enter')nwMas(this)">Mostrar todo</a></p></details>`}
+/* ---------- acceso de solo lectura después del cierre ---------- */
+const LEC_ABIERTO=true; // false = ya no se aceptan nuevos registros de lectura
+function lecCard(cod){if(!LEC_ABIERTO)return"";setTimeout(lecInit,60);
+ return`<div class="card" id="lec" style="border-top-color:var(--o)"><h3>📖 Siga con acceso gratuito de lectura</h3>
+ <p class="small">La plataforma se cierra el <b>${fmt(FIN_PLAT)}</b>. Si desea <b>seguir consultando</b> la Biblioteca (infografías, tríptico y guías), el Recetario andino, los videos y las referencias <b>sin descargarlos</b>, registre aquí su código. Es gratis y de solo lectura: no incluye retos, evaluaciones ni certificado.</p>
+ <label>Mi código de participante</label><input id="leccod" placeholder="Ej.: A3F9K2" maxlength="6" style="text-transform:uppercase" value="${esc(cod||LS.g("tesa_ultimo")||"")}">
+ <label style="display:flex;gap:8px;font-weight:normal;align-items:flex-start"><input type="checkbox" id="leccons" style="width:auto;margin-top:4px">Deseo conservar mi acceso de solo lectura y autorizo que mi código quede en el registro de lectura de la campaña (uso académico).</label>
+ <button onclick="lecRegistrar()">Registrar mi código</button><div id="lecm"></div>
+ <p class="small">¿Ya lo registró? <a href="lectura.html" style="color:var(--g);font-weight:bold">Entrar al modo lectura</a></p></div>`}
+async function lecInit(){const i=$("#leccod");if(!i)return;const c=i.value.trim().toUpperCase();if(c.length<4)return;try{const r=await rpc("lector_consultar",{p_codigo:c});if(r&&r.registrado)lecOk(c)}catch(e){}}
+function lecOk(c){const el=$("#lec");if(!el)return;el.innerHTML=`<h3>📖 Acceso de lectura registrado ✓</h3><p class="small">El código <b>${esc(c)}</b> quedó registrado. Después del cierre podrá seguir consultando la Biblioteca, el Recetario, los videos y las referencias entrando con ese código.</p><a class="btn" href="lectura.html" style="display:inline-block;background:var(--g);color:#fff;border-radius:8px;padding:11px 18px;font-weight:bold;text-decoration:none">Abrir el modo lectura</a>`}
+async function lecRegistrar(){const m=$("#lecm"),b=event.target,c=($("#leccod").value||"").trim().toUpperCase();
+ if(c.length<4)return m.innerHTML=msg("err","Escriba su código de participante.");
+ if(!$("#leccons").checked)return m.innerHTML=msg("err","Marque la casilla para confirmar que desea conservar el acceso de lectura.");
+ busy(b,true);try{await rpc("lector_registrar",{p_codigo:c,p_consentimiento:true});LS.s("lec_codigo",c);busy(b,false);lecOk(c)}catch(e){busy(b,false);m.innerHTML=msg("err",e.message)}}
 function home(){const e=S.est,sm=e.semanas,j=e.pretest_hecho,pl=plantas(),G=["🥕","🍎","🌻"],nf=(nomG().split(" ")[0]||"");
  let h=`<div class="card"><div class="hd"><span><b>${nf?"Hola, "+esc(nf.charAt(0).toUpperCase()+nf.slice(1).toLowerCase()):"Hola"} 👋</b><span class="code">${S.code}</span></span><span><button class="sec" onclick="miCodigo()">🔑 Mi código</button> <button class="sec" onclick="salir()">Salir</button></span></div>${S.para&&S.nivel?`<div class="small" style="margin-top:6px">🎯 ${esc(S.para)} · ${esc(S.nivel)} · <a href="#" onclick="cambiarCtx();return false" style="color:var(--g);font-weight:bold">Cambiar</a></div>`:`<div style="margin-top:6px"><button style="margin:0;padding:6px 12px" onclick="cambiarCtx()">Completar mi perfil</button></div>`}</div>`;
- h+=noticias();h+=huertaCard();
+ h+=noticias();h+=lecCard(S.code);h+=huertaCard();
  if(j&&S.lb===false)h+=`<div class="card" style="border-left:4px solid var(--o,#f5c518)"><h3>🌱 Complete su punto de partida</h3><p class="small">Antes de empezar la Semana 1, cuéntenos cómo fue la semana pasada (de 0 a 7 días). Así podremos ver cuánto cambia durante la campaña. Son solo 4 preguntas.</p>${hNota()}${H().map(x=>`<label>${x[1]}</label>${sel("h0_"+x[0],0,7)}`).join("")}<button onclick="puntoPartida()">Guardar</button><div id="mpp"></div></div>`;
  h+=`<div class="card"><div class="tools"><button onclick="biblio('ig')"><span>📚</span>Biblioteca</button><button onclick="videos()"><span>🎬</span>Videos</button><button onclick="recetario()"><span>🍽️</span>Recetas</button><button onclick="cal()"><span>📅</span>Registro</button><button class="${j?"":"lock"}" ${j?'onclick="juegos()"':"disabled"}><span>🎮</span>Juegos</button><button onclick="refs()"><span>📖</span>Fuentes</button></div></div>`;
  h+=tipCard()+accion();
