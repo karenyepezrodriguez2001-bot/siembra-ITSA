@@ -32,6 +32,12 @@ tr.avg td{background:var(--gl);font-weight:bold}
 .pill{display:inline-block;padding:2px 9px;border-radius:99px;font-size:12px;background:var(--gl);color:var(--g)}.pill.w{background:#fff4c7;color:#7a5b00}.pill.n{background:#eee;color:#666}
 .res{background:var(--gl);border-radius:8px;padding:10px;margin:10px 0}
 @media(max-width:600px){.bar{grid-template-columns:1fr}}
+.qa{border:1px solid var(--b);border-radius:10px;padding:12px;margin:10px 0;background:#fff}.qa h4{margin:0 0 8px;font-size:14px;color:#3d1a5e}
+.op{display:grid;grid-template-columns:minmax(0,1fr) 190px;gap:8px;align-items:center;margin:4px 0;padding:6px 8px;border-radius:8px;font-size:13px}.op.c{background:#e6f4ea}.op.w{background:#fdeeee}
+.pill.r{background:#fde8e8;color:#9b1c1c}.pill.g{background:#e6f4ea;color:#1e6b34}
+.mk{display:inline-block;min-width:30px;padding:2px 6px;border-radius:6px;font-weight:bold;text-align:center}.mk.g{background:#e6f4ea;color:#1e6b34}.mk.r{background:#fde8e8;color:#9b1c1c}
+.trk i.vd{background:#4caf6a}.trk i.rj{background:#d96c6c}
+@media(max-width:600px){.op{grid-template-columns:1fr}}
 </style></head><body>
 <header><h1>Panel de la investigadora</h1><p>Campaña “Siembra hábitos, cosecha salud” · acceso privado</p></header>
 <div id="nav"></div>
@@ -41,7 +47,8 @@ const URL="https://vokpjjidytayjrzjespr.supabase.co",KEY="sb_publishable_q6YCquh
 const esc=v=>String(v==null?"":v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const $=s=>document.querySelector(s),app=$("#app"),nav=$("#nav");
 let CLAVE="",F=[],SEM=[],GEN="",TAB="inicio",SUB="",BUSCA="",RW=1,RP=true;
-const KQ=["B","B","B","A","C","B","B","C","A","B"]; // clave supuesta; verificar con la tabla "clave" de Supabase
+// Claves de respuestas: la evaluación inicial y la final tienen PREGUNTAS DISTINTAS, cada una con su clave.
+const CLV={pre:["B","B","B","A","C","B","B","C","A","B"],post:["A","C","B","C","A","B","C","A","B","A"]};
 async function rpc(fn,a){let r;try{r=await fetch(`${URL}/rest/v1/rpc/${fn}`,{method:"POST",headers:{"Content-Type":"application/json",apikey:KEY},body:JSON.stringify(a)})}catch(e){throw new Error("Sin conexión")}
  const t=await r.text();let d;try{d=JSON.parse(t)}catch(e){d=t}if(!r.ok)throw new Error((d&&d.message)||"Error");return d}
 function login(m){nav.innerHTML="";app.innerHTML=`<div class="card"><h2>Ingreso</h2><p class="step">Escriba la clave que definió al crear el panel.</p><input id="k" type="password" placeholder="Clave" autocomplete="current-password"> <button id="bk" onclick="entrar()">Entrar</button>${m?`<div class="err">${esc(m)}</div>`:""}</div>`;$("#k").addEventListener("keydown",e=>{if(e.key=="Enter")entrar()})}
@@ -55,7 +62,7 @@ function salirP(){CLAVE="";F=[];login()}
 const tx=v=>v==null?"":String(v).replace(/[\t\r\n]+/g," ");
 const prog=(f,s)=>(f.progreso||[]).find(x=>x.s==s)||{};
 const hab=(f,s)=>((f.habitos||[]).find(x=>x.s==s)||{}).v;
-const sc=a=>a?a.reduce((n,x,i)=>n+(String(x).toUpperCase()==KQ[i]?1:0),0):null;
+const sc=(a,k)=>a?a.reduce((n,x,i)=>n+(String(x).toUpperCase()==CLV[k][i]?1:0),0):null;
 const nv=p=>p==null?"":p<=4?"Bajo":p<=7?"Medio":"Alto";
 const avg=a=>{a=a.filter(x=>x!=null&&x!==""&&!isNaN(x));return a.length?(a.reduce((s,x)=>s+ +x,0)/a.length).toFixed(1):"–"};
 const dash=v=>v==null||v===""?"–":v;
@@ -70,11 +77,12 @@ const BL={
  contactos:()=>[["Código","Nombre","Correo","WhatsApp","Registro"]].concat(F.map(f=>[f.codigo,f.nombre,f.correo,f.whatsapp,fecha(f.registrado)])),
  pre:()=>F.map(f=>[f.codigo].concat(f.pre||Array(10).fill(""))),
  post:()=>F.map(f=>f.post||Array(10).fill("")),
- comp:()=>[["Código","Pretest","Postest","Cambio"]].concat(F.map(f=>{const a=sc(f.pre),b=sc(f.post);return[f.codigo,a==null?"":a,b==null?"":b,a!=null&&b!=null?b-a:""]})),
+ comp:()=>[["Código","Pretest","Postest","Cambio"]].concat(F.map(f=>{const a=sc(f.pre,"pre"),b=sc(f.post,"post");return[f.codigo,a==null?"":a,b==null?"":b,a!=null&&b!=null?b-a:""]})),
  hab:()=>F.map(f=>{let r=[f.codigo];for(let s=1;s<=3;s++)r=r.concat(hab(f,s)||["","","",""]);return r}),
- sat:()=>F.map(f=>[f.codigo].concat(f.sat||["","","",""]))};
+ resp:()=>[["Código","Momento","N°","Tema","Eligió","Correcta","Acertó"]].concat(F.flatMap(f=>["pre","post"].flatMap(m=>f[m]?QD[m].map((_,i)=>{const l=let_(f[m],i);return[f.codigo,m=="pre"?"Inicial":"Final",i+1,TEMAS[i],l,CLV[m][i],l?(l==CLV[m][i]?1:0):""]}):[]))),
+sat:()=>F.map(f=>[f.codigo].concat(f.sat||["","","",""]))};
 function cp(k,el){const t=BL[k]().map(r=>r.map(tx).join("\t")).join("\n");const m=el.parentElement.querySelector(".ok");
- navigator.clipboard.writeText(t).then(()=>{m.textContent="Copiado ✓ ("+F.length+" filas)"}).catch(()=>{m.textContent="No se pudo copiar"})}
+ navigator.clipboard.writeText(t).then(()=>{m.textContent="Copiado ✓ ("+t.split("\n").length+" filas)"}).catch(()=>{m.textContent="No se pudo copiar"})}
 const cbtn=(k,txt,cls)=>`<button class="${cls||""}" onclick="cp('${k}',this)">${txt}</button><span class="ok"></span>`;
 
 /* ---------- componentes ---------- */
@@ -82,11 +90,11 @@ const T=(h,r,vacio)=>`<div class="tw"><table><tr>${h.map(x=>`<th>${esc(x)}</th>`
 const AV=c=>({avg:1,c});
 const buscador=()=>`<input id="bs" type="search" placeholder="Buscar por código o nombre…" value="${esc(BUSCA)}" oninput="BUSCA=this.value;render();const b=$('#bs');b.focus();b.setSelectionRange(b.value.length,b.value.length)">`;
 const sub=l=>`<div class="sub">${l.map(x=>`<button class="${SUB==x[0]?"on":""}" onclick="SUB='${x[0]}';render()">${x[1]}</button>`).join("")}</div>`;
-const TABS=[["inicio","🏠 Inicio"],["part","👥 Participantes"],["avance","📈 Avance"],["conoc","🧠 Conocimientos"],["hab","🌱 Hábitos"],["sat","⭐ Satisfacción"],["rec","🔔 Recordatorios"],["env","📋 Envíos"]];
-function go(t){TAB=t;SUB={conoc:"pre",hab:"1"}[t]||"";BUSCA="";render();window.scrollTo(0,0);if(t=="rec")cargarEstado();if(t=="env")cargarEnvios().then(render)}
+const TABS=[["inicio","🏠 Inicio"],["part","👥 Participantes"],["avance","📈 Avance"],["conoc","🧠 Conocimientos"],["resp","🔍 Respuestas"],["hab","🌱 Hábitos"],["sat","⭐ Satisfacción"],["rec","🔔 Recordatorios"],["env","📋 Envíos"]];
+function go(t){TAB=t;SUB={conoc:"pre",hab:"1",resp:"preg"}[t]||"";BUSCA="";PER="";render();window.scrollTo(0,0);if(t=="rec")cargarEstado();if(t=="env")cargarEnvios().then(render)}
 function render(){
  nav.innerHTML=`<div class="tabs">${TABS.map(t=>`<button class="${TAB==t[0]?"on":""}" onclick="go('${t[0]}')">${t[1]}</button>`).join("")}<button class="s" style="margin-left:auto" onclick="cargar()">↻ Actualizar</button><button class="s" onclick="salirP()">Cerrar sesión</button></div>`;
- app.innerHTML=({inicio:vInicio,part:vPart,avance:vAvance,conoc:vConoc,hab:vHab,sat:vSat,rec:vRec,env:vEnv})[TAB]()+`<p class="step">Datos actualizados: ${GEN?new Date(GEN).toLocaleString("es-EC"):"–"}</p>`}
+ app.innerHTML=({inicio:vInicio,part:vPart,avance:vAvance,conoc:vConoc,resp:vResp,hab:vHab,sat:vSat,rec:vRec,env:vEnv})[TAB]()+`<p class="step">Datos actualizados: ${GEN?new Date(GEN).toLocaleString("es-EC"):"–"}</p>`}
 
 /* ---------- INICIO: panorama general ---------- */
 function vInicio(){const n=F.length,c=a=>F.filter(a).length,pct=x=>n?Math.round(x*100/n):0;
@@ -100,6 +108,7 @@ function vInicio(){const n=F.length,c=a=>F.filter(a).length,pct=x=>n?Math.round(
  <button onclick="go('part')"><b>👥 Participantes</b>Quiénes se registraron y sus datos.</button>
  <button onclick="go('avance')"><b>📈 Avance</b>Qué ha hecho cada familia.</button>
  <button onclick="go('conoc')"><b>🧠 Conocimientos</b>Evaluación inicial, final y comparación.</button>
+ <button onclick="go('resp')"><b>🔍 Respuestas</b>Qué contestaron, errores y qué reforzar.</button>
  <button onclick="go('hab')"><b>🌱 Hábitos</b>Registro semanal, semana por semana.</button>
  <button onclick="go('sat')"><b>⭐ Satisfacción</b>Resultados de la encuesta.</button>
  <button onclick="go('rec')"><b>🔔 Recordatorios</b>Mensajes a las familias pendientes.</button></div>
@@ -121,15 +130,15 @@ function vAvance(){const L=flt(),m=(f,s)=>{const p=prog(f,s);return[p.l,p.r,hab(
 
 /* ---------- CONOCIMIENTOS ---------- */
 function vConoc(){const L=flt(),H=["Código"].concat(Array.from({length:10},(_,i)=>"P"+(i+1))),
- nota=`<p class="step">Se muestra la letra elegida en cada pregunta. El puntaje y el nivel (Bajo 0–4, Medio 5–7, Alto 8–10) se calculan aquí con la clave de respuestas; verifique que coincida con la tabla <b>clave</b> de Supabase.</p>`;
+ nota=`<p class="step">Se muestra la letra elegida en cada pregunta. El puntaje y el nivel (Bajo 0–4, Medio 5–7, Alto 8–10) se calculan aquí con la clave de respuestas de cada evaluación (la inicial y la final tienen preguntas distintas). Para ver qué eligió cada persona y cuál era la correcta, use la pestaña <b>🔍 Respuestas</b>.</p>`;
  let b="";
- if(SUB=="pre"||SUB=="post"){const k=SUB,lab=k=="pre"?"Evaluación inicial":"Evaluación final",rows=a=>a.map(f=>{const r=f[k],p=sc(r);return[f.codigo].concat(r||Array(10).fill("–"),[dash(p),dash(nv(p))])});
-  const ps=F.map(f=>sc(f[k])).filter(x=>x!=null);
+ if(SUB=="pre"||SUB=="post"){const k=SUB,lab=k=="pre"?"Evaluación inicial":"Evaluación final",rows=a=>a.map(f=>{const r=f[k],p=sc(r,k);return[f.codigo].concat(r||Array(10).fill("–"),[dash(p),dash(nv(p))])});
+  const ps=F.map(f=>sc(f[k],k)).filter(x=>x!=null);
   b=`<h3>${lab}</h3>${buscador()}${nota}${T(H.concat(["Puntaje","Nivel"]),rows(L).concat(ps.length?[AV(["Promedio ("+ps.length+")"].concat(Array(10).fill(""),[avg(ps),""]))]:[]))}
   <div class="bt">${cbtn(k,"Copiar "+lab.toLowerCase())}<p class="step">${k=="pre"?"Hoja de Conocimientos, celda <b>A6</b> (código + 10 respuestas).":"Hoja de Conocimientos, celda <b>N6</b> (10 respuestas, sin código)."} Incluye a todos en el mismo orden de participantes.</p></div>`}
- else{const rows=L.map(f=>{const a=sc(f.pre),p=sc(f.post);return[f.codigo,dash(a),dash(p),a!=null&&p!=null?(p-a>0?"+":"")+(p-a):"–"]}),
-  par=F.filter(f=>f.pre&&f.post),dif=par.map(f=>sc(f.post)-sc(f.pre));
-  b=`<h3>Comparación inicial y final</h3>${buscador()}${T(["Código","Inicial","Final","Cambio"],rows.concat([AV(["Promedio",avg(F.map(f=>sc(f.pre))),avg(F.map(f=>sc(f.post))),dif.length?(avg(dif)>0?"+":"")+avg(dif):"–"])]))}
+ else{const rows=L.map(f=>{const a=sc(f.pre,"pre"),p=sc(f.post,"post");return[f.codigo,dash(a),dash(p),a!=null&&p!=null?(p-a>0?"+":"")+(p-a):"–"]}),
+  par=F.filter(f=>f.pre&&f.post),dif=par.map(f=>sc(f.post,"post")-sc(f.pre,"pre"));
+  b=`<h3>Comparación inicial y final</h3>${buscador()}${T(["Código","Inicial","Final","Cambio"],rows.concat([AV(["Promedio",avg(F.map(f=>sc(f.pre,"pre"))),avg(F.map(f=>sc(f.post,"post"))),dif.length?(avg(dif)>0?"+":"")+avg(dif):"–"])]))}
   <p class="step">El cambio promedio se calcula solo con quienes hicieron las dos evaluaciones (${par.length}).</p><div class="bt">${cbtn("comp","Copiar comparación","s")}<p class="step">Tabla con encabezados, para revisar o pegar en una hoja aparte.</p></div>`}
  return `<div class="card"><h2>Conocimientos</h2>${sub([["pre","Evaluación inicial"],["post","Evaluación final"],["comp","Comparación"]])}${b}</div>`}
 
@@ -146,6 +155,73 @@ function vSat(){const L=flt(),con=F.filter(f=>f.sat);
  return `<div class="card"><h2>Encuesta de satisfacción</h2>${buscador()}<p class="step">Valoraciones de 1 a 5. Respondieron ${con.length} de ${F.length}.</p>
  ${T(["Código","Utilidad","Claridad","Recomendaría","Comentario"],L.map(f=>{const s=f.sat||[];return[f.codigo,dash(s[0]),dash(s[1]),dash(s[2]),{h:s[3]?`<span style="white-space:normal;display:inline-block;min-width:220px;text-align:left">${esc(s[3])}</span>`:"–"}]}).concat(con.length?[AV(["Promedio",avg(con.map(f=>f.sat[0])),avg(con.map(f=>f.sat[1])),avg(con.map(f=>f.sat[2])),""])]:[]))}
  <div class="bt">${cbtn("sat","Copiar satisfacción")}<p class="step">Hoja de Satisfacción, celda <b>A6</b> (código, 3 valoraciones y comentario).</p></div></div>`}
+
+/* ---------- RESPUESTAS: qué contestaron y qué corregir ---------- */
+const QD={"pre":[["La malnutrición incluye…",["Solo desnutrición","Desnutrición, sobrepeso y obesidad","Solo obesidad"]],["Un riesgo frecuente en casa es…",["Tomar agua en las comidas","Premiar con golosinas y comer frente a pantallas","Hacer actividad al aire libre"]],["Una consecuencia en el estudio o el trabajo puede ser…",["Más energía","Menor atención y rendimiento","Mejor memoria"]],["La mitad de un plato saludable debería ser…",["Frutas y verduras","Arroz o pan","Frituras"]],["Para niños y adolescentes de 5 a 17 años, la actividad física diaria recomendada es de…",["15 minutos","30 minutos","60 minutos"]],["Si nota cambios bruscos de peso en usted o en alguien de su familia, lo mejor es…",["Hacer una dieta por su cuenta","Consultar en el centro de salud","Compararse con otras personas"]],["¿Cuál es un producto ultraprocesado?",["Fruta fresca","Galletas y snacks empacados","Lentejas cocidas"]],["La mejor bebida para acompañar las comidas es…",["Gaseosa","Jugo industrializado","Agua simple"]],["Una señal de alerta para consultar es…",["Cambios bruscos de peso o cansancio constante, o que un menor no crezca como se espera","Hacer actividad física","Comer fruta"]],["Durante las comidas conviene…",["Tener la televisión o el celular encendidos","Apagar las pantallas","Comer apurados"]]],"post":[["Son formas de malnutrición…",["La desnutrición, el sobrepeso y la obesidad","Únicamente la falta de peso","Únicamente el exceso de peso"]],["¿Cuál de estas costumbres en casa aumenta el riesgo de malnutrición?",["Servir frutas picadas como merienda","Cenar en familia, sin pantallas","Tener golosinas y gaseosas siempre a la mano"]],["Comer mal de forma habitual puede causar…",["Más concentración","Cansancio y dificultad para concentrarse","Mejor rendimiento"]],["¿Cuál plato está mejor equilibrado?",["Todo arroz con fritura","Solo carne asada","Medio plato de verduras y frutas, y el resto con granos y proteína"]],["¿Cuánto movimiento al día se recomienda a un adolescente de 14 años?",["Al menos 60 minutos al día","15 minutos al día","Una hora, solo el fin de semana"]],["Un niño baja de peso de pronto y está muy decaído. Lo más adecuado es…",["Esperar a ver si se le pasa","Llevarlo al centro de salud","Darle vitaminas por su cuenta"]],["¿Cuál de estos alimentos es ultraprocesado?",["Huevo cocido","Avena en hojuelas sin azúcar","Papas fritas de funda"]],["Para calmar la sed durante el día, lo mejor es…",["Agua simple","Bebida energizante","Té helado embotellado"]],["Conviene consultar a un profesional de salud si…",["Un menor juega al aire libre","Hay cansancio constante o un menor no crece como se espera","Se come fruta todos los días"]],["Para comer mejor en familia conviene…",["Comer despacio y sin pantallas","Comer rápido para no perder tiempo","Ver videos en el celular durante la comida"]]]};
+const TEMAS=["Qué es la malnutrición","Costumbres de riesgo en casa","Consecuencias en estudio o trabajo","Plato saludable","Actividad física recomendada","Qué hacer ante cambios de peso","Alimentos ultraprocesados","Bebida para comidas y sed","Señales de alerta para consultar","Comer sin pantallas"];
+const MN={pre:"Evaluación inicial",post:"Evaluación final"},LET="ABC";
+let MOM="pre",PER="";
+const let_=(r,i)=>r&&r[i]?String(r[i]).toUpperCase():"";
+const txo=(m,i,l)=>{const j=LET.indexOf(l);return j<0?"":QD[m][i][1][j]};
+const acierta=(f,m,i)=>{const l=let_(f[m],i);return l?l==CLV[m][i]:null};
+function dist(m,i,P){const c={A:0,B:0,C:0};let n=0;(P||F).forEach(f=>{const l=let_(f[m],i);if(c[l]!=null){c[l]++;n++}});return{c,n}}
+const pcor=(m,i,P)=>{let n=0,k=0;(P||F).forEach(f=>{const a=acierta(f,m,i);if(a!=null){n++;if(a)k++}});return n?Math.round(k*100/n):null};
+function errTop(m,i){const d=dist(m,i);let t=null;LET.split("").forEach(l=>{if(l!=CLV[m][i]&&d.c[l]>0&&(!t||d.c[l]>t.n))t={l,n:d.c[l],p:Math.round(d.c[l]*100/d.n)}});return t}
+const wrap=(h,w)=>({h:`<span style="white-space:normal;display:inline-block;min-width:${w||170}px;text-align:left">${h}</span>`});
+const momB=()=>`<div class="sub">${["pre","post"].map(m=>`<button class="${MOM==m?"on":""}" onclick="MOM='${m}';render()">${MN[m]}</button>`).join("")}</div>`;
+const estado=p=>p==null?"–":{h:p<50?'<span class="pill r">Reforzar</span>':p<75?'<span class="pill w">Revisar</span>':'<span class="pill g">Bien</span>'};
+function verPer(c){PER=c;SUB="per";TAB="resp";BUSCA="";render();window.scrollTo(0,0)}
+
+function vResp(){let b="";
+ b=SUB=="tema"?vTema():SUB=="per"?vPer():SUB=="mapa"?vMapa():vPreg();
+ return `<div class="card"><h2>Respuestas y errores</h2><p class="step">Aquí se ve <b>qué contestó cada persona</b>, cuál era la respuesta correcta y en qué temas conviene reforzar. Una pregunta de la evaluación inicial y la del mismo número en la final tratan el mismo tema, aunque están redactadas distinto.</p>
+ ${sub([["preg","Por pregunta"],["tema","Antes vs después"],["per","Por persona"],["mapa","Mapa de aciertos"]])}${b}</div>`}
+
+function vPreg(){const m=MOM,n=F.filter(f=>f[m]).length;
+ if(!n)return momB()+`<p class="step">Aún nadie ha respondido la ${MN[m].toLowerCase()}.</p>`;
+ const rows=QD[m].map((q,i)=>{const p=pcor(m,i),e=errTop(m,i);return["P"+(i+1),wrap(esc(TEMAS[i]),160),p==null?"–":p+"%",estado(p),wrap(CLV[m][i]+") "+esc(txo(m,i,CLV[m][i])),200),e?wrap(e.l+") "+esc(txo(m,i,e.l))+` <b>(${e.p}%)</b>`,200):"–"]});
+ const cards=QD[m].map((q,i)=>{const d=dist(m,i),p=pcor(m,i),mx=Math.max(0,...LET.split("").filter(l=>l!=CLV[m][i]).map(l=>d.c[l]));
+  return `<div class="qa"><h4>P${i+1}. ${esc(q[0])} ${p==null?"":`<span class="pill ${p<50?"r":p<75?"w":"g"}">${p}% acertó</span>`}</h4>${q[1].map((o,j)=>{const l=LET[j],ok=l==CLV[m][i],c=d.c[l],pp=d.n?Math.round(c*100/d.n):0;
+   return `<div class="op ${ok?"c":c>0&&c==mx?"w":""}"><span>${l}) ${esc(o)}${ok?" ✓ <b>correcta</b>":""}</span><div style="display:flex;align-items:center;gap:6px"><div class="trk" style="flex:1"><i class="${ok?"vd":"rj"}" style="width:${pp}%"></i></div><b style="font-size:12px;min-width:56px">${c} (${pp}%)</b></div></div>`}).join("")}</div>`}).join("");
+ return `${momB()}<p class="step">Respondieron: ${n} de ${F.length}. “Reforzar” = acertó menos del 50%; “Revisar” = entre 50% y 74%. Barra verde = respuesta correcta; barra roja = respuestas incorrectas (en rosado, la incorrecta más elegida).</p>
+ ${T(["Pregunta","Tema","% acertó","Estado","Respuesta correcta","Error más frecuente"],rows)}<h3>Detalle de cada pregunta</h3>${cards}`}
+
+function vTema(){const P=F.filter(f=>f.pre&&f.post);
+ if(!P.length)return `<p class="step">Se necesita al menos una persona con las dos evaluaciones completas.</p>`;
+ const cnt=(i,x,y)=>P.filter(f=>acierta(f,"pre",i)===x&&acierta(f,"post",i)===y).length;
+ const rows=TEMAS.map((t,i)=>{const a=pcor("pre",i,P),b=pcor("post",i,P),d=a!=null&&b!=null?b-a:null;
+  return[wrap(`P${i+1} · ${esc(t)}`,200),a==null?"–":a+"%",b==null?"–":b+"%",d==null?"–":(d>0?"+":"")+d+" pts",cnt(i,false,true),cnt(i,false,false),cnt(i,true,false)]});
+ const fin=F.filter(f=>f.post),dbj=TEMAS.map((t,i)=>[t,pcor("post",i,fin)]).filter(x=>x[1]!=null).sort((a,b)=>a[1]-b[1]).slice(0,3);
+ return `<p class="step">Compara a las <b>${P.length}</b> personas que hicieron las dos evaluaciones (mismas personas antes y después).</p>
+ ${T(["Tema","Inicial","Final","Cambio","Aprendieron (✗→✓)","Persistió el error (✗→✗)","Retrocedieron (✓→✗)"],rows)}
+ ${dbj.length?`<div class="res"><b>Reforzar primero (peores temas en la evaluación final):</b><br>${dbj.map(x=>esc(x[0])+" ("+x[1]+"% acertó)").join(" · ")}</div>`:""}
+ <p class="step">Cuidado al interpretar: las preguntas inicial y final están redactadas distinto, así que una puede ser algo más fácil que la otra. Lo más útil es la columna “Persistió el error”: son personas que no cambiaron su idea equivocada.</p>`}
+
+function vPer(){const Lp=flt(),f0=PER&&F.find(x=>x.codigo==PER);
+ if(f0)return detalle(f0);PER="";
+ const rows=Lp.map(f=>{const a=sc(f.pre,"pre"),p=sc(f.post,"post");return[f.codigo,dash(f.nombre),a==null?"–":a+"/10 · "+nv(a),p==null?"–":p+"/10 · "+nv(p),a!=null&&p!=null?(p-a>0?"+":"")+(p-a):"–",{h:f.pre||f.post?`<button class="s" style="margin:0;padding:5px 10px" onclick="verPer('${esc(f.codigo)}')">Ver respuestas</button>`:"–"}]});
+ return `${buscador()}<p class="step">Elija a una persona para ver, pregunta por pregunta, qué respondió y cuál era la correcta.</p>${T(["Código","Nombre","Inicial","Final","Cambio","Detalle"],rows)}
+ <div class="bt">${cbtn("resp","Copiar todas las respuestas","s")}<p class="step">Una fila por pregunta (código, momento, tema, letra elegida, letra correcta y si acertó). Útil para analizar en Excel; no incluye nombres.</p></div>`}
+
+function detalle(f){const a=sc(f.pre,"pre"),p=sc(f.post,"post");
+ const ev=i=>{const x=acierta(f,"pre",i),y=acierta(f,"post",i);if(x==null&&y==null)return["Sin datos","n"];if(x==null||y==null)return["Falta una evaluación","n"];
+  return x&&y?["Acertó siempre",""]:!x&&y?["Aprendió","g"]:x&&!y?["Retrocedió","w"]:["Persiste el error","r"]};
+ const cel=(m,i)=>{const l=let_(f[m],i);if(!l)return{h:"–"};const ok=l==CLV[m][i];
+  return wrap(`<span class="mk ${ok?"g":"r"}">${ok?"✓":"✗"}</span> ${l}) ${esc(txo(m,i,l))}${ok?"":`<br><small style="color:#1e6b34">Correcta: ${CLV[m][i]}) ${esc(txo(m,i,CLV[m][i]))}</small>`}`,220)};
+ const rows=TEMAS.map((t,i)=>{const e=ev(i);return[wrap(`P${i+1} · ${esc(t)}`,150),cel("pre",i),cel("post",i),{h:`<span class="pill ${e[1]}">${e[0]}</span>`}]});
+ const ref=TEMAS.filter((t,i)=>f.post?acierta(f,"post",i)===false:acierta(f,"pre",i)===false);
+ return `<button class="s" onclick="PER='';render()">← Volver a la lista</button>
+ <h3>${esc(f.codigo)}${f.nombre?" · "+esc(f.nombre):""}</h3>
+ <div class="kp" style="max-width:420px"><div class="k"><b>${a==null?"–":a+"/10"}</b><span>Inicial ${a==null?"":"· "+nv(a)}</span></div><div class="k"><b>${p==null?"–":p+"/10"}</b><span>Final ${p==null?"":"· "+nv(p)}</span></div></div>
+ ${T(["Tema","Inicial: lo que eligió","Final: lo que eligió","Evolución"],rows)}
+ <div class="res"><b>Temas a reforzar con esta persona${f.post?"":" (según la evaluación inicial)"}:</b><br>${ref.length?ref.map(esc).join(" · "):"Ninguno: no tuvo errores."}</div>`}
+
+function vMapa(){const m=MOM,Lp=flt().filter(f=>f[m]);
+ const rows=Lp.map(f=>[{h:`<a href="#" onclick="verPer('${esc(f.codigo)}');return false">${esc(f.codigo)}</a>`}].concat(QD[m].map((_,i)=>{const l=let_(f[m],i);return l?{h:`<span class="mk ${l==CLV[m][i]?"g":"r"}">${l==CLV[m][i]?"✓":"✗ "+l}</span>`}:"–"}),[sc(f[m],m)+"/10"]));
+ const all=F.filter(f=>f[m]);
+ const pie=all.length?[AV(["% acertó"].concat(QD[m].map((_,i)=>{const p=pcor(m,i);return p==null?"–":p+"%"}),[avg(all.map(f=>sc(f[m],m)))+"/10"]))]:[];
+ return `${momB()}${buscador()}<p class="step">✓ = acertó · ✗ y una letra = eligió esa letra (incorrecta). La primera fila indica la letra correcta de cada pregunta. Toque un código para ver el detalle de esa persona.</p>
+ ${T(["Código"].concat(QD[m].map((_,i)=>"P"+(i+1)),["Puntaje"]),(all.length?[AV(["Clave"].concat(CLV[m],[""]))]:[]).concat(rows,pie))}`}
 
 /* ---------- control de envíos compartido ---------- */
 let ENV=[];
