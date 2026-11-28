@@ -176,7 +176,7 @@ a.btn{display:inline-block;background:var(--g);color:#fff;border-radius:8px;padd
 <svg class="wave" viewBox="0 0 1440 40" preserveAspectRatio="none" aria-hidden="true"><path d="M0,22 C240,48 480,0 720,22 C960,44 1200,6 1440,22 L1440,40 L0,40Z" fill="#f1e7fb"/></svg></header>
 <div class="shell"><aside class="side" id="sl" aria-hidden="true"><span class="big sun" onclick="wig(this)">☀️</span><span class="big" onclick="wig(this)">🥕</span><span class="big" onclick="wig(this)">🥦</span><span class="big" onclick="wig(this)">🍎</span><span class="big" onclick="wig(this)">🤸‍♀️</span><span class="big" onclick="wig(this)">🚴‍♂️</span><span class="big" onclick="wig(this)">🍇</span></aside>
 <main id="app"><div class="card">Cargando…</div></main><aside class="side" id="sr" aria-hidden="true"><span class="big" onclick="wig(this)">🌈</span><span class="big" onclick="wig(this)">🦋</span><span class="big" onclick="wig(this)">⚽</span><span class="big" onclick="wig(this)">🍓</span><span class="big" onclick="wig(this)">🏃‍♀️</span><span class="big" onclick="wig(this)">🧘‍♂️</span><span class="big" onclick="wig(this)">💧</span></aside></div>
-<footer class="foot"><div class="grass" aria-hidden="true"><span>🌿</span><span>🥕</span><span>🌻</span><span>🍅</span><span>🌱</span><span>🥦</span><span>🌽</span><span>🌿</span><span>🍓</span><span>🌻</span><span>🥕</span><span>🌱</span><span>🍅</span><span>🌿</span></div>Proyecto académico de Enfermería, Instituto Superior Tecnológico San Antonio (TESA). Sus datos son confidenciales y se usan solo con fines académicos.<br>Versión 23-nov-2026 · noticias y acceso de lectura</footer>
+<footer class="foot"><div class="grass" aria-hidden="true"><span>🌿</span><span>🥕</span><span>🌻</span><span>🍅</span><span>🌱</span><span>🥦</span><span>🌽</span><span>🌿</span><span>🍓</span><span>🌻</span><span>🥕</span><span>🌱</span><span>🍅</span><span>🌿</span></div>Proyecto académico de Enfermería, Instituto Superior Tecnológico San Antonio (TESA). Sus datos son confidenciales y se usan solo con fines académicos.<br>Versión 28-nov-2026 · plataforma cerrada</footer>
 <script>
 /* ---------- generador de QR (modo byte, corrección M, versiones 1 a 10) ---------- */
 const QR=(()=>{
@@ -248,7 +248,7 @@ function draw(ctx,text,x0,y0,px,quiet){const G=make(text),n=G.length,q=quiet==nu
 return{make,svg,draw}})();
 
 const SBURL="https://vokpjjidytayjrzjespr.supabase.co",KEY="sb_publishable_q6YCquh7-JYBEUrl1UCQfA_NDJ5ROGS";
-async function rpc(fn,args){let r;try{r=await fetch(`${SBURL}/rest/v1/rpc/${fn}`,{method:"POST",headers:{"Content-Type":"application/json",apikey:KEY},body:JSON.stringify(args)})}catch(e){throw new Error("Sin conexión. Revise su internet e intente de nuevo.")}
+async function rpc(fn,args){if(plataformaCerrada()&&!RPC_LECTURA.includes(fn)){setTimeout(cierre,0);throw new Error("La plataforma finalizó el viernes 27 de noviembre de 2026 a las 23:59.")}let r;try{r=await fetch(`${SBURL}/rest/v1/rpc/${fn}`,{method:"POST",headers:{"Content-Type":"application/json",apikey:KEY},body:JSON.stringify(args)})}catch(e){throw new Error("Sin conexión. Revise su internet e intente de nuevo.")}
  const t=await r.text();let d;try{d=JSON.parse(t)}catch(e){d=t}if(!r.ok)throw new Error((d&&d.message)||"Ocurrió un error. Intente de nuevo.");return d}
 const $=s=>document.querySelector(s),app=$("#app");
 const LS={g:k=>{try{return localStorage.getItem(k)}catch(e){return null}},s:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}},d:k=>{try{localStorage.removeItem(k)}catch(e){}}};
@@ -304,7 +304,7 @@ function show(h,keep){window._vw="";clearInterval(window._ni);stopVid();app.inne
 function busy(b,on){b.disabled=on;b.dataset.t=b.dataset.t||b.textContent;b.textContent=on?"Guardando…":b.dataset.t}
 const back=`<button class="sec noprint" style="margin:0 0 12px" onclick="ini()">← Volver al inicio</button>`;
 const ini=()=>S.est?home():load();
-async function load(){try{S.est=await rpc("obtener_estado",{p_codigo:S.code});if(!S.est.existe){S.code=null;LS.d("tesa_codigo");LS.d("surcos_codigo");return start()}LS.s("tesa_ultimo",S.code);try{const pf=await rpc("obtener_perfil",{p_codigo:S.code})||{};S.nom=pf.nombre||"";if(!S.para&&PARA[pf.para]){S.para=pf.para;LS.s("tesa_para",S.para)}if(!S.nivel&&pf.nivel){S.nivel=pf.nivel;LS.s("tesa_nivel",S.nivel)}}catch(e){S.nom=LS.g("tesa_nombre")||""}S.lb=true;if(S.est.pretest_hecho){try{S.lb=await rpc("tiene_linea_base",{p_codigo:S.code})}catch(e){S.lb=true}}home()}catch(e){show(`<div class="card">${msg("err",e.message)}<button onclick="load()">Reintentar</button></div>`)}}
+async function load(){if(plataformaCerrada())return cierre();try{S.est=await rpc("obtener_estado",{p_codigo:S.code});if(!S.est.existe){S.code=null;LS.d("tesa_codigo");LS.d("surcos_codigo");return start()}LS.s("tesa_ultimo",S.code);try{const pf=await rpc("obtener_perfil",{p_codigo:S.code})||{};S.nom=pf.nombre||"";if(!S.para&&PARA[pf.para]){S.para=pf.para;LS.s("tesa_para",S.para)}if(!S.nivel&&pf.nivel){S.nivel=pf.nivel;LS.s("tesa_nivel",S.nivel)}}catch(e){S.nom=LS.g("tesa_nombre")||""}S.lb=true;if(S.est.pretest_hecho){try{S.lb=await rpc("tiene_linea_base",{p_codigo:S.code})}catch(e){S.lb=true}}home()}catch(e){show(`<div class="card">${msg("err",e.message)}<button onclick="load()">Reintentar</button></div>`)}}
 /* ---------- registro por pasos ---------- */
 const ROLES=[["Madre","👩"],["Padre","👨"],["Representante legal","📝"],["Abuelo/a","👵"],["Otro familiar","👪"]];
 const NIV=[["Primaria","🎒"],["Secundaria","🏫"],["Universidad o instituto","🎓"],["Trabajo","💼"]];
@@ -320,11 +320,11 @@ const opts=(sel,fn,k,arr,cls)=>`<div class="opts ${cls||""}">${arr.map((x,i)=>`<
 const selv=(id,arr,val)=>`<select id="${id}" onchange="REG.${id}=this.value"><option value="">Elija…</option>${arr.map(x=>`<option ${x==val?"selected":""}>${x}</option>`).join("")}</select>`;
 /* Cierre de inscripciones: true = no se admiten nuevos registros (cierre: domingo 15-nov-2026) */
 const REG_CERRADO=true;
-function start(){show(`${noticias()}<div class="card"><h2>Bienvenido/a</h2><p>Esta campaña de 3 semanas le ayudará a mejorar la alimentación y los hábitos de vida, suyos, de su hijo o hija, o de toda su familia. Cada semana se habilita sola en su fecha.</p>
+function start(){if(plataformaCerrada())return cierre();show(`${noticias()}<div class="card"><h2>Bienvenido/a</h2><p>Esta campaña de 3 semanas le ayudará a mejorar la alimentación y los hábitos de vida, suyos, de su hijo o hija, o de toda su familia. Cada semana se habilita sola en su fecha.</p>
 <h3 style="margin-top:16px">Ya me registré</h3><label>Mi código de participante</label><input id="cod" name="usuario" autocomplete="username" placeholder="Ej.: A3F9K2" maxlength="6" style="text-transform:uppercase" value="${esc(LS.g('tesa_ultimo')||'')}"><p class="small" style="margin:6px 0 0">¿No recuerda su código? Búsquelo en el mensaje de bienvenida que recibió por correo o WhatsApp.</p><button onclick="entrar()">Entrar</button><div id="m1"></div></div>
 ${REG_CERRADO?`<div class="card" style="border-top-color:var(--o)"><h3>🔒 Registro cerrado</h3><p class="small">El período de inscripción terminó el domingo 15 de noviembre de 2026 y ya no se aceptan nuevos participantes. Si usted se registró antes de esa fecha, ingrese con su código en el recuadro de arriba. ¡Gracias por su interés!</p></div>`:`<div class="card"><h3>Soy nuevo/a</h3><p class="small">El registro tiene 4 pasos sencillos y toma menos de 2 minutos.</p><button class="y" onclick="REG={};regPaso(1)">Comenzar registro</button></div>`}${lecCard("")}`)}
 function regSet(k,i){REG[k]=REGARR[k][i][0];if(k=="para")REG.rol=REG.para=="Para mí"?"Participo solo por mí":(ROLES.some(r=>r[0]==REG.rol)?REG.rol:"");regPaso(RP,true)}
-function regPaso(n,keep){if(REG_CERRADO)return start();RP=n;const p=REG.para;
+function regPaso(n,keep){if(REG_CERRADO||plataformaCerrada())return start();RP=n;const p=REG.para;
  const bar=`<div class="stp">${[1,2,3,4].map(i=>`<i class="${i<n?"on":i==n?"cur":""}"></i>`).join("")}</div><p class="small" style="margin:0 0 10px">Paso ${n} de 4</p>`;let h="";
  if(n==1)h=`<h2>¿Para quién realiza la campaña?</h2><p class="small">Con esta elección adaptamos los textos, retos, registros, consejos, videos y juegos.</p>${opts(REG.para,"regSet","para",PARAD,"big")}`;
  if(n==2)h=`<h2>${Vp(p,"¿A qué dedica su día?","Nivel de estudio de su hijo o hija","Entorno principal de su familia")}</h2><p class="small">${Vp(p,"Elija una sola opción: la que mejor describe a qué dedica usted la mayor parte de su día.","Esta pregunta es sobre su hijo o hija, no sobre usted. Si participan varios, elija el nivel del menor que más va a participar.","Esta pregunta es sobre toda la familia. Si tiene dudas, elija el nivel del hijo o hija que más va a participar.")}</p><div class="why"><b>¿Para qué lo preguntamos?</b> Solo para mostrarle consejos y ejemplos que sí pueda aplicar (por ejemplo, qué llevar de lonchera o qué elegir en el bar del colegio o del trabajo). No es una prueba ni afecta su certificado. Podrá cambiarlo después en “Mi campaña”.</div>${p!="Para mí"?`<b>Su rol</b><p class="small" style="margin:2px 0 6px">¿Qué es usted de su hijo o hija o de su familia?</p>${opts(REG.rol,"regSet","rol",ROLES)}`:""}<b>${Vp(p,"¿A qué se dedica actualmente?","¿En qué nivel de estudio está su hijo o hija?","¿Cuál es el nivel o entorno principal de la familia?")}</b>${opts(REG.ins,"regSet","ins",NIVD[p]||NIV)}`;
@@ -339,8 +339,8 @@ function regNext(){const m=t=>{$("#rm").innerHTML=msg("err",t)};
  if(RP==2){if(REG.para!="Para mí"&&!REG.rol)return m("Elija su rol.");if(!REG.ins)return m("Elija un nivel o entorno.")}
  if(RP==3){const n=(REG.nom||"").trim();if(n.length<5||!n.includes(" "))return m("Escriba su nombre y apellido.");if(!REG.edad||!REG.sexo)return m("Elija su edad y su sexo.")}
  regPaso(RP+1)}
-async function entrar(){const c=$("#cod").value.trim().toUpperCase();if(c.length<4)return $("#m1").innerHTML=msg("err","Escriba su código.");const prev=LS.g("tesa_ultimo");if(prev&&prev!==c){["tesa_nombre","tesa_para","tesa_nivel","tesa_cor","tesa_wha"].forEach(LS.d);S.para=null;S.nivel=null}S.code=c;LS.s("tesa_codigo",c);load()}
-async function registrar(){if(REG_CERRADO)return start();const m=t=>{$("#rm").innerHTML=msg("err",t)};
+async function entrar(){if(plataformaCerrada())return cierre();const c=$("#cod").value.trim().toUpperCase();if(c.length<4)return $("#m1").innerHTML=msg("err","Escriba su código.");const prev=LS.g("tesa_ultimo");if(prev&&prev!==c){["tesa_nombre","tesa_para","tesa_nivel","tesa_cor","tesa_wha"].forEach(LS.d);S.para=null;S.nivel=null}S.code=c;LS.s("tesa_codigo",c);load()}
+async function registrar(){if(REG_CERRADO||plataformaCerrada())return start();const m=t=>{$("#rm").innerHTML=msg("err",t)};
  if(!REG.canal)return m("Elija cómo desea recibir los recordatorios: correo o WhatsApp.");
  let cor="",wha="";
  if(REG.canal=="Correo"){cor=(REG.cor||"").trim();if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cor))return m("Escriba un correo electrónico válido.")}
@@ -402,6 +402,12 @@ function ctSet(k,i){CT[k]=(k=="para"?PARAD:(NIVD[CT.para]||NIV))[i][0];ctxView(t
 function ctGuardar(){if(!CT.para||!CT.ins)return $("#cm").innerHTML=msg("err","Elija las dos opciones.");S.para=CT.para;S.nivel=CT.ins;LS.s("tesa_para",S.para);LS.s("tesa_nivel",S.nivel);TIP=-1;ini()}
 /* ---------- avisos / noticias de la pantalla de inicio ---------- */
 const FIN_PLAT="2026-11-27"; // último día de la plataforma (AAAA-MM-DD). Cambie aquí si la fecha se mueve.
+/* Cierre automático: desde las 00:00 del día siguiente a FIN_PLAT (hora de Ecuador) nadie puede ingresar, registrarse ni guardar datos.
+   Solo siguen disponibles las solicitudes de acceso de lectura. */
+const RPC_LECTURA=["lector_consultar","lector_registrar"];
+const plataformaCerrada=()=>new Date().toLocaleDateString("en-CA",{timeZone:"America/Guayaquil"})>FIN_PLAT;
+function cierre(){S.est=null;S.code=null;LS.d("tesa_codigo");LS.d("surcos_codigo");
+ show(`${noticias()}<div class="card" style="border-top-color:var(--o);text-align:center"><div style="font-size:52px" aria-hidden="true">🔒</div><h2>La plataforma ha finalizado</h2><p>La campaña <b>Siembra hábitos, cosecha salud</b> cerró el <b>viernes 27 de noviembre de 2026 a las 23:59</b>. Desde ese momento ya no es posible ingresar con un código, registrarse, completar actividades o evaluaciones ni descargar el certificado.</p><p class="small">¡Gracias por participar y por sembrar hábitos saludables! 🌱</p></div>${lecCard("")}`)}
 const NOT_FECHA="2026-11-23",NOT_AUTOR="Karen Yépez y Jacqueline Zambrano"; // fecha y autoras que se muestran en la noticia
 function nwMas(a){const m=$("#nwmas");if(!m)return;const o=m.style.display=="none";m.style.display=o?"block":"none";a.textContent=o?"Mostrar menos":"Mostrar todo"}
 function noticias(){
@@ -425,7 +431,7 @@ function noticias(){
 const LEC_ABIERTO=true; // false = ya no se aceptan nuevos registros de lectura
 function lecCard(cod){if(!LEC_ABIERTO)return"";setTimeout(lecInit,60);
  return`<div class="card" id="lec" style="border-top-color:var(--o)"><h3>📖 Siga con acceso gratuito de lectura</h3>
- <p class="small">La plataforma se cierra el <b>${fmt(FIN_PLAT)}</b>. Si desea <b>seguir consultando</b> la Biblioteca (infografías, tríptico y guías), el Recetario andino, los videos y las referencias <b>sin descargarlos</b>, registre aquí su código. Es gratis y de solo lectura: no incluye retos, evaluaciones ni certificado.</p>
+ <p class="small">La plataforma ${plataformaCerrada()?"cerró":"se cierra"} el <b>${fmt(FIN_PLAT)}</b>. Si desea <b>seguir consultando</b> la Biblioteca (infografías, tríptico y guías), el Recetario andino, los videos y las referencias <b>sin descargarlos</b>, registre aquí su código. Es gratis y de solo lectura: no incluye retos, evaluaciones ni certificado.</p>
  <label>Mi código de participante</label><input id="leccod" placeholder="Ej.: A3F9K2" maxlength="6" style="text-transform:uppercase" value="${esc(cod||LS.g("tesa_ultimo")||"")}">
  <label style="display:flex;gap:8px;font-weight:normal;align-items:flex-start"><input type="checkbox" id="leccons" style="width:auto;margin-top:4px">Deseo conservar mi acceso de solo lectura y autorizo que mi código quede en el registro de lectura de la campaña (uso académico).</label>
  <button onclick="lecRegistrar()">Registrar mi código</button><div id="lecm"></div>
@@ -2214,5 +2220,5 @@ function bienvenida(){if(S.hola)return"";S.hola=true;const h=new Date().getHours
  const p=!e.pretest_hecho?"Su primer paso: responder la evaluación inicial. Ya está disponible.":certFalta().length==0?"¡Cumplió todo! Ya puede obtener su certificado de participación.":`Su huerta tiene ${n} de 3 plantas florecidas.`;
  return`<div class="card hola"><h3 style="margin-bottom:4px">${Vv[Math.floor(Math.random()*Vv.length)]}</h3><p style="margin:0">${p}</p></div>`}
 ytCargar();
-S.code?load():start();
+plataformaCerrada()?cierre():(S.code?load():start());
 </script></body></html>
